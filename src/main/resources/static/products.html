@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Print Shop — Product & Price Scales (DocketManager Style)</title>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --section-title: #0284c7;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        aside {
+            width: 250px;
+            background: var(--primary);
+            color: white;
+            padding: 24px 14px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            padding: 0 8px 24px;
+            font-weight: bold;
+            font-size: 1.15rem;
+            border-bottom: 1px solid #475569;
+        }
+
+        .brand span {
+            color: #38bdf8;
+        }
+
+        nav {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #334155;
+            color: white;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        header p {
+            margin: 4px 0 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .content {
+            padding: 28px 32px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px #0000000d;
+        }
+
+        .section-header {
+            font-size: 0.92rem;
+            font-weight: bold;
+            color: var(--section-title);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 22px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.92rem;
+            background: #ffffff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-full {
+            grid-column: 1 / -1;
+        }
+
+        /* Scales sub-table inside the form */
+        .scales-container {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+
+        .scale-row {
+            display: grid;
+            grid-template-columns: 140px 140px 140px 140px auto;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .scale-header {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .btn-add-scale {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px dashed #0284c7;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .btn-add-scale:hover {
+            background: #bae6fd;
+        }
+
+        .btn-remove-scale {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 0;
+            border-radius: 4px;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .actions {
+            margin-top: 24px;
+            text-align: right;
+        }
+
+        button.btn-primary {
+            background: var(--accent);
+            border: 0;
+            border-radius: 6px;
+            padding: 12px 24px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        button.btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border: 0;
+            padding: 6px 12px;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        th {
+            color: var(--muted);
+            background: #f1f5f9;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .scale-badge {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 2px 4px 2px 0;
+            font-size: 0.8rem;
+        }
+
+        .scale-badge strong {
+            color: #0f172a;
+        }
+
+        .scale-badge span {
+            color: #0284c7;
+            font-weight: bold;
+        }
+
+        .scale-badge small {
+            color: var(--muted);
+        }
+
+        .active-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="brand">URBAN <span>PRINT</span></div>
+
+    <nav>
+        <a href="/">Customers</a>
+        <a href="/products.html" class="active">Products & Pricing</a>
+        <a href="#">Quotes</a>
+        <a href="#">Orders</a>
+        <a href="#">Production Queue</a>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <h1>Product Setup & Pricing Scales</h1>
+        <p>Configure print products, quantity tiers (100, 250, 500...), total prices, and specs.</p>
+    </header>
+
+    <div class="content">
+        <section class="card">
+            <form id="productForm">
+                <!-- 1. GENERAL INFORMATION -->
+                <div class="section-header">1. General Information</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="productName">Product Name *</label>
+                        <input id="productName" required placeholder="e.g. Standard Business Cards">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemCode">SKU / Item Code</label>
+                        <input id="itemCode" placeholder="e.g. BC-STD-01">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category">
+                            <option value="Digital Print">Digital Print (Cards, Flyers)</option>
+                            <option value="Wide Format">Wide Format (Signs, Banners)</option>
+                            <option value="Stickers & Labels">Stickers & Labels</option>
+                            <option value="Apparel & Promo">Apparel & Promo</option>
+                            <option value="Design & Service">Design & Service</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pricingMethod">Pricing Method</label>
+                        <select id="pricingMethod" onchange="togglePricingSections()">
+                            <option value="QUANTITY_SCALE">Quantity Pricing Scale (100, 250, 500, 1000...)</option>
+                            <option value="PER_SQFT">Per Square Foot (Sq. Ft.)</option>
+                            <option value="PER_UNIT">Flat Rate / Per Item</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group form-full">
+                        <label for="description">Product Description / Notes</label>
+                        <input id="description" placeholder="Shown on work orders and customer quotes">
+                    </div>
+                </div>
+
+                <!-- 2. QUANTITY PRICING SCALES (DOCKETMANAGER STYLE) -->
+                <div id="scaleSection">
+                    <div class="section-header">2. Pricing Scales (Quantity Tiers)</div>
+                    <p style="font-size: 0.85rem; color: var(--muted); margin-top: -6px; margin-bottom: 12px;">
+                        Define packages (e.g. Quantity: <strong>250</strong>, Total Price: <strong>$45.00</strong>). The system computes the Price Per Piece automatically.
+                    </p>
+
+                    <div class="scales-container">
+                        <div class="scale-row scale-header">
+                            <div>Quantity</div>
+                            <div>Total Cost ($)</div>
+                            <div>Total Price ($) *</div>
+                            <div>Price / Piece</div>
+                            <div>Action</div>
+                        </div>
+
+                        <div id="scaleRowsContainer">
+                            <!-- Populated with default rows -->
+                        </div>
+
+                        <button type="button" class="btn-add-scale" onclick="addScaleRow()">
+                            + Add Quantity Scale
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2B. FLAT / SQFT PRICING (FOR BANNERS & SIGNS) -->
+                <div id="flatPricingSection" style="display: none;">
+                    <div class="section-header">2. Flat / Area Pricing</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="baseCost">Base Cost ($ CAD)</label>
+                            <input id="baseCost" type="number" step="0.01" min="0" placeholder="e.g. 1.50 per sq.ft.">
+                        </div>
+                        <div class="form-group">
+                            <label for="basePrice">Selling Price ($ CAD) *</label>
+                            <input id="basePrice" type="number" step="0.01" min="0" placeholder="e.g. 4.50 per sq.ft.">
+                        </div>
+                        <div class="form-group">
+                            <label for="minimumOrderFee">Minimum Order Fee ($ CAD)</label>
+                            <input id="minimumOrderFee" type="number" step="0.01" min="0" placeholder="e.g. 25.00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. PRINT SPECIFICATIONS -->
+                <div class="section-header">3. Print & Substrate Specifications</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="defaultWidth">Default Width (inches)</label>
+                        <input id="defaultWidth" type="number" step="0.01" placeholder="e.g. 3.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="defaultHeight">Default Height (inches)</label>
+                        <input id="defaultHeight" type="number" step="0.01" placeholder="e.g. 2.0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="defaultStock">Paper / Stock Substrate</label>
+                        <input id="defaultStock" placeholder="e.g. 14pt Coated Cover, 13oz Vinyl">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sidesInks">Inks / Sides</label>
+                        <select id="sidesInks">
+                            <option value="4/0 - Full Color 1-Sided">4/0 - Full Color 1-Sided</option>
+                            <option value="4/4 - Full Color Both Sides">4/4 - Full Color Both Sides</option>
+                            <option value="1/0 - Black 1-Sided">1/0 - Black 1-Sided</option>
+                            <option value="1/1 - Black Both Sides">1/1 - Black Both Sides</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productionDepartment">Production Department</label>
+                        <select id="productionDepartment">
+                            <option value="Digital Press">Digital Press</option>
+                            <option value="Wide Format">Wide Format (Roland / Plotter)</option>
+                            <option value="Bindery / Finishing">Bindery / Finishing</option>
+                            <option value="Outsourced">Outsourced Vendor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="turnaroundDays">Standard Turnaround (Days)</label>
+                        <input id="turnaroundDays" type="number" step="1" min="1" placeholder="e.g. 2">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn-primary" type="submit">
+                        Save Product Configuration
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Product Catalog (Print Items)</h2>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Code</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Pricing Model</th>
+                        <th>Quantity & Price Scales</th>
+                        <th>Print Specs</th>
+                        <th>Dept</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="productsTableBody">
+                    <tr>
+                        <td colspan="10" class="empty">Loading products...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+    const API_URL = "/api/products";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Inicializa com 4 linhas padrão de tiragens típicas
+        addScaleRow(100, 15.00, 30.00);
+        addScaleRow(250, 20.00, 45.00);
+        addScaleRow(500, 28.00, 65.00);
+        addScaleRow(1000, 40.00, 95.00);
+
+        loadProducts();
+    });
+
+    function togglePricingSections() {
+        const method = document.getElementById("pricingMethod").value;
+        const scaleSection = document.getElementById("scaleSection");
+        const flatSection = document.getElementById("flatPricingSection");
+
+        if (method === "QUANTITY_SCALE") {
+            scaleSection.style.display = "block";
+            flatSection.style.display = "none";
+        } else {
+            scaleSection.style.display = "none";
+            flatSection.style.display = "block";
+        }
+    }
+
+    function addScaleRow(qty = "", cost = "", price = "") {
+        const container = document.getElementById("scaleRowsContainer");
+        const rowId = "scale_row_" + Date.now() + "_" + Math.random().toString(36).substring(2, 5);
+
+        const row = document.createElement("div");
+        row.className = "scale-row";
+        row.id = rowId;
+
+        row.innerHTML = `
+            <div>
+                <input type="number" class="scale-qty" placeholder="e.g. 250" value="${qty}" required oninput="recalcPerPiece('${rowId}')">
+            </div>
+            <div>
+                <input type="number" step="0.01" class="scale-cost" placeholder="Cost $" value="${cost}">
+            </div>
+            <div>
+                <input type="number" step="0.01" class="scale-price" placeholder="Price $" value="${price}" required oninput="recalcPerPiece('${rowId}')">
+            </div>
+            <div>
+                <input type="text" class="scale-per-piece" placeholder="$0.0000" readonly style="background:#f1f5f9; color:#475569; font-weight:bold;">
+            </div>
+            <div>
+                <button type="button" class="btn-remove-scale" onclick="document.getElementById('${rowId}').remove()">Remove</button>
+            </div>
+        `;
+
+        container.appendChild(row);
+        recalcPerPiece(rowId);
+    }
+
+    function recalcPerPiece(rowId) {
+        const row = document.getElementById(rowId);
+        if (!row) return;
+
+        const qtyInput = row.querySelector(".scale-qty");
+        const priceInput = row.querySelector(".scale-price");
+        const pieceInput = row.querySelector(".scale-per-piece");
+
+        const qty = parseFloat(qtyInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+
+        if (qty > 0 && price > 0) {
+            const perPiece = price / qty;
+            pieceInput.value = "$" + perPiece.toFixed(4) + " /ea";
+        } else {
+            pieceInput.value = "-";
+        }
+    }
+
+    document.getElementById("productForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const pricingMethod = document.getElementById("pricingMethod").value;
+        const priceScales = [];
+
+        if (pricingMethod === "QUANTITY_SCALE") {
+            const rows = document.querySelectorAll("#scaleRowsContainer .scale-row");
+            rows.forEach(r => {
+                const q = r.querySelector(".scale-qty").value;
+                const c = r.querySelector(".scale-cost").value;
+                const p = r.querySelector(".scale-price").value;
+
+                if (q && p) {
+                    priceScales.push({
+                        quantity: parseInt(q),
+                        totalCost: c ? Number(c) : null,
+                        totalPrice: Number(p)
+                    });
+                }
+            });
+
+            if (priceScales.length === 0) {
+                alert("Please define at least one Quantity Price Scale (e.g. 250 cards for $45.00).");
+                return;
+            }
+        }
+
+        const product = {
+            productName: document.getElementById("productName").value.trim(),
+            itemCode: document.getElementById("itemCode").value.trim(),
+            category: document.getElementById("category").value,
+            description: document.getElementById("description").value.trim(),
+            pricingMethod: pricingMethod,
+            unit: "Each",
+            baseCost: document.getElementById("baseCost").value ? Number(document.getElementById("baseCost").value) : null,
+            basePrice: document.getElementById("basePrice").value ? Number(document.getElementById("basePrice").value) : null,
+            minimumOrderFee: document.getElementById("minimumOrderFee").value ? Number(document.getElementById("minimumOrderFee").value) : null,
+            defaultWidth: document.getElementById("defaultWidth").value ? Number(document.getElementById("defaultWidth").value) : null,
+            defaultHeight: document.getElementById("defaultHeight").value ? Number(document.getElementById("defaultHeight").value) : null,
+            defaultStock: document.getElementById("defaultStock").value.trim(),
+            sidesInks: document.getElementById("sidesInks").value,
+            productionDepartment: document.getElementById("productionDepartment").value,
+            turnaroundDays: document.getElementById("turnaroundDays").value ? parseInt(document.getElementById("turnaroundDays").value) : null,
+            priceScales: priceScales,
+            active: true
+        };
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(product)
+        });
+
+        if (response.ok) {
+            this.reset();
+            document.getElementById("scaleRowsContainer").innerHTML = "";
+            addScaleRow(100, 15.00, 30.00);
+            addScaleRow(250, 20.00, 45.00);
+            addScaleRow(500, 28.00, 65.00);
+            addScaleRow(1000, 40.00, 95.00);
+            togglePricingSections();
+            await loadProducts();
+        } else {
+            alert("Error creating product. Please verify inputs.");
+        }
+    });
+
+    async function loadProducts() {
+        const tableBody = document.getElementById("productsTableBody");
+
+        try {
+            const response = await fetch(API_URL);
+            const products = await response.json();
+
+            if (products.length === 0) {
+                tableBody.innerHTML =
+                    '<tr><td colspan="10" class="empty">No products configured yet.</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = products.map(product => {
+                // Monta os badges das escalas de quantidade
+                let scalesHtml = "-";
+                if (product.pricingMethod === "QUANTITY_SCALE" && product.priceScales && product.priceScales.length > 0) {
+                    scalesHtml = product.priceScales
+                        .sort((a, b) => a.quantity - b.quantity)
+                        .map(s => `
+                            <span class="scale-badge">
+                                <strong>${s.quantity} pcs</strong>: 
+                                <span>$${Number(s.totalPrice).toFixed(2)}</span>
+                                <small>($${Number(s.pricePerPiece || (s.totalPrice/s.quantity)).toFixed(3)}/ea)</small>
+                            </span>
+                        `).join(" ");
+                } else if (product.basePrice != null) {
+                    scalesHtml = `<strong>$${Number(product.basePrice).toFixed(2)}</strong> <small>(${product.pricingMethod})</small>`;
+                }
+
+                const dims = (product.defaultWidth && product.defaultHeight)
+                    ? `${product.defaultWidth}" x ${product.defaultHeight}"`
+                    : "";
+                const specs = [dims, product.defaultStock, product.sidesInks].filter(Boolean).join(" | ");
+
+                return `
+                <tr>
+                    <td>${product.id}</td>
+                    <td><strong>${escapeHtml(product.itemCode || "-")}</strong></td>
+                    <td>${escapeHtml(product.productName || "")}</td>
+                    <td>${escapeHtml(product.category || "-")}</td>
+                    <td><small>${escapeHtml(product.pricingMethod || "-")}</small></td>
+                    <td>${scalesHtml}</td>
+                    <td><small>${escapeHtml(specs || "-")}</small></td>
+                    <td>${escapeHtml(product.productionDepartment || "-")}</td>
+                    <td>
+                        <span class="${product.active ? "active-badge" : ""}">
+                            ${product.active ? "Active" : "Inactive"}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn-danger" onclick="deleteProduct(${product.id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `}).join("");
+        } catch (error) {
+            console.error(error);
+            tableBody.innerHTML =
+                '<tr><td colspan="10" class="empty">Failed to load products.</td></tr>';
+        }
+    }
+
+    async function deleteProduct(id) {
+        if (!confirm(`Are you sure you want to delete product #${id}?`)) {
+            return;
+        }
+
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            await loadProducts();
+        } else {
+            alert("Could not delete product.");
+        }
+    }
+
+    function escapeHtml(value) {
+        const div = document.createElement("div");
+        div.textContent = value;
+        return div.innerHTML;
+    }
+</script>
+
+</body>
+</html>
