@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Print Shop — Quotes</title>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --section-title: #0284c7;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        aside {
+            width: 250px;
+            background: var(--primary);
+            color: white;
+            padding: 24px 14px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            padding: 0 8px 24px;
+            font-weight: bold;
+            font-size: 1.15rem;
+            border-bottom: 1px solid #475569;
+        }
+
+        .brand span {
+            color: #38bdf8;
+        }
+
+        nav {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #334155;
+            color: white;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .content {
+            padding: 28px 32px;
+            max-width: 1500px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px #0000000d;
+        }
+
+        .section-header {
+            font-size: 0.92rem;
+            font-weight: bold;
+            color: var(--section-title);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 14px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.92rem;
+            background: white;
+        }
+
+        textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .customer-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e3a8a;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 16px;
+            display: none;
+            font-size: 0.88rem;
+        }
+
+        .item-builder {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .builder-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1.5fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 6px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 7px 10px;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-add {
+            background: #dbeafe;
+            color: #1d4ed8;
+            white-space: nowrap;
+        }
+
+        .price-preview {
+            height: 38px;
+            padding: 10px;
+            background: #e2e8f0;
+            color: #0f172a;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.88rem;
+            vertical-align: top;
+        }
+
+        th {
+            color: var(--muted);
+            background: #f1f5f9;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 24px;
+        }
+
+        .summary {
+            margin-left: auto;
+            max-width: 380px;
+            margin-top: 22px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: var(--muted);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--border);
+            margin-top: 8px;
+            padding-top: 14px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                display: block;
+            }
+
+            aside {
+                width: 100%;
+            }
+
+            nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .content {
+                padding: 20px 14px;
+            }
+
+            .builder-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside>
+    <div class="brand">URBAN <span>PRINT</span></div>
+
+    <nav>
+        <a href="/">Customers</a>
+        <a href="/products.html">Products & Pricing</a>
+        <a href="/quotes.html" class="active">Quotes</a>
+        <a href="#">Orders</a>
+        <a href="#">Production Queue</a>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <h1>Create Quote</h1>
+        <p>Select a customer, add products, and prepare a professional quotation.</p>
+    </header>
+
+    <div class="content">
+
+        <div id="message" class="message"></div>
+
+        <section class="card">
+            <div class="section-header">1. Quote Information</div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="customerSelect">Customer *</label>
+                    <select id="customerSelect" required>
+                        <option value="">Loading customers...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="issueDate">Issue Date *</label>
+                    <input type="date" id="issueDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="expiryDate">Expiry Date *</label>
+                    <input type="date" id="expiryDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status">
+                        <option value="DRAFT">Draft</option>
+                        <option value="SENT">Sent</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="taxRate">Tax Rate (%)</label>
+                    <input type="number" id="taxRate" value="12.00" min="0" step="0.01"
+                           oninput="calculateTotals()">
+                </div>
+
+                <div class="form-group form-full">
+                    <label for="notes">Notes / Terms</label>
+                    <textarea id="notes"
+                              placeholder="Payment terms, production notes, delivery information..."></textarea>
+                </div>
+            </div>
+
+            <div id="customerInfo" class="customer-info"></div>
+        </section>
+
+        <section class="card">
+            <div class="section-header">2. Add Quote Items</div>
+
+            <div class="item-builder">
+                <div class="builder-grid">
+                    <div class="form-group">
+                        <label for="productSelect">Product *</label>
+                        <select id="productSelect" onchange="loadProductScales()">
+                            <option value="">Loading products...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scaleSelect">Quantity / Price *</label>
+                        <select id="scaleSelect" onchange="updatePricePreview()">
+                            <option value="">Select a product first</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customDescription">Description</label>
+                        <input id="customDescription"
+                               placeholder="Optional custom description">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Selected Price</label>
+                        <div id="pricePreview" class="price-preview">$0.00</div>
+                    </div>
+
+                    <button type="button" class="btn btn-add" onclick="addQuoteItem()">
+                        + Add Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="margin-top: 22px;">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description / Specs</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="quoteItemsBody">
+                    <tr>
+                        <td colspan="6" class="empty">
+                            No items added to this quote yet.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong id="subtotal">$0.00</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Tax</span>
+                    <strong id="taxAmount">$0.00</strong>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span id="totalAmount">$0.00</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn btn-primary" onclick="saveQuote()">
+                    Save Quote
+                </button>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+    const CUSTOMERS_API = "/api/customers";
+    const PRODUCTS_API = "/api/products";
+    const QUOTES_API = "/api/quotes";
+
+    let customers = [];
+    let products = [];
+    let quoteItems = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        setDefaultDates();
+        await loadCustomers();
+        await loadProducts();
+
+        document.getElementById("customerSelect")
+            .addEventListener("change", showCustomerInfo);
+    });
+
+    function setDefaultDates() {
+        const today = new Date();
+        const expiry = new Date(today);
+        expiry.setDate(expiry.getDate() + 30);
+
+        document.getElementById("issueDate").value = formatDate(today);
+        document.getElementById("expiryDate").value = formatDate(expiry);
+    }
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    async function loadCustomers() {
+        const select = document.getElementById("customerSelect");
+
+        try {
+            const response = await fetch(CUSTOMERS_API);
+
+            if (!response.ok) {
+                throw new Error("Could not load customers.");
+            }
+
+            customers = await response.json();
+
+            select.innerHTML = '<option value="">Select a customer</option>';
+
+            customers.forEach(customer => {
+                const option = document.createElement("option");
+                option.value = customer.id;
+                option.textContent = getCustomerName(customer);
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error(error);
+            select.innerHTML = '<option value="">Failed to load customers</option>';
+        }
+    }
+
+    async function loadProducts() {
+        const select = document.getElementById("productSelect");
+
+        try {
+            const response = await fetch(PRODUCTS_API);
+
+            if (!response.ok) {
+                throw new Error("Could not load products.");
+            }
+
+            products = await response.json();
+
+            select.innerHTML = '<option value="">Select a product</option>';
+
+            products
+                .filter(product => product.active !== false)
+                .forEach(product => {
+                    const option = document.createElement("option");
+                    option.value = product.id;
+                    option.textContent = product.productName;
+                    select.appendChild(option);
+                });
+        } catch (error) {
+            console.error(error);
+            select.innerHTML = '<option value="">Failed to load products</option>';
+        }
+    }
+
+    function getCustomerName(customer) {
+        return customer.customerName
+            || customer.companyName
+            || customer.name
+            || `Customer #${customer.id}`;
+    }
+
+    function getCustomerEmail(customer) {
+        return customer.email
+            || customer.emailAddress
+            || "";
+    }
+
+    function showCustomerInfo() {
+        const customerId = Number(document.getElementById("customerSelect").value);
+        const customer = customers.find(item => item.id === customerId);
+        const info = document.getElementById("customerInfo");
+
+        if (!customer) {
+            info.style.display = "none";
+            info.innerHTML = "";
+            return;
+        }
+
+        const email = getCustomerEmail(customer);
+
+        info.innerHTML = `
+            <strong>${escapeHtml(getCustomerName(customer))}</strong>
+            ${email ? `<br>Email: ${escapeHtml(email)}` : ""}
+        `;
+
+        info.style.display = "block";
+    }
+
+    function loadProductScales() {
+        const productId = Number(document.getElementById("productSelect").value);
+        const product = products.find(item => item.id === productId);
+        const scaleSelect = document.getElementById("scaleSelect");
+
+        scaleSelect.innerHTML = "";
+
+        if (!product) {
+            scaleSelect.innerHTML =
+                '<option value="">Select a product first</option>';
+            updatePricePreview();
+            return;
+        }
+
+        const scales = product.priceScales || [];
+
+        if (scales.length === 0) {
+            scaleSelect.innerHTML =
+                '<option value="">No quantity scale configured</option>';
+            updatePricePreview();
+            return;
+        }
+
+        scaleSelect.innerHTML =
+            '<option value="">Select quantity and price</option>';
+
+        scales
+            .sort((a, b) => a.quantity - b.quantity)
+            .forEach(scale => {
+                const option = document.createElement("option");
+                option.value = scale.id || `${scale.quantity}-${scale.totalPrice}`;
+                option.dataset.quantity = scale.quantity;
+                option.dataset.totalPrice = scale.totalPrice;
+                option.dataset.unitPrice =
+                    scale.pricePerPiece || (scale.totalPrice / scale.quantity);
+
+                option.textContent =
+                    `${scale.quantity} pcs — $${Number(scale.totalPrice).toFixed(2)}`;
+
+                scaleSelect.appendChild(option);
+            });
+
+        updatePricePreview();
+    }
+
+    function updatePricePreview() {
+        const select = document.getElementById("scaleSelect");
+        const option = select.options[select.selectedIndex];
+        const preview = document.getElementById("pricePreview");
+
+        if (!option || !option.dataset.totalPrice) {
+            preview.textContent = "$0.00";
+            return;
+        }
+
+        const quantity = Number(option.dataset.quantity);
+        const totalPrice = Number(option.dataset.totalPrice);
+        const unitPrice = totalPrice / quantity;
+
+        preview.textContent =
+            `$${totalPrice.toFixed(2)} total ($${unitPrice.toFixed(4)} /ea)`;
+    }
+
+    function addQuoteItem() {
+        const productId = Number(document.getElementById("productSelect").value);
+        const scaleSelect = document.getElementById("scaleSelect");
+        const scaleOption = scaleSelect.options[scaleSelect.selectedIndex];
+
+        const product = products.find(item => item.id === productId);
+
+        if (!product) {
+            showMessage("Please select a product.", "error");
+            return;
+        }
+
+        if (!scaleOption || !scaleOption.dataset.quantity) {
+            showMessage("Please select a quantity and price.", "error");
+            return;
+        }
+
+        const quantity = Number(scaleOption.dataset.quantity);
+        const totalPrice = Number(scaleOption.dataset.totalPrice);
+        const unitPrice = totalPrice / quantity;
+
+        const descriptionInput =
+            document.getElementById("customDescription").value.trim();
+
+        const defaultSpecs = [
+            product.defaultWidth && product.defaultHeight
+                ? `${product.defaultWidth}" x ${product.defaultHeight}"`
+                : "",
+            product.defaultStock || "",
+            product.sidesInks || ""
+        ].filter(Boolean).join(" | ");
+
+        quoteItems.push({
+            productId: product.id,
+            productName: product.productName,
+            itemDescription: descriptionInput || product.productName,
+            quantity: quantity,
+            unitPrice: unitPrice,
+            totalPrice: totalPrice,
+            printSpecsSummary: defaultSpecs
+        });
+
+        document.getElementById("customDescription").value = "";
+
+        renderQuoteItems();
+        calculateTotals();
+    }
+
+    function renderQuoteItems() {
+        const body = document.getElementById("quoteItemsBody");
+
+        if (quoteItems.length === 0) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty">
+                        No items added to this quote yet.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        body.innerHTML = quoteItems.map((item, index) => `
+            <tr>
+                <td><strong>${escapeHtml(item.productName)}</strong></td>
+                <td>
+                    ${escapeHtml(item.itemDescription)}
+                    ${item.printSpecsSummary
+                        ? `<br><small>${escapeHtml(item.printSpecsSummary)}</small>`
+                        : ""}
+                </td>
+                <td>${item.quantity}</td>
+                <td>$${item.unitPrice.toFixed(4)}</td>
+                <td><strong>$${item.totalPrice.toFixed(2)}</strong></td>
+                <td>
+                    <button class="btn btn-danger"
+                            onclick="removeQuoteItem(${index})">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    function removeQuoteItem(index) {
+        quoteItems.splice(index, 1);
+        renderQuoteItems();
+        calculateTotals();
+    }
+
+    function calculateTotals() {
+        const subtotal = quoteItems.reduce(
+            (sum, item) => sum + Number(item.totalPrice),
+            0
+        );
+
+        const taxRate =
+            Number(document.getElementById("taxRate").value) || 0;
+
+        const taxAmount = subtotal * taxRate / 100;
+        const totalAmount = subtotal + taxAmount;
+
+        document.getElementById("subtotal").textContent =
+            formatCurrency(subtotal);
+
+        document.getElementById("taxAmount").textContent =
+            formatCurrency(taxAmount);
+
+        document.getElementById("totalAmount").textContent =
+            formatCurrency(totalAmount);
+    }
+
+    async function saveQuote() {
+        const customerId =
+            Number(document.getElementById("customerSelect").value);
+
+        if (!customerId) {
+            showMessage("Please select a customer.", "error");
+            return;
+        }
+
+        if (quoteItems.length === 0) {
+            showMessage("Please add at least one item to the quote.", "error");
+            return;
+        }
+
+        const quote = {
+            customer: {
+                id: customerId
+            },
+            issueDate: document.getElementById("issueDate").value,
+            expiryDate: document.getElementById("expiryDate").value,
+            status: document.getElementById("status").value,
+            taxRate: Number(document.getElementById("taxRate").value) || 0,
+            notes: document.getElementById("notes").value.trim(),
+            items: quoteItems.map(item => ({
+                product: {
+                    id: item.productId
+                },
+                itemDescription: item.itemDescription,
+                quantity: item.quantity,
+                unitPrice: Number(item.unitPrice.toFixed(4)),
+                totalPrice: Number(item.totalPrice.toFixed(2)),
+                printSpecsSummary: item.printSpecsSummary
+            }))
+        };
+
+        try {
+            const response = await fetch(QUOTES_API, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(quote)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(errorText);
+                throw new Error("Could not save quote.");
+            }
+
+            const savedQuote = await response.json();
+
+            showMessage(
+                `Quote ${savedQuote.quoteNumber} was saved successfully.`,
+                "success"
+            );
+
+            resetQuoteForm();
+        } catch (error) {
+            console.error(error);
+            showMessage(
+                "Error saving quote. Check the backend terminal for details.",
+                "error"
+            );
+        }
+    }
+
+    function resetQuoteForm() {
+        quoteItems = [];
+        document.getElementById("notes").value = "";
+        document.getElementById("status").value = "DRAFT";
+        document.getElementById("taxRate").value = "12.00";
+        document.getElementById("customerSelect").value = "";
+        document.getElementById("productSelect").value = "";
+        document.getElementById("scaleSelect").innerHTML =
+            '<option value="">Select a product first</option>';
+        document.getElementById("customerInfo").style.display = "none";
+
+        setDefaultDates();
+        renderQuoteItems();
+        calculateTotals();
+    }
+
+    function showMessage(text, type) {
+        const message = document.getElementById("message");
+        message.textContent = text;
+        message.className = `message ${type}`;
+
+        setTimeout(() => {
+            message.className = "message";
+            message.textContent = "";
+        }, 5000);
+    }
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat("en-CA", {
+            style: "currency",
+            currency: "CAD"
+        }).format(value);
+    }
+
+    function escapeHtml(value) {
+        const div = document.createElement("div");
+        div.textContent = value == null ? "" : String(value);
+        return div.innerHTML;
+    }
+</script>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.urbanprint.backend.service;
 
 import com.urbanprint.backend.model.Product;
+import com.urbanprint.backend.model.ProductPriceScale;
 import com.urbanprint.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,12 @@ public class ProductService {
     }
 
     public Product save(Product product) {
+        if (product.getPriceScales() != null) {
+            for (ProductPriceScale scale : product.getPriceScales()) {
+                scale.setProduct(product);
+                scale.calculateDerivedFields();
+            }
+        }
         return productRepository.save(product);
     }
 

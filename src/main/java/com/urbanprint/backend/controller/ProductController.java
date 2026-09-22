@@ -1,6 +1,7 @@
 package com.urbanprint.backend.controller;
 
 import com.urbanprint.backend.model.Product;
+import com.urbanprint.backend.model.ProductPriceScale;
 import com.urbanprint.backend.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,15 +43,30 @@ public class ProductController {
         return productService.findById(id)
                 .map(existingProduct -> {
                     existingProduct.setProductName(product.getProductName());
-                    existingProduct.setDescription(product.getDescription());
+                    existingProduct.setItemCode(product.getItemCode());
                     existingProduct.setCategory(product.getCategory());
+                    existingProduct.setDescription(product.getDescription());
+                    existingProduct.setPricingMethod(product.getPricingMethod());
                     existingProduct.setUnit(product.getUnit());
-                    existingProduct.setUnitPrice(product.getUnitPrice());
+                    existingProduct.setBaseCost(product.getBaseCost());
+                    existingProduct.setBasePrice(product.getBasePrice());
+                    existingProduct.setMinimumOrderFee(product.getMinimumOrderFee());
+                    existingProduct.setDefaultWidth(product.getDefaultWidth());
+                    existingProduct.setDefaultHeight(product.getDefaultHeight());
+                    existingProduct.setDefaultStock(product.getDefaultStock());
+                    existingProduct.setSidesInks(product.getSidesInks());
+                    existingProduct.setProductionDepartment(product.getProductionDepartment());
+                    existingProduct.setTurnaroundDays(product.getTurnaroundDays());
                     existingProduct.setActive(product.isActive());
 
-                    return ResponseEntity.ok(
-                            productService.save(existingProduct)
-                    );
+                    existingProduct.getPriceScales().clear();
+                    if (product.getPriceScales() != null) {
+                        for (ProductPriceScale scale : product.getPriceScales()) {
+                            existingProduct.addPriceScale(scale);
+                        }
+                    }
+
+                    return ResponseEntity.ok(productService.save(existingProduct));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
