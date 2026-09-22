@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Print Shop — Quote Details</title>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        aside {
+            width: 250px;
+            background: var(--primary);
+            color: white;
+            padding: 24px 14px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            padding: 0 8px 24px;
+            font-weight: bold;
+            font-size: 1.15rem;
+            border-bottom: 1px solid #475569;
+        }
+
+        .brand span {
+            color: #38bdf8;
+        }
+
+        nav {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #334155;
+            color: white;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .content {
+            padding: 28px 32px;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 1px 3px #0000000d;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: #e2e8f0; color: #334155; }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-success { background: var(--success); color: white; }
+
+        .quote-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 24px;
+        }
+
+        .company-meta h2 {
+            margin: 0 0 6px;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .company-meta p {
+            margin: 2px 0;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .quote-meta {
+            text-align: right;
+        }
+
+        .quote-meta h3 {
+            margin: 0 0 6px;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        .status-DRAFT { background: #fef3c7; color: #92400e; }
+        .status-SENT { background: #dbeafe; color: #1e40af; }
+        .status-ACCEPTED { background: #dcfce7; color: #166534; }
+        .status-REJECTED { background: #fee2e2; color: #991b1b; }
+        .status-CONVERTED { background: #ede9fe; color: #5b21b6; }
+
+        .parties-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 30px;
+        }
+
+        .party-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .party-box h4 {
+            margin: 0 0 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+
+        .party-box p {
+            margin: 4px 0;
+            font-size: 0.92rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: var(--muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .summary-box {
+            margin-left: auto;
+            max-width: 350px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: var(--muted);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--border);
+            margin-top: 8px;
+            padding-top: 14px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .notes-box {
+            margin-top: 24px;
+            padding: 16px;
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .notes-box strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #92400e;
+        }
+
+        @media print {
+            aside, header, .header-actions {
+                display: none;
+            }
+            body {
+                background: white;
+            }
+            .card {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside>
+    <div class="brand">URBAN <span>PRINT</span></div>
+
+    <nav>
+        <a href="/">Customers</a>
+        <a href="/products.html">Products & Pricing</a>
+        <a href="/quote-list.html" class="active">Quotes</a>
+        <a href="/quotes.html">New Quote</a>
+        <a href="#">Orders</a>
+        <a href="#">Production Queue</a>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <div>
+            <h1 id="pageTitle">Quote Details</h1>
+            <p>Review customer quotation summary.</p>
+        </div>
+        <div class="header-actions">
+            <a href="/quote-list.html" class="btn btn-secondary">← Back to Quotes</a>
+            <button class="btn btn-secondary" onclick="window.print()">Print / PDF</button>
+            <button class="btn btn-primary" onclick="markAsSent()">Mark as Sent</button>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="card" id="quoteContainer">
+            <div id="loadingMessage" style="text-align: center; color: var(--muted); padding: 40px;">
+                Loading quote details...
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const quoteId = urlParams.get('id');
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!quoteId) {
+            document.getElementById("quoteContainer").innerHTML = `
+                <div style="color: var(--danger); text-align: center;">No quote ID provided in URL.</div>
+            `;
+            return;
+        }
+        loadQuoteDetails();
+    });
+
+    async function loadQuoteDetails() {
+        try {
+            const response = await fetch(`/api/quotes/${quoteId}`);
+            if (!response.ok) {
+                throw new Error("Could not find quote.");
+            }
+
+            const quote = await response.json();
+            renderQuote(quote);
+        } catch (error) {
+            console.error(error);
+            document.getElementById("quoteContainer").innerHTML = `
+                <div style="color: var(--danger); text-align: center;">Failed to load quote details.</div>
+            `;
+        }
+    }
+
+    function renderQuote(quote) {
+        document.getElementById("pageTitle").textContent = `Quote ${quote.quoteNumber || ''}`;
+
+        const customer = quote.customer || {};
+        const customerName = customer.customerName || customer.companyName || customer.name || "N/A";
+        const email = customer.email || customer.emailAddress || "N/A";
+        const phone = customer.phone || customer.phoneNumber || "N/A";
+        const address = customer.address || "N/A";
+
+        const gstRate = Number(quote.gstRate != null ? quote.gstRate : 5.00);
+        const pstRate = Number(quote.pstRate != null ? quote.pstRate : 7.00);
+        const gstAmount = Number(quote.gstAmount != null ? quote.gstAmount : (quote.subtotal * gstRate / 100));
+        const pstAmount = Number(quote.pstAmount != null ? quote.pstAmount : (quote.subtotal * pstRate / 100));
+
+        const itemsHtml = (quote.items || []).map(item => `
+            <tr>
+                <td>
+                    <strong>${escapeHtml(item.product?.productName || item.itemDescription)}</strong>
+                    ${item.printSpecsSummary ? `<br><small style="color: var(--muted);">${escapeHtml(item.printSpecsSummary)}</small>` : ''}
+                </td>
+                <td>${escapeHtml(item.itemDescription || '')}</td>
+                <td>${item.quantity}</td>
+                <td>$${Number(item.unitPrice || 0).toFixed(4)}</td>
+                <td><strong>$${Number(item.totalPrice || 0).toFixed(2)}</strong></td>
+            </tr>
+        `).join("");
+
+        document.getElementById("quoteContainer").innerHTML = `
+            <div class="quote-header-info">
+                <div class="company-meta">
+                    <h2>URBAN PRINT SHOP</h2>
+                    <p>7993 Enterprise St, Burnaby, BC</p>
+                    <p>Phone: (604) 420-3298 | info@urbanprintshop.ca</p>
+                </div>
+
+                <div class="quote-meta">
+                    <h3>${escapeHtml(quote.quoteNumber || 'QUOTE')}</h3>
+                    <p><strong>Issue Date:</strong> ${escapeHtml(quote.issueDate || '-')}</p>
+                    <p><strong>Expiry Date:</strong> ${escapeHtml(quote.expiryDate || '-')}</p>
+                    <div><span class="status-badge status-${escapeHtml(quote.status || 'DRAFT')}">${escapeHtml(quote.status || 'DRAFT')}</span></div>
+                </div>
+            </div>
+
+            <div class="parties-grid">
+                <div class="party-box">
+                    <h4>Prepared For (Customer)</h4>
+                    <p><strong>${escapeHtml(customerName)}</strong></p>
+                    <p>Email: ${escapeHtml(email)}</p>
+                    <p>Phone: ${escapeHtml(phone)}</p>
+                    <p>Address: ${escapeHtml(address)}</p>
+                </div>
+
+                <div class="party-box">
+                    <h4>Quotation Summary</h4>
+                    <p><strong>Status:</strong> ${escapeHtml(quote.status || 'Draft')}</p>
+                    <p><strong>Taxes:</strong> GST (${gstRate.toFixed(2)}%) + PST (${pstRate.toFixed(2)}%)</p>
+                    <p><strong>Item Count:</strong> ${(quote.items || []).length} item(s)</p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description / Specs</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml || '<tr><td colspan="5" style="text-align: center; color: var(--muted);">No items.</td></tr>'}
+                </tbody>
+            </table>
+
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>$${Number(quote.subtotal || 0).toFixed(2)}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>GST (${gstRate.toFixed(2)}%)</span>
+                    <strong>$${gstAmount.toFixed(2)}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>PST (${pstRate.toFixed(2)}%)</span>
+                    <strong>$${pstAmount.toFixed(2)}</strong>
+                </div>
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span>$${Number(quote.totalAmount || 0).toFixed(2)} CAD</span>
+                </div>
+            </div>
+
+            ${quote.notes ? `
+                <div class="notes-box">
+                    <strong>Terms & Notes:</strong>
+                    <span>${escapeHtml(quote.notes)}</span>
+                </div>
+            ` : ''}
+        `;
+    }
+
+    async function markAsSent() {
+        try {
+            const response = await fetch(`/api/quotes/${quoteId}`);
+            if (!response.ok) throw new Error("Could not fetch quote.");
+            const quote = await response.json();
+
+            quote.status = "SENT";
+
+            const updateResponse = await fetch(`/api/quotes/${quoteId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(quote)
+            });
+
+            if (!updateResponse.ok) throw new Error("Could not update status.");
+            alert("Quote marked as SENT!");
+            loadQuoteDetails();
+        } catch (e) {
+            console.error(e);
+            alert("Error updating quote status.");
+        }
+    }
+
+    function escapeHtml(value) {
+        const div = document.createElement("div");
+        div.textContent = value == null ? "" : String(value);
+        return div.innerHTML;
+    }
+</script>
+
+</body>
+</html>

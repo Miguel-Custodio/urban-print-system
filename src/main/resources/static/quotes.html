@@ -363,7 +363,8 @@
     <nav>
         <a href="/">Customers</a>
         <a href="/products.html">Products & Pricing</a>
-        <a href="/quotes.html" class="active">Quotes</a>
+        <a href="/quote-list.html" class="active">Quotes</a>
+        <a href="/quotes.html">New Quote</a>
         <a href="#">Orders</a>
         <a href="#">Production Queue</a>
     </nav>
@@ -409,8 +410,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="taxRate">Tax Rate (%)</label>
-                    <input type="number" id="taxRate" value="12.00" min="0" step="0.01"
+                    <label for="gstRate">GST Rate (%)</label>
+                    <input type="number" id="gstRate" value="5.00" min="0" step="0.01"
+                           oninput="calculateTotals()">
+                </div>
+
+                <div class="form-group">
+                    <label for="pstRate">PST Rate (%)</label>
+                    <input type="number" id="pstRate" value="7.00" min="0" step="0.01"
                            oninput="calculateTotals()">
                 </div>
 
@@ -490,8 +497,13 @@
                 </div>
 
                 <div class="summary-row">
-                    <span>Tax</span>
-                    <strong id="taxAmount">$0.00</strong>
+                    <span>GST (5%)</span>
+                    <strong id="gstAmount">$0.00</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>PST (7%)</span>
+                    <strong id="pstAmount">$0.00</strong>
                 </div>
 
                 <div class="summary-total">
@@ -791,17 +803,21 @@
             0
         );
 
-        const taxRate =
-            Number(document.getElementById("taxRate").value) || 0;
+        const gstRate = Number(document.getElementById("gstRate").value) || 0;
+        const pstRate = Number(document.getElementById("pstRate").value) || 0;
 
-        const taxAmount = subtotal * taxRate / 100;
-        const totalAmount = subtotal + taxAmount;
+        const gstAmount = subtotal * gstRate / 100;
+        const pstAmount = subtotal * pstRate / 100;
+        const totalAmount = subtotal + gstAmount + pstAmount;
 
         document.getElementById("subtotal").textContent =
             formatCurrency(subtotal);
 
-        document.getElementById("taxAmount").textContent =
-            formatCurrency(taxAmount);
+        document.getElementById("gstAmount").textContent =
+            formatCurrency(gstAmount);
+
+        document.getElementById("pstAmount").textContent =
+            formatCurrency(pstAmount);
 
         document.getElementById("totalAmount").textContent =
             formatCurrency(totalAmount);
@@ -828,7 +844,8 @@
             issueDate: document.getElementById("issueDate").value,
             expiryDate: document.getElementById("expiryDate").value,
             status: document.getElementById("status").value,
-            taxRate: Number(document.getElementById("taxRate").value) || 0,
+            gstRate: Number(document.getElementById("gstRate").value) || 5.00,
+            pstRate: Number(document.getElementById("pstRate").value) || 7.00,
             notes: document.getElementById("notes").value.trim(),
             items: quoteItems.map(item => ({
                 product: {
@@ -878,7 +895,8 @@
         quoteItems = [];
         document.getElementById("notes").value = "";
         document.getElementById("status").value = "DRAFT";
-        document.getElementById("taxRate").value = "12.00";
+        document.getElementById("gstRate").value = "5.00";
+        document.getElementById("pstRate").value = "7.00";
         document.getElementById("customerSelect").value = "";
         document.getElementById("productSelect").value = "";
         document.getElementById("scaleSelect").innerHTML =

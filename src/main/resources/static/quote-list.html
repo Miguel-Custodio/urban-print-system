@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Print Shop — Quote List</title>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        aside {
+            width: 250px;
+            background: var(--primary);
+            color: white;
+            padding: 24px 14px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            padding: 0 8px 24px;
+            font-weight: bold;
+            font-size: 1.15rem;
+            border-bottom: 1px solid #475569;
+        }
+
+        .brand span {
+            color: #38bdf8;
+        }
+
+        nav {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #334155;
+            color: white;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .content {
+            padding: 28px 32px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px #0000000d;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        select,
+        input {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+        }
+
+        button,
+        .button-link {
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.88rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            white-space: nowrap;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: var(--muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-DRAFT {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-SENT {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-ACCEPTED {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-REJECTED {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-CONVERTED {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .empty,
+        .loading {
+            text-align: center;
+            color: var(--muted);
+            padding: 28px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 14px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            display: none;
+        }
+
+        @media (max-width: 800px) {
+            body {
+                display: block;
+            }
+
+            aside {
+                width: 100%;
+            }
+
+            nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .content {
+                padding: 20px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside>
+    <div class="brand">URBAN <span>PRINT</span></div>
+
+    <nav>
+        <a href="/">Customers</a>
+        <a href="/products.html">Products & Pricing</a>
+        <a href="/quote-list.html" class="active">Quotes</a>
+        <a href="/quotes.html">New Quote</a>
+        <a href="#">Orders</a>
+        <a href="#">Production Queue</a>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <h1>Quotes</h1>
+        <p>View and manage customer quotations.</p>
+    </header>
+
+    <div class="content">
+        <section class="card">
+
+            <div id="errorMessage" class="error"></div>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <label for="statusFilter">Filter by status:</label>
+
+                    <select id="statusFilter" onchange="loadQuotes()">
+                        <option value="">All Statuses</option>
+                        <option value="DRAFT">Draft</option>
+                        <option value="SENT">Sent</option>
+                        <option value="ACCEPTED">Accepted</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="CONVERTED">Converted</option>
+                    </select>
+                </div>
+
+                <a href="/quotes.html" class="button-link btn-primary">
+                    + New Quote
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Quote Number</th>
+                        <th>Customer</th>
+                        <th>Issue Date</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                        <th>Subtotal</th>
+                        <th>Tax</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="quotesTableBody">
+                    <tr>
+                        <td colspan="9" class="loading">
+                            Loading quotes...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+    const API_URL = "/api/quotes";
+    let allQuotes = [];
+
+    document.addEventListener("DOMContentLoaded", loadQuotes);
+
+    async function loadQuotes() {
+        const tableBody = document.getElementById("quotesTableBody");
+        const filter = document.getElementById("statusFilter").value;
+
+        hideError();
+
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Could not load quotes.");
+            }
+
+            allQuotes = await response.json();
+
+            const filteredQuotes = filter
+                ? allQuotes.filter(quote => quote.status === filter)
+                : allQuotes;
+
+            renderQuotes(filteredQuotes);
+        } catch (error) {
+            console.error(error);
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="empty">
+                        Failed to load quotes.
+                    </td>
+                </tr>
+            `;
+
+            showError(
+                "Could not load quotes. Check whether the backend is running."
+            );
+        }
+    }
+
+    function renderQuotes(quotes) {
+        const tableBody = document.getElementById("quotesTableBody");
+
+        if (!quotes || quotes.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="empty">
+                        No quotes found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tableBody.innerHTML = quotes.map(quote => {
+            const customerName = getCustomerName(quote.customer);
+            const status = quote.status || "DRAFT";
+
+            return `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(quote.quoteNumber || "-")}</strong>
+                    </td>
+
+                    <td>${escapeHtml(customerName)}</td>
+
+                    <td>${escapeHtml(quote.issueDate || "-")}</td>
+
+                    <td>${escapeHtml(quote.expiryDate || "-")}</td>
+
+                    <td>
+                        <span class="status status-${escapeHtml(status)}">
+                            ${escapeHtml(status)}
+                        </span>
+                    </td>
+
+                    <td>${formatCurrency(quote.subtotal)}</td>
+
+                    <td>${formatCurrency(quote.taxAmount)}</td>
+
+                    <td>
+                        <strong>${formatCurrency(quote.totalAmount)}</strong>
+                    </td>
+
+                    <td>
+                        <button class="btn-secondary"
+                                onclick="viewQuote(${quote.id})">
+                            View
+                        </button>
+
+                        <button class="btn-danger"
+                                onclick="deleteQuote(${quote.id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    function getCustomerName(customer) {
+        if (!customer) {
+            return "-";
+        }
+
+        return customer.customerName
+            || customer.companyName
+            || customer.name
+            || `Customer #${customer.id}`;
+    }
+
+    function formatCurrency(value) {
+        const number = Number(value || 0);
+
+        return new Intl.NumberFormat("en-CA", {
+            style: "currency",
+            currency: "CAD"
+        }).format(number);
+    }
+
+    function viewQuote(id) {
+        window.location.href = `/quote-details.html?id=${id}`;
+    }
+
+    async function deleteQuote(id) {
+        const confirmed = confirm(
+            "Are you sure you want to delete this quote?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                throw new Error("Could not delete quote.");
+            }
+
+            await loadQuotes();
+        } catch (error) {
+            console.error(error);
+            showError("Could not delete the quote.");
+        }
+    }
+
+    function showError(message) {
+        const errorElement = document.getElementById("errorMessage");
+        errorElement.textContent = message;
+        errorElement.style.display = "block";
+    }
+
+    function hideError() {
+        const errorElement = document.getElementById("errorMessage");
+        errorElement.textContent = "";
+        errorElement.style.display = "none";
+    }
+
+    function escapeHtml(value) {
+        const div = document.createElement("div");
+        div.textContent = value == null ? "" : String(value);
+        return div.innerHTML;
+    }
+</script>
+
+</body>
+</html>

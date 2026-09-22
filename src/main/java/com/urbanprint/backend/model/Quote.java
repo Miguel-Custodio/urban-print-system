@@ -3,8 +3,8 @@ package com.urbanprint.backend.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,167 +16,91 @@ public class Quote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String quoteNumber; // e.g. QU-1001
+    @Column(nullable = false, unique = true)
+    private String quoteNumber;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    private LocalDate issueDate = LocalDate.now();
+    @Column(nullable = false)
+    private LocalDate issueDate;
 
-    private LocalDate expiryDate = LocalDate.now().plusDays(30);
+    private LocalDate expiryDate;
 
-    // DRAFT, SENT, ACCEPTED, REJECTED, CONVERTED
-    private String status = "DRAFT";
+    @Column(nullable = false)
+    private String status = "DRAFT"; // DRAFT, SENT, ACCEPTED, REJECTED, CONVERTED
 
-    @Column(precision = 10, scale = 2)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
-    // British Columbia combined GST (5%) + PST (7%) = 12% by default
-    @Column(precision = 5, scale = 2)
-    private BigDecimal taxRate = new BigDecimal("12.00");
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal gstRate = new BigDecimal("5.00");
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal taxAmount = BigDecimal.ZERO;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal gstAmount = BigDecimal.ZERO;
 
-    @Column(precision = 10, scale = 2)
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal pstRate = new BigDecimal("7.00");
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal pstAmount = BigDecimal.ZERO;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuoteItem> items = new ArrayList<>();
 
-    public Quote() {
-    }
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public void addItem(QuoteItem item) {
-        items.add(item);
-        item.setQuote(this);
-        calculateTotals();
-    }
+    public Quote() {}
 
-    public void removeItem(QuoteItem item) {
-        items.remove(item);
-        item.setQuote(null);
-        calculateTotals();
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    @PrePersist
-    @PreUpdate
-    public void calculateTotals() {
-        BigDecimal sum = BigDecimal.ZERO;
-        if (items != null) {
-            for (QuoteItem item : items) {
-                if (item.getTotalPrice() != null) {
-                    sum = sum.add(item.getTotalPrice());
-                }
-            }
-        }
-        this.subtotal = sum;
+    public String getQuoteNumber() { return quoteNumber; }
+    public void setQuoteNumber(String quoteNumber) { this.quoteNumber = quoteNumber; }
 
-        if (this.taxRate != null && this.taxRate.compareTo(BigDecimal.ZERO) > 0) {
-            this.taxAmount = this.subtotal.multiply(this.taxRate)
-                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        } else {
-            this.taxAmount = BigDecimal.ZERO;
-        }
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer customer) { this.customer = customer; }
 
-        this.totalAmount = this.subtotal.add(this.taxAmount);
-    }
+    public LocalDate getIssueDate() { return issueDate; }
+    public void setIssueDate(LocalDate issueDate) { this.issueDate = issueDate; }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public LocalDate getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
 
-    public String getQuoteNumber() {
-        return quoteNumber;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setQuoteNumber(String quoteNumber) {
-        this.quoteNumber = quoteNumber;
-    }
+    public BigDecimal getSubtotal() { return subtotal; }
+    public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
 
-    public Customer getCustomer() {
-        return customer;
-    }
+    public BigDecimal getGstRate() { return gstRate; }
+    public void setGstRate(BigDecimal gstRate) { this.gstRate = gstRate; }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+    public BigDecimal getGstAmount() { return gstAmount; }
+    public void setGstAmount(BigDecimal gstAmount) { this.gstAmount = gstAmount; }
 
-    public LocalDate getIssueDate() {
-        return issueDate;
-    }
+    public BigDecimal getPstRate() { return pstRate; }
+    public void setPstRate(BigDecimal pstRate) { this.pstRate = pstRate; }
 
-    public void setIssueDate(LocalDate issueDate) {
-        this.issueDate = issueDate;
-    }
+    public BigDecimal getPstAmount() { return pstAmount; }
+    public void setPstAmount(BigDecimal pstAmount) { this.pstAmount = pstAmount; }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
 
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public BigDecimal getTaxRate() {
-        return taxRate;
-    }
-
-    public void setTaxRate(BigDecimal taxRate) {
-        this.taxRate = taxRate;
-    }
-
-    public BigDecimal getTaxAmount() {
-        return taxAmount;
-    }
-
-    public void setTaxAmount(BigDecimal taxAmount) {
-        this.taxAmount = taxAmount;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public List<QuoteItem> getItems() {
-        return items;
-    }
-
+    public List<QuoteItem> getItems() { return items; }
     public void setItems(List<QuoteItem> items) {
         this.items = items;
         if (items != null) {
@@ -184,6 +108,13 @@ public class Quote {
                 item.setQuote(this);
             }
         }
-        calculateTotals();
+    }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
