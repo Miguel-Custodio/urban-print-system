@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Orders - Urban Print Shop</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #f4f5f7; color: #222; }
+  header { background: #1c2b39; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 20px; margin: 0; }
+  nav a { color: #fff; text-decoration: none; margin-left: 16px; font-size: 14px; }
+  .container { padding: 24px; }
+  .toolbar { display: flex; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+  select, input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+  th { background: #f0f2f5; }
+  tr:hover { background: #fafafa; cursor: pointer; }
+  .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #fff; }
+  .PENDING { background: #f0ad4e; }
+  .IN_PRODUCTION { background: #5bc0de; }
+  .QUALITY_CHECK { background: #9b59b6; }
+  .READY_FOR_PICKUP { background: #5cb85c; }
+  .DELIVERED { background: #2c3e50; }
+  .CANCELLED { background: #d9534f; }
+  .priority { font-size: 12px; font-weight: bold; }
+  .LOW { color: #999; }
+  .NORMAL { color: #333; }
+  .HIGH { color: #e67e22; }
+  .RUSH { color: #d9534f; }
+  .empty { text-align: center; padding: 40px; color: #888; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Urban Print Shop - Orders</h1>
+  <nav>
+    <a href="index.html">Customers</a>
+    <a href="products.html">Products</a>
+    <a href="quote-list.html">Quotes</a>
+    <a href="orders.html">Orders</a>
+    <a href="production-queue.html">Production Queue</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="toolbar">
+    <div>
+      <label>Filter by status: </label>
+      <select id="statusFilter" onchange="loadOrders()">
+        <option value="">All</option>
+        <option value="PENDING">Pending</option>
+        <option value="IN_PRODUCTION">In Production</option>
+        <option value="QUALITY_CHECK">Quality Check</option>
+        <option value="READY_FOR_PICKUP">Ready for Pickup</option>
+        <option value="DELIVERED">Delivered</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Customer</th>
+        <th>Order Date</th>
+        <th>Due Date</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody id="ordersBody">
+    </tbody>
+  </table>
+  <div id="emptyMsg" class="empty" style="display:none;">No orders found.</div>
+</div>
+
+<script>
+const API_URL = '/api/orders';
+
+async function loadOrders() {
+  const status = document.getElementById('statusFilter').value;
+  const url = status ? `${API_URL}/status/${status}` : API_URL;
+
+  const res = await fetch(url);
+  const orders = await res.json();
+
+  const tbody = document.getElementById('ordersBody');
+  const emptyMsg = document.getElementById('emptyMsg');
+  tbody.innerHTML = '';
+
+  if (!orders || orders.length === 0) {
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+
+  orders.forEach(order => {
+    const tr = document.createElement('tr');
+    tr.onclick = () => window.location.href = `order-details.html?id=${order.id}`;
+    tr.innerHTML = `
+      <td>${order.orderNumber}</td>
+      <td>${order.customer ? order.customer.name : ''}</td>
+      <td>${order.orderDate || ''}</td>
+      <td>${order.dueDate || ''}</td>
+      <td class="priority ${order.priority}">${order.priority}</td>
+      <td><span class="badge ${order.status}">${order.status.replace('_',' ')}</span></td>
+      <td>$${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+loadOrders();
+</script>
+
+</body>
+</html>

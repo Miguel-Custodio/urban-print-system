@@ -133,6 +133,7 @@
         .btn-secondary { background: #e2e8f0; color: #334155; }
         .btn-secondary:hover { background: #cbd5e1; }
         .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #15803d; }
 
         .quote-header-info {
             display: flex;
@@ -291,8 +292,8 @@
         <a href="/products.html">Products & Pricing</a>
         <a href="/quote-list.html" class="active">Quotes</a>
         <a href="/quotes.html">New Quote</a>
-        <a href="#">Orders</a>
-        <a href="#">Production Queue</a>
+        <a href="orders.html">Orders</a>
+        <a href="production-queue.html">Production Queue</a>
     </nav>
 </aside>
 
@@ -306,6 +307,8 @@
             <a href="/quote-list.html" class="btn btn-secondary">← Back to Quotes</a>
             <button class="btn btn-secondary" onclick="window.print()">Print / PDF</button>
             <button class="btn btn-primary" onclick="markAsSent()">Mark as Sent</button>
+            <button id="acceptBtn" class="btn btn-success" style="display:none;" onclick="markAsAccepted()">Mark as Accepted</button>
+            <button id="convertBtn" class="btn btn-success" style="display:none;" onclick="convertToOrder()">Convert to Order</button>
         </div>
     </header>
 
@@ -351,6 +354,19 @@
 
     function renderQuote(quote) {
         document.getElementById("pageTitle").textContent = `Quote ${quote.quoteNumber || ''}`;
+
+        const convertBtn = document.getElementById("convertBtn");
+        if (quote.status === "ACCEPTED") {
+            convertBtn.style.display = "inline-flex";
+        } else {
+            convertBtn.style.display = "none";
+        }
+        const acceptBtn = document.getElementById("acceptBtn");
+        if (quote.status === "SENT" || quote.status === "DRAFT") {
+            acceptBtn.style.display = "inline-flex";
+        } else {
+            acceptBtn.style.display = "none";
+        }
 
         const customer = quote.customer || {};
         const customerName = customer.customerName || customer.companyName || customer.name || "N/A";
@@ -473,6 +489,53 @@
             console.error(e);
             alert("Error updating quote status.");
         }
+    }
+
+    async function markAsAccepted() {
+    try {
+        const response = await fetch(`/api/quotes/${quoteId}`);
+        if (!response.ok) throw new Error("Could not fetch quote.");
+        const quote = await response.json();
+
+        quote.status = "ACCEPTED";
+
+        const updateResponse = await fetch(`/api/quotes/${quoteId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(quote)
+        });
+
+        if (!updateResponse.ok) throw new Error("Could not update status.");
+        alert("Quote marked as ACCEPTED!");
+        loadQuoteDetails();
+    } catch (e) {
+        console.error(e);
+        alert("Error updating quote status.");
+    }
+    }
+
+    async function convertToOrder() {
+    if (!confirm("Convert this quote into an order?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/orders/from-quote/${quoteId}`, {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not convert quote to order.");
+        }
+
+        alert(`Order ${data.orderNumber} created successfully!`);
+        window.location.href = `order-details.html?id=${data.id}`;
+    } catch (e) {
+        console.error(e);
+        alert(e.message || "Error converting quote to order.");
+    }
     }
 
     function escapeHtml(value) {

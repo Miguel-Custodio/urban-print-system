@@ -6,6 +6,7 @@ import com.urbanprint.backend.model.OrderStatus;
 import com.urbanprint.backend.model.Quote;
 import com.urbanprint.backend.model.QuoteItem;
 import com.urbanprint.backend.repository.OrderRepository;
+import com.urbanprint.backend.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +20,11 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final QuoteRepository quoteRepository;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, QuoteRepository quoteRepository) {
         this.orderRepository = orderRepository;
+        this.quoteRepository = quoteRepository;
     }
 
     public List<Order> getAllOrders() {
@@ -104,6 +107,12 @@ public class OrderService {
 
     @Transactional
     public Order createOrderFromQuote(Quote quote) {
+
+        if ("CONVERTED".equalsIgnoreCase(quote.getStatus())) {
+            throw new IllegalStateException(
+                    "This quote has already been converted into an order.");
+        }
+
         Order order = new Order();
         order.setQuote(quote);
         order.setCustomer(quote.getCustomer());
@@ -129,7 +138,12 @@ public class OrderService {
 
         calculateTotals(order);
 
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        quote.setStatus("CONVERTED");
+        quoteRepository.save(quote);
+
+        return savedOrder;
     }
 
     private void calculateTotals(Order order) {

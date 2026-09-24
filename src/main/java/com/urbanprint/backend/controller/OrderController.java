@@ -5,10 +5,12 @@ import com.urbanprint.backend.model.OrderStatus;
 import com.urbanprint.backend.model.Quote;
 import com.urbanprint.backend.repository.QuoteRepository;
 import com.urbanprint.backend.service.OrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -46,11 +48,18 @@ public class OrderController {
     }
 
     @PostMapping("/from-quote/{quoteId}")
-    public ResponseEntity<Order> createOrderFromQuote(@PathVariable Long quoteId) {
+    public ResponseEntity<?> createOrderFromQuote(@PathVariable Long quoteId) {
         Quote quote = quoteRepository.findById(quoteId)
                 .orElseThrow(() -> new RuntimeException("Quote not found with id " + quoteId));
-        Order order = orderService.createOrderFromQuote(quote);
-        return ResponseEntity.ok(order);
+
+        try {
+            Order order = orderService.createOrderFromQuote(quote);
+            return ResponseEntity.ok(order);
+        } catch (IllegalStateException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")

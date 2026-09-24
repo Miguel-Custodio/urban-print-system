@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Urban Print Shop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+        }
+
+        header {
+            background: #1c2b39;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 16px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            color: #1c2b39;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        button,
+        select {
+            padding: 9px 14px;
+            border-radius: 5px;
+            border: 1px solid #bbb;
+            font-size: 14px;
+        }
+
+        button {
+            cursor: pointer;
+            background: #1c2b39;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background: #294255;
+        }
+
+        .card {
+            background: white;
+            border-radius: 6px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .order-number {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .status-badge,
+        .priority-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .status-badge {
+            color: white;
+        }
+
+        .PENDING {
+            background: #f0ad4e;
+        }
+
+        .IN_PRODUCTION {
+            background: #5bc0de;
+        }
+
+        .QUALITY_CHECK {
+            background: #9b59b6;
+        }
+
+        .READY_FOR_PICKUP {
+            background: #5cb85c;
+        }
+
+        .DELIVERED {
+            background: #2c3e50;
+        }
+
+        .CANCELLED {
+            background: #d9534f;
+        }
+
+        .LOW {
+            background: #999;
+            color: white;
+        }
+
+        .NORMAL {
+            background: #777;
+            color: white;
+        }
+
+        .HIGH {
+            background: #e67e22;
+            color: white;
+        }
+
+        .RUSH {
+            background: #d9534f;
+            color: white;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-top: 22px;
+        }
+
+        .info-label {
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #1c2b39;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f0f2f5;
+        }
+
+        .specs {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .production-select {
+            min-width: 150px;
+        }
+
+        .totals {
+            max-width: 360px;
+            margin-left: auto;
+            margin-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+        }
+
+        .grand-total {
+            border-top: 2px solid #1c2b39;
+            margin-top: 8px;
+            padding-top: 12px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .notes {
+            white-space: pre-wrap;
+            color: #555;
+        }
+
+        .loading,
+        .error {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 6px;
+        }
+
+        .error {
+            color: #b00020;
+        }
+
+        @media (max-width: 800px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            nav a {
+                margin-left: 0;
+                margin-right: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Urban Print Shop - Order Details</h1>
+
+    <nav>
+        <a href="index.html">Customers</a>
+        <a href="products.html">Products</a>
+        <a href="quote-list.html">Quotes</a>
+        <a href="orders.html">Orders</a>
+        <a href="production-queue.html">Production Queue</a>
+    </nav>
+</header>
+
+<div class="container">
+
+    <div class="top-actions">
+        <a class="back-link" href="orders.html">← Back to Orders</a>
+
+        <div>
+            <select id="orderStatus">
+                <option value="PENDING">Pending</option>
+                <option value="IN_PRODUCTION">In Production</option>
+                <option value="QUALITY_CHECK">Quality Check</option>
+                <option value="READY_FOR_PICKUP">Ready for Pickup</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="CANCELLED">Cancelled</option>
+            </select>
+
+            <button onclick="updateOrderStatus()">
+                Update Status
+            </button>
+        </div>
+    </div>
+
+    <div id="loading" class="loading">
+        Loading order...
+    </div>
+
+    <div id="error" class="error" style="display: none;"></div>
+
+    <div id="orderContent" style="display: none;">
+
+        <div class="card">
+            <div class="order-header">
+                <div>
+                    <div id="orderNumber" class="order-number"></div>
+
+                    <span id="statusBadge" class="status-badge"></span>
+                    <span id="priorityBadge" class="priority-badge"></span>
+                </div>
+
+                <div>
+                    <strong>Urban Print Shop</strong><br>
+                    7993 Enterprise St<br>
+                    Burnaby, BC
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div>
+                    <div class="info-label">Customer</div>
+                    <div id="customerName" class="info-value"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Order Date</div>
+                    <div id="orderDate" class="info-value"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Due Date</div>
+                    <div id="dueDate" class="info-value"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Source Quote</div>
+                    <div id="quoteNumber" class="info-value"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Order Items</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Production Status</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody id="itemsBody"></tbody>
+            </table>
+
+            <div class="totals">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <strong id="subtotal"></strong>
+                </div>
+
+                <div class="total-row">
+                    <span>GST</span>
+                    <strong id="gst"></strong>
+                </div>
+
+                <div class="total-row">
+                    <span>PST</span>
+                    <strong id="pst"></strong>
+                </div>
+
+                <div class="total-row grand-total">
+                    <span>Total</span>
+                    <strong id="total"></strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Notes</h2>
+            <div id="notes" class="notes"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/orders';
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('id');
+
+    let currentOrder = null;
+
+    function formatMoney(value) {
+        const amount = Number(value || 0);
+
+        return amount.toLocaleString('en-CA', {
+            style: 'currency',
+            currency: 'CAD'
+        });
+    }
+
+    function displayStatus(status) {
+        return String(status || '')
+            .replaceAll('_', ' ');
+    }
+
+    function getCustomerName(customer) {
+        if (!customer) {
+            return '';
+        }
+
+        return customer.customerName
+            || customer.name
+            || customer.contactName
+            || '';
+    }
+
+    async function loadOrder() {
+        if (!orderId) {
+            showError('Order ID was not provided.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/${orderId}`);
+
+            if (!response.ok) {
+                throw new Error('Order not found.');
+            }
+
+            currentOrder = await response.json();
+            renderOrder(currentOrder);
+
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    function renderOrder(order) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('orderContent').style.display = 'block';
+
+        document.getElementById('orderNumber').textContent =
+            order.orderNumber || '';
+
+        const statusBadge = document.getElementById('statusBadge');
+        statusBadge.textContent = displayStatus(order.status);
+        statusBadge.className = `status-badge ${order.status}`;
+
+        const priorityBadge = document.getElementById('priorityBadge');
+        priorityBadge.textContent = order.priority || '';
+        priorityBadge.className = `priority-badge ${order.priority}`;
+
+        document.getElementById('orderStatus').value =
+            order.status || 'PENDING';
+
+        document.getElementById('customerName').textContent =
+            getCustomerName(order.customer);
+
+        document.getElementById('orderDate').textContent =
+            order.orderDate || '';
+
+        document.getElementById('dueDate').textContent =
+            order.dueDate || 'Not defined';
+
+        document.getElementById('quoteNumber').textContent =
+            order.quote ? order.quote.quoteNumber : 'Manual order';
+
+        document.getElementById('subtotal').textContent =
+            formatMoney(order.subtotal);
+
+        document.getElementById('gst').textContent =
+            `${formatMoney(order.gstAmount)} (${order.gstRate || 0}%)`;
+
+        document.getElementById('pst').textContent =
+            `${formatMoney(order.pstAmount)} (${order.pstRate || 0}%)`;
+
+        document.getElementById('total').textContent =
+            formatMoney(order.totalAmount);
+
+        document.getElementById('notes').textContent =
+            order.notes || 'No notes.';
+
+        renderItems(order.items || []);
+    }
+
+    function renderItems(items) {
+        const tbody = document.getElementById('itemsBody');
+        tbody.innerHTML = '';
+
+        if (items.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">No items found.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        items.forEach(item => {
+            const row = document.createElement('tr');
+
+            const productName = item.product
+                ? item.product.productName || ''
+                : '';
+
+            row.innerHTML = `
+                <td>${productName}</td>
+                <td>
+                    ${item.itemDescription || ''}
+                    <div class="specs">
+                        ${item.printSpecsSummary || ''}
+                    </div>
+                </td>
+                <td>${item.quantity || 0}</td>
+                <td>${formatMoney(item.unitPrice)}</td>
+                <td>
+                    <select class="production-select"
+                            data-item-id="${item.id}">
+                        <option value="PENDING">Pending</option>
+                        <option value="IN_PRODUCTION">In Production</option>
+                        <option value="QUALITY_CHECK">Quality Check</option>
+                        <option value="READY_FOR_PICKUP">Ready for Pickup</option>
+                        <option value="DELIVERED">Delivered</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </td>
+                <td>${formatMoney(item.totalPrice)}</td>
+            `;
+
+            tbody.appendChild(row);
+
+            const select = row.querySelector('select');
+            select.value = item.productionStatus || 'PENDING';
+        });
+    }
+
+    async function updateOrderStatus() {
+        const newStatus = document.getElementById('orderStatus').value;
+
+        try {
+            const response = await fetch(
+                `${API_URL}/${orderId}/status?status=${newStatus}`,
+                {
+                    method: 'PATCH'
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Could not update order status.');
+            }
+
+            currentOrder = await response.json();
+            renderOrder(currentOrder);
+
+            alert('Order status updated successfully.');
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    function showError(message) {
+        document.getElementById('loading').style.display = 'none';
+
+        const errorElement = document.getElementById('error');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    loadOrder();
+</script>
+
+</body>
+</html>

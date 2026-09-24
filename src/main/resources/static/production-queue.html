@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Queue - Urban Print Shop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+        }
+
+        header {
+            background: #1c2b39;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 16px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 18px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar h2 {
+            margin: 0;
+            color: #1c2b39;
+        }
+
+        select,
+        button {
+            padding: 9px 13px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        select {
+            border: 1px solid #bbb;
+        }
+
+        button {
+            border: none;
+            background: #1c2b39;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #294255;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e5e5;
+            text-align: left;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #eef1f4;
+            color: #1c2b39;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .order-link {
+            color: #1769aa;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 13px;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .PENDING {
+            background: #f0ad4e;
+        }
+
+        .IN_PRODUCTION {
+            background: #2499c6;
+        }
+
+        .QUALITY_CHECK {
+            background: #8e44ad;
+        }
+
+        .READY_FOR_PICKUP {
+            background: #46a447;
+        }
+
+        .DELIVERED {
+            background: #2c3e50;
+        }
+
+        .CANCELLED {
+            background: #d9534f;
+        }
+
+        .LOW {
+            color: #777;
+        }
+
+        .NORMAL {
+            color: #333;
+        }
+
+        .HIGH {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .RUSH {
+            color: #d9534f;
+            font-weight: bold;
+        }
+
+        .due-date-overdue {
+            color: #d9534f;
+            font-weight: bold;
+        }
+
+        .due-date-today {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .empty,
+        .loading,
+        .error {
+            padding: 40px;
+            text-align: center;
+            color: #777;
+        }
+
+        .error {
+            color: #b00020;
+        }
+
+        .summary {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Urban Print Shop - Production Queue</h1>
+
+    <nav>
+        <a href="index.html">Customers</a>
+        <a href="products.html">Products</a>
+        <a href="quote-list.html">Quotes</a>
+        <a href="orders.html">Orders</a>
+        <a href="production-queue.html">Production Queue</a>
+    </nav>
+</header>
+
+<div class="container">
+
+    <div class="toolbar">
+        <div>
+            <h2>Production Queue</h2>
+            <div id="summary" class="summary">Loading...</div>
+        </div>
+
+        <div>
+            <label for="statusFilter">Filter:</label>
+
+            <select id="statusFilter" onchange="renderQueue()">
+                <option value="">All active items</option>
+                <option value="PENDING">Pending</option>
+                <option value="IN_PRODUCTION">In Production</option>
+                <option value="QUALITY_CHECK">Quality Check</option>
+                <option value="READY_FOR_PICKUP">Ready for Pickup</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="CANCELLED">Cancelled</option>
+            </select>
+
+            <button onclick="loadQueue()">Refresh</button>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div id="loading" class="loading">Loading production queue...</div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <table id="queueTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Due Date</th>
+                    <th>Priority</th>
+                    <th>Production Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="queueBody"></tbody>
+        </table>
+
+        <div id="empty" class="empty" style="display: none;">
+            No production items found.
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/orders';
+    let allQueueItems = [];
+
+    function getCustomerName(customer) {
+        if (!customer) {
+            return '';
+        }
+
+        return customer.name
+            || customer.customerName
+            || customer.contactName
+            || '';
+    }
+
+    function formatStatus(status) {
+        return String(status || '')
+            .replaceAll('_', ' ');
+    }
+
+    function isOverdue(date) {
+        if (!date) {
+            return false;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        return date < today;
+    }
+
+    function isToday(date) {
+        if (!date) {
+            return false;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        return date === today;
+    }
+
+    async function loadQueue() {
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const table = document.getElementById('queueTable');
+
+        loading.style.display = 'block';
+        error.style.display = 'none';
+        table.style.display = 'none';
+
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error('Could not load orders.');
+            }
+
+            const orders = await response.json();
+
+            allQueueItems = [];
+
+            orders.forEach(order => {
+                (order.items || []).forEach(item => {
+                    allQueueItems.push({
+                        order: order,
+                        item: item
+                    });
+                });
+            });
+
+            loading.style.display = 'none';
+            renderQueue();
+
+        } catch (e) {
+            loading.style.display = 'none';
+            error.textContent = e.message;
+            error.style.display = 'block';
+        }
+    }
+
+    function renderQueue() {
+        const filter = document.getElementById('statusFilter').value;
+        const tbody = document.getElementById('queueBody');
+        const table = document.getElementById('queueTable');
+        const empty = document.getElementById('empty');
+        const summary = document.getElementById('summary');
+
+        const filteredItems = allQueueItems.filter(({ item }) => {
+            const status = item.productionStatus || 'PENDING';
+
+            if (!filter) {
+                return status !== 'DELIVERED' && status !== 'CANCELLED';
+            }
+
+            return status === filter;
+        });
+
+        tbody.innerHTML = '';
+
+        summary.textContent =
+            `${filteredItems.length} production item(s)`;
+
+        if (filteredItems.length === 0) {
+            table.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        empty.style.display = 'none';
+        table.style.display = 'table';
+
+        filteredItems.sort((a, b) => {
+            const dateA = a.order.dueDate || '9999-12-31';
+            const dateB = b.order.dueDate || '9999-12-31';
+
+            return dateA.localeCompare(dateB);
+        });
+
+        filteredItems.forEach(({ order, item }) => {
+            const row = document.createElement('tr');
+
+            const dueDateClass = isOverdue(order.dueDate)
+                ? 'due-date-overdue'
+                : isToday(order.dueDate)
+                    ? 'due-date-today'
+                    : '';
+
+            const productName = item.product
+                ? item.product.productName || ''
+                : '';
+
+            row.innerHTML = `
+                <td>
+                    <a class="order-link"
+                       href="order-details.html?id=${order.id}">
+                        ${order.orderNumber || ''}
+                    </a>
+                </td>
+
+                <td>${getCustomerName(order.customer)}</td>
+
+                <td>${productName}</td>
+
+                <td>
+                    ${item.itemDescription || ''}
+                    <br>
+                    <small>${item.printSpecsSummary || ''}</small>
+                </td>
+
+                <td>${item.quantity || 0}</td>
+
+                <td class="${dueDateClass}">
+                    ${order.dueDate || 'Not defined'}
+                </td>
+
+                <td class="${order.priority || 'NORMAL'}">
+                    ${order.priority || 'NORMAL'}
+                </td>
+
+                <td>
+                    <span class="badge ${item.productionStatus || 'PENDING'}">
+                        ${formatStatus(item.productionStatus || 'PENDING')}
+                    </span>
+                </td>
+
+                <td>
+                    <button onclick="openOrder(${order.id})">
+                        Open Order
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function openOrder(orderId) {
+        window.location.href = `order-details.html?id=${orderId}`;
+    }
+
+    loadQueue();
+</script>
+
+</body>
+</html>
