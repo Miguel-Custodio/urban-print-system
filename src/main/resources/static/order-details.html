@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details - Urban Print Shop</title>
-
+    <title>Urban Print Shop — Order Details</title>
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --primary: #1c2b39;
+            --accent: #2563eb;
+            --bg: #f4f5f7;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --muted: #64748b;
         }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f5f7;
-            color: #222;
-        }
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); }
 
         header {
-            background: #1c2b39;
+            background: var(--primary);
             color: white;
             padding: 16px 24px;
             display: flex;
@@ -26,254 +27,124 @@
             align-items: center;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 20px;
-        }
+        header h1 { margin: 0; font-size: 20px; }
+        nav a { color: white; text-decoration: none; margin-left: 16px; font-size: 14px; }
+        nav a:hover { text-decoration: underline; }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 16px;
-            font-size: 14px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 24px auto;
-            padding: 0 20px;
-        }
-
-        .top-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+        .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
 
         .back-link {
-            color: #1c2b39;
+            display: inline-block;
+            margin-bottom: 16px;
+            color: var(--accent);
             text-decoration: none;
-            font-weight: bold;
-        }
-
-        button,
-        select {
-            padding: 9px 14px;
-            border-radius: 5px;
-            border: 1px solid #bbb;
             font-size: 14px;
-        }
-
-        button {
-            cursor: pointer;
-            background: #1c2b39;
-            color: white;
-            border: none;
-        }
-
-        button:hover {
-            background: #294255;
+            font-weight: bold;
         }
 
         .card {
-            background: white;
-            border-radius: 6px;
-            padding: 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .order-header {
+        .order-header-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
+            gap: 16px;
         }
 
-        .order-number {
-            font-size: 25px;
+        .order-title h2 { margin: 0 0 8px; font-size: 26px; }
+
+        .badge-priority {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: bold;
-            margin-bottom: 8px;
+        }
+        .priority-LOW { background: #f1f5f9; color: #475569; }
+        .priority-NORMAL { background: #e0f2fe; color: #0369a1; }
+        .priority-HIGH { background: #ffedd5; color: #c2410c; }
+        .priority-RUSH { background: #fee2e2; color: #b91c1c; font-weight: bold; }
+
+        .status-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
-        .status-badge,
-        .priority-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 14px;
-            font-size: 12px;
+        select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            background: white;
+        }
+
+        button.btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
             font-weight: bold;
-            margin-right: 6px;
+            cursor: pointer;
         }
+        button.btn-primary:hover { background: #2c3e50; }
 
-        .status-badge {
-            color: white;
-        }
-
-        .PENDING {
-            background: #f0ad4e;
-        }
-
-        .IN_PRODUCTION {
-            background: #5bc0de;
-        }
-
-        .QUALITY_CHECK {
-            background: #9b59b6;
-        }
-
-        .READY_FOR_PICKUP {
-            background: #5cb85c;
-        }
-
-        .DELIVERED {
-            background: #2c3e50;
-        }
-
-        .CANCELLED {
-            background: #d9534f;
-        }
-
-        .LOW {
-            background: #999;
-            color: white;
-        }
-
-        .NORMAL {
-            background: #777;
-            color: white;
-        }
-
-        .HIGH {
-            background: #e67e22;
-            color: white;
-        }
-
-        .RUSH {
-            background: #d9534f;
-            color: white;
-        }
-
-        .info-grid {
+        .grid-info {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-top: 22px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
         }
-
-        .info-label {
-            color: #777;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-weight: bold;
-            font-size: 15px;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 18px;
-            color: #1c2b39;
-        }
+        .info-block label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+        .info-block div { font-size: 15px; font-weight: bold; }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 16px;
         }
-
-        th,
-        td {
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
             text-align: left;
-            padding: 12px 10px;
-            border-bottom: 1px solid #e5e5e5;
             font-size: 14px;
-            vertical-align: top;
         }
+        th { background: #f8fafc; color: var(--muted); font-size: 12px; text-transform: uppercase; }
 
-        th {
-            background: #f0f2f5;
-        }
-
-        .specs {
-            color: #666;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .production-select {
-            min-width: 150px;
-        }
-
-        .totals {
-            max-width: 360px;
+        .totals-section {
+            max-width: 350px;
             margin-left: auto;
             margin-top: 20px;
         }
-
-        .total-row {
+        .totals-row {
             display: flex;
             justify-content: space-between;
-            padding: 7px 0;
+            padding: 6px 0;
+            font-size: 14px;
         }
-
-        .grand-total {
-            border-top: 2px solid #1c2b39;
-            margin-top: 8px;
-            padding-top: 12px;
+        .totals-row.grand-total {
             font-size: 18px;
             font-weight: bold;
-        }
-
-        .notes {
-            white-space: pre-wrap;
-            color: #555;
-        }
-
-        .loading,
-        .error {
-            background: white;
-            padding: 30px;
-            text-align: center;
-            border-radius: 6px;
-        }
-
-        .error {
-            color: #b00020;
-        }
-
-        @media (max-width: 800px) {
-            .info-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            nav a {
-                margin-left: 0;
-                margin-right: 12px;
-            }
+            border-top: 2px solid var(--border);
+            margin-top: 8px;
+            padding-top: 10px;
         }
     </style>
 </head>
-
 <body>
 
 <header>
-    <h1>Urban Print Shop - Order Details</h1>
-
+    <h1>Urban Print Shop — Order Details</h1>
     <nav>
         <a href="index.html">Customers</a>
         <a href="products.html">Products</a>
@@ -284,308 +155,204 @@
 </header>
 
 <div class="container">
+    <a href="orders.html" class="back-link">← Back to Orders</a>
 
-    <div class="top-actions">
-        <a class="back-link" href="orders.html">← Back to Orders</a>
+    <div class="card" id="orderCard">
+        <div class="order-header-row">
+            <div class="order-title">
+                <h2 id="orderNumber">Loading...</h2>
+                <span id="orderPriority" class="badge-priority"></span>
+            </div>
+            <div class="status-actions">
+                <select id="orderStatusSelect">
+                    <option value="PENDING_PAYMENT">Pending Payment</option>
+                    <option value="PENDING_FILE">Pending File</option>
+                    <option value="GRAPHICS">Graphics</option>
+                    <option value="SF_QUEUE">Small Format Queue</option>
+                    <option value="SF_PRINTING">SF Printing</option>
+                    <option value="WF_QUEUE">Wide Format Queue</option>
+                    <option value="WF_PRINTING">WF Printing</option>
+                    <option value="FINISHING">Finishing</option>
+                    <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
+                    <option value="SHIPPING">Shipping</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                </select>
+                <button class="btn-primary" onclick="updateOrderStatus()">Update Status</button>
+            </div>
+        </div>
 
-        <div>
-            <select id="orderStatus">
-                <option value="PENDING">Pending</option>
-                <option value="IN_PRODUCTION">In Production</option>
-                <option value="QUALITY_CHECK">Quality Check</option>
-                <option value="READY_FOR_PICKUP">Ready for Pickup</option>
-                <option value="DELIVERED">Delivered</option>
-                <option value="CANCELLED">Cancelled</option>
-            </select>
-
-            <button onclick="updateOrderStatus()">
-                Update Status
-            </button>
+        <div class="grid-info">
+            <div class="info-block">
+                <label>Customer</label>
+                <div id="customerName">-</div>
+            </div>
+            <div class="info-block">
+                <label>Order Date</label>
+                <div id="orderDate">-</div>
+            </div>
+            <div class="info-block">
+                <label>Due Date</label>
+                <div id="dueDate">Not defined</div>
+            </div>
+            <div class="info-block">
+                <label>Source Quote</label>
+                <div id="sourceQuote">-</div>
+            </div>
         </div>
     </div>
 
-    <div id="loading" class="loading">
-        Loading order...
+    <div class="card">
+        <h3 style="margin: 0 0 12px;">Order Items</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Production Status</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+        </table>
+
+        <div class="totals-section">
+            <div class="totals-row">
+                <span>Subtotal</span>
+                <span id="subtotal">$0.00</span>
+            </div>
+            <div class="totals-row">
+                <span>GST (<span id="gstRate">5</span>%)</span>
+                <span id="gstAmount">$0.00</span>
+            </div>
+            <div class="totals-row">
+                <span>PST (<span id="pstRate">7</span>%)</span>
+                <span id="pstAmount">$0.00</span>
+            </div>
+            <div class="totals-row grand-total">
+                <span>Total</span>
+                <span id="totalAmount">$0.00</span>
+            </div>
+        </div>
     </div>
 
-    <div id="error" class="error" style="display: none;"></div>
-
-    <div id="orderContent" style="display: none;">
-
-        <div class="card">
-            <div class="order-header">
-                <div>
-                    <div id="orderNumber" class="order-number"></div>
-
-                    <span id="statusBadge" class="status-badge"></span>
-                    <span id="priorityBadge" class="priority-badge"></span>
-                </div>
-
-                <div>
-                    <strong>Urban Print Shop</strong><br>
-                    7993 Enterprise St<br>
-                    Burnaby, BC
-                </div>
-            </div>
-
-            <div class="info-grid">
-                <div>
-                    <div class="info-label">Customer</div>
-                    <div id="customerName" class="info-value"></div>
-                </div>
-
-                <div>
-                    <div class="info-label">Order Date</div>
-                    <div id="orderDate" class="info-value"></div>
-                </div>
-
-                <div>
-                    <div class="info-label">Due Date</div>
-                    <div id="dueDate" class="info-value"></div>
-                </div>
-
-                <div>
-                    <div class="info-label">Source Quote</div>
-                    <div id="quoteNumber" class="info-value"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>Order Items</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Description</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Production Status</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-
-                <tbody id="itemsBody"></tbody>
-            </table>
-
-            <div class="totals">
-                <div class="total-row">
-                    <span>Subtotal</span>
-                    <strong id="subtotal"></strong>
-                </div>
-
-                <div class="total-row">
-                    <span>GST</span>
-                    <strong id="gst"></strong>
-                </div>
-
-                <div class="total-row">
-                    <span>PST</span>
-                    <strong id="pst"></strong>
-                </div>
-
-                <div class="total-row grand-total">
-                    <span>Total</span>
-                    <strong id="total"></strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>Notes</h2>
-            <div id="notes" class="notes"></div>
-        </div>
-
+    <div class="card">
+        <h3 style="margin: 0 0 8px;">Notes</h3>
+        <p id="orderNotes" style="color: var(--muted); margin: 0;">No notes.</p>
     </div>
 </div>
 
 <script>
-    const API_URL = '/api/orders';
-    const params = new URLSearchParams(window.location.search);
-    const orderId = params.get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('id');
 
-    let currentOrder = null;
-
-    function formatMoney(value) {
-        const amount = Number(value || 0);
-
-        return amount.toLocaleString('en-CA', {
-            style: 'currency',
-            currency: 'CAD'
-        });
-    }
-
-    function displayStatus(status) {
-        return String(status || '')
-            .replaceAll('_', ' ');
-    }
-
-    function getCustomerName(customer) {
-        if (!customer) {
-            return '';
-        }
-
-        return customer.customerName
-            || customer.name
-            || customer.contactName
-            || '';
-    }
-
-    async function loadOrder() {
+    async function loadOrderDetails() {
         if (!orderId) {
-            showError('Order ID was not provided.');
+            alert("No order specified.");
+            window.location.href = 'orders.html';
             return;
         }
 
         try {
-            const response = await fetch(`${API_URL}/${orderId}`);
+            const res = await fetch(`/api/orders/${orderId}`);
+            if (!res.ok) throw new Error("Order not found");
+            const order = await res.json();
 
-            if (!response.ok) {
-                throw new Error('Order not found.');
-            }
+            document.getElementById('orderNumber').textContent = order.orderNumber;
+            document.getElementById('orderStatusSelect').value = order.status;
 
-            currentOrder = await response.json();
-            renderOrder(currentOrder);
+            const priorityBadge = document.getElementById('orderPriority');
+            priorityBadge.textContent = order.priority || 'NORMAL';
+            priorityBadge.className = `badge-priority priority-${order.priority || 'NORMAL'}`;
 
-        } catch (error) {
-            showError(error.message);
+            const customer = order.customer || {};
+            document.getElementById('customerName').textContent = customer.customerName || customer.name || customer.contactName || 'N/A';
+            document.getElementById('orderDate').textContent = order.orderDate || '-';
+            document.getElementById('dueDate').textContent = order.dueDate || 'Not defined';
+            document.getElementById('sourceQuote').textContent = order.quote ? order.quote.quoteNumber : 'Direct Order';
+            document.getElementById('orderNotes').textContent = order.notes || 'No notes.';
+
+            // Totals
+            document.getElementById('subtotal').textContent = `$${(order.subtotal || 0).toFixed(2)}`;
+            document.getElementById('gstRate').textContent = order.gstRate || 5;
+            document.getElementById('gstAmount').textContent = `$${(order.gstAmount || 0).toFixed(2)}`;
+            document.getElementById('pstRate').textContent = order.pstRate || 7;
+            document.getElementById('pstAmount').textContent = `$${(order.pstAmount || 0).toFixed(2)}`;
+            document.getElementById('totalAmount').textContent = `$${(order.totalAmount || 0).toFixed(2)}`;
+
+            // Items
+            const tbody = document.getElementById('itemsBody');
+            tbody.innerHTML = '';
+            (order.items || []).forEach(item => {
+                const tr = document.createElement('tr');
+                const pStatus = item.productionStatus || 'PENDING_FILE';
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(item.product?.productName || 'Custom Item')}</strong></td>
+                    <td>
+                        ${escapeHtml(item.itemDescription || '')}
+                        ${item.printSpecsSummary ? `<br><small style="color: var(--muted);">${escapeHtml(item.printSpecsSummary)}</small>` : ''}
+                    </td>
+                    <td>${item.quantity}</td>
+                    <td>$${(item.unitPrice || 0).toFixed(2)}</td>
+                    <td>
+                        <select onchange="updateItemProductionStatus(${item.id}, this.value)">
+                            <option value="PENDING_PAYMENT" ${pStatus === 'PENDING_PAYMENT' ? 'selected' : ''}>Pending Payment</option>
+                            <option value="PENDING_FILE" ${pStatus === 'PENDING_FILE' ? 'selected' : ''}>Pending File</option>
+                            <option value="GRAPHICS" ${pStatus === 'GRAPHICS' ? 'selected' : ''}>Graphics</option>
+                            <option value="SF_QUEUE" ${pStatus === 'SF_QUEUE' ? 'selected' : ''}>Small Format Queue</option>
+                            <option value="SF_PRINTING" ${pStatus === 'SF_PRINTING' ? 'selected' : ''}>SF Printing</option>
+                            <option value="WF_QUEUE" ${pStatus === 'WF_QUEUE' ? 'selected' : ''}>Wide Format Queue</option>
+                            <option value="WF_PRINTING" ${pStatus === 'WF_PRINTING' ? 'selected' : ''}>WF Printing</option>
+                            <option value="FINISHING" ${pStatus === 'FINISHING' ? 'selected' : ''}>Finishing</option>
+                            <option value="READY_FOR_PICKUP" ${pStatus === 'READY_FOR_PICKUP' ? 'selected' : ''}>Ready for Pick Up</option>
+                            <option value="SHIPPING" ${pStatus === 'SHIPPING' ? 'selected' : ''}>Shipping</option>
+                            <option value="COMPLETED" ${pStatus === 'COMPLETED' ? 'selected' : ''}>Completed</option>
+                            <option value="CANCELLED" ${pStatus === 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                    <td><strong>$${(item.totalPrice || 0).toFixed(2)}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+        } catch (e) {
+            console.error(e);
+            alert("Error loading order details.");
         }
-    }
-
-    function renderOrder(order) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('orderContent').style.display = 'block';
-
-        document.getElementById('orderNumber').textContent =
-            order.orderNumber || '';
-
-        const statusBadge = document.getElementById('statusBadge');
-        statusBadge.textContent = displayStatus(order.status);
-        statusBadge.className = `status-badge ${order.status}`;
-
-        const priorityBadge = document.getElementById('priorityBadge');
-        priorityBadge.textContent = order.priority || '';
-        priorityBadge.className = `priority-badge ${order.priority}`;
-
-        document.getElementById('orderStatus').value =
-            order.status || 'PENDING';
-
-        document.getElementById('customerName').textContent =
-            getCustomerName(order.customer);
-
-        document.getElementById('orderDate').textContent =
-            order.orderDate || '';
-
-        document.getElementById('dueDate').textContent =
-            order.dueDate || 'Not defined';
-
-        document.getElementById('quoteNumber').textContent =
-            order.quote ? order.quote.quoteNumber : 'Manual order';
-
-        document.getElementById('subtotal').textContent =
-            formatMoney(order.subtotal);
-
-        document.getElementById('gst').textContent =
-            `${formatMoney(order.gstAmount)} (${order.gstRate || 0}%)`;
-
-        document.getElementById('pst').textContent =
-            `${formatMoney(order.pstAmount)} (${order.pstRate || 0}%)`;
-
-        document.getElementById('total').textContent =
-            formatMoney(order.totalAmount);
-
-        document.getElementById('notes').textContent =
-            order.notes || 'No notes.';
-
-        renderItems(order.items || []);
-    }
-
-    function renderItems(items) {
-        const tbody = document.getElementById('itemsBody');
-        tbody.innerHTML = '';
-
-        if (items.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6">No items found.</td>
-                </tr>
-            `;
-            return;
-        }
-
-        items.forEach(item => {
-            const row = document.createElement('tr');
-
-            const productName = item.product
-                ? item.product.productName || ''
-                : '';
-
-            row.innerHTML = `
-                <td>${productName}</td>
-                <td>
-                    ${item.itemDescription || ''}
-                    <div class="specs">
-                        ${item.printSpecsSummary || ''}
-                    </div>
-                </td>
-                <td>${item.quantity || 0}</td>
-                <td>${formatMoney(item.unitPrice)}</td>
-                <td>
-                    <select class="production-select"
-                            data-item-id="${item.id}">
-                        <option value="PENDING">Pending</option>
-                        <option value="IN_PRODUCTION">In Production</option>
-                        <option value="QUALITY_CHECK">Quality Check</option>
-                        <option value="READY_FOR_PICKUP">Ready for Pickup</option>
-                        <option value="DELIVERED">Delivered</option>
-                        <option value="CANCELLED">Cancelled</option>
-                    </select>
-                </td>
-                <td>${formatMoney(item.totalPrice)}</td>
-            `;
-
-            tbody.appendChild(row);
-
-            const select = row.querySelector('select');
-            select.value = item.productionStatus || 'PENDING';
-        });
     }
 
     async function updateOrderStatus() {
-        const newStatus = document.getElementById('orderStatus').value;
-
+        const newStatus = document.getElementById('orderStatusSelect').value;
         try {
-            const response = await fetch(
-                `${API_URL}/${orderId}/status?status=${newStatus}`,
-                {
-                    method: 'PATCH'
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error('Could not update order status.');
-            }
-
-            currentOrder = await response.json();
-            renderOrder(currentOrder);
-
-            alert('Order status updated successfully.');
-
-        } catch (error) {
-            alert(error.message);
+            const res = await fetch(`/api/orders/${orderId}/status?status=${newStatus}`, { method: 'PATCH' });
+            if (!res.ok) throw new Error("Failed to update status");
+            alert("Order status updated!");
+        } catch (e) {
+            console.error(e);
+            alert("Error updating order status.");
         }
     }
 
-    function showError(message) {
-        document.getElementById('loading').style.display = 'none';
-
-        const errorElement = document.getElementById('error');
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
+    async function updateItemProductionStatus(itemId, newStatus) {
+        try {
+            const res = await fetch(`/api/orders/${orderId}/items/${itemId}/status?status=${newStatus}`, { method: 'PATCH' });
+            if (!res.ok) throw new Error("Failed to update item status");
+        } catch (e) {
+            console.error(e);
+            alert("Error updating item production status.");
+            loadOrderDetails();
+        }
     }
 
-    loadOrder();
+    function escapeHtml(val) {
+        const div = document.createElement("div");
+        div.textContent = val == null ? "" : String(val);
+        return div.innerHTML;
+    }
+
+    document.addEventListener('DOMContentLoaded', loadOrderDetails);
 </script>
 
 </body>

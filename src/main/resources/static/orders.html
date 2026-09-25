@@ -16,18 +16,18 @@
   th { background: #f0f2f5; }
   tr:hover { background: #fafafa; cursor: pointer; }
   .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #fff; }
-  .PENDING { background: #f0ad4e; }
-  .IN_PRODUCTION { background: #5bc0de; }
-  .QUALITY_CHECK { background: #9b59b6; }
+  .PENDING_PAYMENT { background: #f0ad4e; }
+  .PENDING_FILE { background: #e67e22; }
+  .GRAPHICS { background: #9b59b6; }
+  .SF_QUEUE { background: #3498db; }
+  .SF_PRINTING { background: #2980b9; }
+  .WF_QUEUE { background: #1abc9c; }
+  .WF_PRINTING { background: #16a085; }
+  .FINISHING { background: #8e44ad; }
   .READY_FOR_PICKUP { background: #5cb85c; }
-  .DELIVERED { background: #2c3e50; }
+  .SHIPPING { background: #27ae60; }
+  .COMPLETED { background: #2c3e50; }
   .CANCELLED { background: #d9534f; }
-  .priority { font-size: 12px; font-weight: bold; }
-  .LOW { color: #999; }
-  .NORMAL { color: #333; }
-  .HIGH { color: #e67e22; }
-  .RUSH { color: #d9534f; }
-  .empty { text-align: center; padding: 40px; color: #888; }
 </style>
 </head>
 <body>
@@ -47,13 +47,19 @@
   <div class="toolbar">
     <div>
       <label>Filter by status: </label>
-      <select id="statusFilter" onchange="loadOrders()">
+      <select id="filterStatus" onchange="loadOrders()">
         <option value="">All</option>
-        <option value="PENDING">Pending</option>
-        <option value="IN_PRODUCTION">In Production</option>
-        <option value="QUALITY_CHECK">Quality Check</option>
-        <option value="READY_FOR_PICKUP">Ready for Pickup</option>
-        <option value="DELIVERED">Delivered</option>
+        <option value="PENDING_PAYMENT">Pending Payment</option>
+        <option value="PENDING_FILE">Pending File</option>
+        <option value="GRAPHICS">Graphics</option>
+        <option value="SF_QUEUE">Small Format Queue</option>
+        <option value="SF_PRINTING">SF Printing</option>
+        <option value="WF_QUEUE">Wide Format Queue</option>
+        <option value="WF_PRINTING">WF Printing</option>
+        <option value="FINISHING">Finishing</option>
+        <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
+        <option value="SHIPPING">Shipping</option>
+        <option value="COMPLETED">Completed</option>
         <option value="CANCELLED">Cancelled</option>
       </select>
     </div>
@@ -81,36 +87,81 @@
 const API_URL = '/api/orders';
 
 async function loadOrders() {
-  const status = document.getElementById('statusFilter').value;
+  const status = document.getElementById('filterStatus').value;
   const url = status ? `${API_URL}/status/${status}` : API_URL;
-
-  const res = await fetch(url);
-  const orders = await res.json();
 
   const tbody = document.getElementById('ordersBody');
   const emptyMsg = document.getElementById('emptyMsg');
-  tbody.innerHTML = '';
 
-  if (!orders || orders.length === 0) {
+  try {
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`API error ${res.status}: ${errorText}`);
+    }
+
+    const orders = await res.json();
+
+    if (!Array.isArray(orders)) {
+      throw new Error('The API response is not an order list.');
+    }
+
+    tbody.innerHTML = '';
+
+    if (orders.length === 0) {
+      emptyMsg.textContent = 'No orders found.';
+      emptyMsg.style.display = 'block';
+      return;
+    }
+
+    emptyMsg.style.display = 'none';
+
+    orders.forEach(order => {
+      const tr = document.createElement('tr');
+
+      tr.onclick = () => {
+        window.location.href = `order-details.html?id=${order.id}`;
+      };
+
+      const customerName = order.customer 
+      ? (order.customer.customerName || order.customer.name || order.customer.contactName || '') 
+      : '';
+
+      const statusText = order.status
+        ? order.status.replaceAll('_', ' ')
+        : '';
+
+      const total = order.totalAmount
+        ? Number(order.totalAmount).toFixed(2)
+        : '0.00';
+
+      tr.innerHTML = `
+        <td>${order.orderNumber || ''}</td>
+        <td>${customerName}</td>
+        <td>${order.orderDate || ''}</td>
+        <td>${order.dueDate || ''}</td>
+        <td class="priority ${order.priority || ''}">
+          ${order.priority || ''}
+        </td>
+        <td>
+          <span class="badge ${order.status || ''}">
+            ${statusText}
+          </span>
+        </td>
+        <td>$${total}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error('Error loading orders:', error);
+
+    tbody.innerHTML = '';
+    emptyMsg.textContent = 'Error loading orders. Check the backend terminal.';
     emptyMsg.style.display = 'block';
-    return;
   }
-  emptyMsg.style.display = 'none';
-
-  orders.forEach(order => {
-    const tr = document.createElement('tr');
-    tr.onclick = () => window.location.href = `order-details.html?id=${order.id}`;
-    tr.innerHTML = `
-      <td>${order.orderNumber}</td>
-      <td>${order.customer ? order.customer.name : ''}</td>
-      <td>${order.orderDate || ''}</td>
-      <td>${order.dueDate || ''}</td>
-      <td class="priority ${order.priority}">${order.priority}</td>
-      <td><span class="badge ${order.status}">${order.status.replace('_',' ')}</span></td>
-      <td>$${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'}</td>
-    `;
-    tbody.appendChild(tr);
-  });
 }
 
 loadOrders();

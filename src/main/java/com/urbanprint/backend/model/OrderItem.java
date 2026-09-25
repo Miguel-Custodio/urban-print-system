@@ -38,7 +38,7 @@ public class OrderItem {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "production_status", nullable = false, length = 30)
-    private OrderStatus productionStatus = OrderStatus.PENDING;
+    private OrderStatus productionStatus = OrderStatus.PENDING_PAYMENT;
 
     @Column(name = "production_notes", columnDefinition = "TEXT")
     private String productionNotes;

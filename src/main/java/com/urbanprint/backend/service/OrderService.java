@@ -107,7 +107,7 @@ public class OrderService {
 
     @Transactional
     public Order createOrderFromQuote(Quote quote) {
-
+        
         if ("CONVERTED".equalsIgnoreCase(quote.getStatus())) {
             throw new IllegalStateException(
                     "This quote has already been converted into an order.");
@@ -118,7 +118,7 @@ public class OrderService {
         order.setCustomer(quote.getCustomer());
         order.setOrderNumber(generateOrderNumber());
         order.setOrderDate(LocalDate.now());
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.PENDING_PAYMENT);
         order.setGstRate(quote.getGstRate());
         order.setPstRate(quote.getPstRate());
         order.setNotes(quote.getNotes());
@@ -126,12 +126,14 @@ public class OrderService {
         if (quote.getItems() != null) {
             for (QuoteItem qi : quote.getItems()) {
                 OrderItem item = new OrderItem();
+
                 item.setProduct(qi.getProduct());
                 item.setItemDescription(qi.getItemDescription());
                 item.setQuantity(qi.getQuantity());
                 item.setUnitPrice(qi.getUnitPrice());
                 item.setPrintSpecsSummary(qi.getPrintSpecsSummary());
-                item.setProductionStatus(OrderStatus.PENDING);
+                item.setProductionStatus(OrderStatus.PENDING_FILE);
+
                 order.addItem(item);
             }
         }
