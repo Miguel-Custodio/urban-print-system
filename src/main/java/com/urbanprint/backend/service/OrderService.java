@@ -5,7 +5,10 @@ import com.urbanprint.backend.model.OrderItem;
 import com.urbanprint.backend.model.OrderStatus;
 import com.urbanprint.backend.model.Quote;
 import com.urbanprint.backend.model.QuoteItem;
+import com.urbanprint.backend.model.Product;
+import com.urbanprint.backend.model.ProductPriceScale;
 import com.urbanprint.backend.repository.OrderRepository;
+import com.urbanprint.backend.repository.OrderItemRepository;
 import com.urbanprint.backend.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,16 +18,21 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final QuoteRepository quoteRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderService(OrderRepository orderRepository, QuoteRepository quoteRepository) {
+    public OrderService(OrderRepository orderRepository, QuoteRepository quoteRepository,
+                         OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.quoteRepository = quoteRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
     public List<Order> getAllOrders() {
@@ -101,13 +109,262 @@ public class OrderService {
         }).orElseThrow(() -> new RuntimeException("Order not found with id " + id));
     }
 
+    @Transactional
+    public Order updateOrderNotes(Long orderId, String notes) {
+        return orderRepository.findById(orderId).map(order -> {
+            order.setNotes(notes);
+            return orderRepository.save(order);
+        }).orElseThrow(() -> new RuntimeException("Order not found with id " + orderId));
+    }
+
+    // ---- Item management (DocketManager-style flow) ----
+
+    @Transactional
+    public Order addItemToOrder(Long orderId, OrderItem newItem) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id " + orderId));
+
+        newItem.setOrder(order);
+        order.getItems().add(newItem);
+
+        calculateTotals(order);
+
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order updateOrderItem(Long orderId, Long itemId, OrderItem itemData) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id " + orderId));
+
+        OrderItem existingItem = order.getItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Order item not found with id " + itemId));
+
+        if (itemData.getProduct() != null && itemData.getProduct().getId() != null) {
+            existingItem.setProduct(itemData.getProduct());
+        }
+
+        existingItem.setItemDescription(itemData.getItemDescription());
+        existingItem.setQuantity(itemData.getQuantity());
+        existingItem.setUnitPrice(itemData.getUnitPrice());
+        existingItem.setPrintSpecsSummary(itemData.getPrintSpecsSummary());
+
+        calculateTotals(order);
+
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order removeOrderItem(Long orderId, Long itemId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id " + orderId));
+
+        OrderItem itemToRemove = order.getItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Order item not found with id " + itemId));
+
+        order.removeItem(itemToRemove);
+
+        calculateTotals(order);
+
+        return orderRepository.save(order);
+    }
+
+    // ---- End of item management ----
+
+    @Transactional
+    public Order reorderOrder(Long orderId) {
+        Order original = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id " + orderId));
+
+        Order newOrder = new Order();
+        newOrder.setCustomer(original.getCustomer());
+        newOrder.setOrderDate(LocalDate.now());
+        newOrder.setDueDate(null);
+        newOrder.setPriority(original.getPriority());
+        newOrder.setStatus(OrderStatus.PENDING_PAYMENT);
+        newOrder.setGstRate(original.getGstRate());
+        newOrder.setPstRate(original.getPstRate());
+        newOrder.setNotes("Re-order of " + original.getOrderNumber());
+        newOrder.setOrderNumber(generateOrderNumber());
+
+        List<OrderItem> newItems = original.getItems().stream().map(oldItem -> {
+            OrderItem newItem = new OrderItem();
+            newItem.setProduct(oldItem.getProduct());
+            newItem.setItemDescription(oldItem.getItemDescription());
+            newItem.setQuantity(oldItem.getQuantity());
+            newItem.setUnitPrice(oldItem.getUnitPrice());
+            newItem.setTotalPrice(oldItem.getTotalPrice());
+            newItem.setPrintSpecsSummary(oldItem.getPrintSpecsSummary());
+            newItem.setProductionStatus(OrderStatus.PENDING_PAYMENT);
+            newItem.setOrder(newOrder);
+            return newItem;
+        }).collect(java.util.stream.Collectors.toList());
+
+        newOrder.setItems(newItems);
+
+        calculateTotals(newOrder);
+
+        return orderRepository.save(newOrder);
+    }
+
+    @Transactional
+    public OrderItem updateItemProductionStatus(Long itemId, OrderStatus status) {
+        OrderItem savedItem = orderItemRepository.findById(itemId).map(item -> {
+            item.setProductionStatus(status);
+            return orderItemRepository.save(item);
+        }).orElseThrow(() -> new RuntimeException("Order item not found with id " + itemId));
+
+        Order order = savedItem.getOrder();
+        if (order != null && order.getItems() != null && !order.getItems().isEmpty()) {
+            OrderStatus calculatedStatus = recalculateOrderStatus(order.getItems());
+            if (calculatedStatus != null && calculatedStatus != order.getStatus()) {
+                order.setStatus(calculatedStatus);
+                orderRepository.save(order);
+            }
+        }
+
+        return savedItem;
+    }
+
+    private OrderStatus recalculateOrderStatus(List<OrderItem> items) {
+        if (items.isEmpty()) return null;
+
+        boolean allCompleted = items.stream().allMatch(i -> i.getProductionStatus() == OrderStatus.COMPLETED);
+        if (allCompleted) return OrderStatus.COMPLETED;
+
+        boolean allReadyOrDone = items.stream().allMatch(i ->
+                i.getProductionStatus() == OrderStatus.READY_FOR_PICKUP ||
+                i.getProductionStatus() == OrderStatus.SHIPPING ||
+                i.getProductionStatus() == OrderStatus.COMPLETED);
+        if (allReadyOrDone) return OrderStatus.READY_FOR_PICKUP;
+
+        boolean anyInFinishing = items.stream().anyMatch(i -> i.getProductionStatus() == OrderStatus.FINISHING);
+        if (anyInFinishing) return OrderStatus.FINISHING;
+
+        boolean anyPrinting = items.stream().anyMatch(i ->
+                i.getProductionStatus() == OrderStatus.SF_PRINTING ||
+                i.getProductionStatus() == OrderStatus.WF_PRINTING);
+        if (anyPrinting) {
+            boolean hasWf = items.stream().anyMatch(i -> i.getProductionStatus() == OrderStatus.WF_PRINTING);
+            return hasWf ? OrderStatus.WF_PRINTING : OrderStatus.SF_PRINTING;
+        }
+
+        boolean anyQueue = items.stream().anyMatch(i ->
+                i.getProductionStatus() == OrderStatus.SF_QUEUE ||
+                i.getProductionStatus() == OrderStatus.WF_QUEUE);
+        if (anyQueue) {
+            boolean hasWf = items.stream().anyMatch(i -> i.getProductionStatus() == OrderStatus.WF_QUEUE);
+            return hasWf ? OrderStatus.WF_QUEUE : OrderStatus.SF_QUEUE;
+        }
+
+        boolean anyGraphics = items.stream().anyMatch(i -> i.getProductionStatus() == OrderStatus.GRAPHICS);
+        if (anyGraphics) return OrderStatus.GRAPHICS;
+
+        return null;
+    }
+
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
     }
 
     @Transactional
+    public OrderItem updateItemProductionNotes(Long itemId, String notes) {
+        return orderItemRepository.findById(itemId).map(item -> {
+            item.setProductionNotes(notes);
+            return orderItemRepository.save(item);
+        }).orElseThrow(() -> new RuntimeException("Order item not found with id " + itemId));
+    }
+
+    @Transactional
+    public Quote convertOrderToQuote(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id " + orderId));
+
+        Quote quote = new Quote();
+        quote.setCustomer(order.getCustomer());
+        quote.setIssueDate(LocalDate.now());
+        quote.setExpiryDate(LocalDate.now().plusDays(30));
+        quote.setStatus("DRAFT");
+        quote.setGstRate(order.getGstRate());
+        quote.setPstRate(order.getPstRate());
+        quote.setNotes("Converted from order " + order.getOrderNumber() + " with updated pricing.");
+        quote.setQuoteNumber(generateQuoteNumberForConversion());
+
+        List<QuoteItem> quoteItems = order.getItems().stream().map(oldItem -> {
+            QuoteItem newItem = new QuoteItem();
+            newItem.setProduct(oldItem.getProduct());
+            newItem.setItemDescription(oldItem.getItemDescription());
+            newItem.setQuantity(oldItem.getQuantity());
+            newItem.setPrintSpecsSummary(oldItem.getPrintSpecsSummary());
+
+            BigDecimal unitPrice = findCurrentUnitPrice(oldItem.getProduct(), oldItem.getQuantity());
+            BigDecimal totalPrice = unitPrice
+                    .multiply(BigDecimal.valueOf(oldItem.getQuantity()))
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            newItem.setUnitPrice(unitPrice);
+            newItem.setTotalPrice(totalPrice);
+            newItem.setQuote(quote);
+            return newItem;
+        }).collect(Collectors.toList());
+
+        quote.setItems(quoteItems);
+
+        calculateQuoteTotals(quote);
+
+        return quoteRepository.save(quote);
+    }
+
+    private BigDecimal findCurrentUnitPrice(Product product, Integer quantity) {
+        if (product == null || product.getPriceScales() == null || product.getPriceScales().isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        Optional<ProductPriceScale> exact = product.getPriceScales().stream()
+                .filter(scale -> scale.getQuantity().equals(quantity))
+                .findFirst();
+
+        if (exact.isPresent()) {
+            return exact.get().getPricePerPiece();
+        }
+
+        ProductPriceScale closest = product.getPriceScales().stream()
+                .min(Comparator.comparingInt(scale -> Math.abs(scale.getQuantity() - quantity)))
+                .orElse(null);
+
+        return closest != null ? closest.getPricePerPiece() : BigDecimal.ZERO;
+    }
+
+    private void calculateQuoteTotals(Quote quote) {
+        BigDecimal subtotal = quote.getItems().stream()
+                .map(QuoteItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        quote.setSubtotal(subtotal);
+
+        BigDecimal gstAmount = subtotal.multiply(quote.getGstRate())
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        quote.setGstAmount(gstAmount);
+
+        BigDecimal pstAmount = subtotal.multiply(quote.getPstRate())
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        quote.setPstAmount(pstAmount);
+
+        quote.setTotalAmount(subtotal.add(gstAmount).add(pstAmount));
+    }
+
+    private String generateQuoteNumberForConversion() {
+        long count = quoteRepository.count();
+        return String.format("QU-%04d", count + 1001);
+    }
+
+    @Transactional
     public Order createOrderFromQuote(Quote quote) {
-        
+
         if ("CONVERTED".equalsIgnoreCase(quote.getStatus())) {
             throw new IllegalStateException(
                     "This quote has already been converted into an order.");

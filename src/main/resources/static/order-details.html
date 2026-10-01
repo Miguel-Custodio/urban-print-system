@@ -16,20 +16,66 @@
         }
 
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--text); }
+        body { margin: 0; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
-        header {
+        aside {
+            width: 230px;
             background: var(--primary);
-            color: white;
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: #fff;
+            padding: 20px 12px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        header h1 { margin: 0; font-size: 20px; }
-        nav a { color: white; text-decoration: none; margin-left: 16px; font-size: 14px; }
-        nav a:hover { text-decoration: underline; }
+        .brand-logo-link {
+            display: block;
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .brand-logo {
+            display: block;
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        aside nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        aside nav a:hover,
+        aside nav a.active {
+            background: #334155;
+            color: #fff;
+        }
+
+        main { flex: 1; min-width: 0; }
+
+        .page-header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+        }
+
+        .page-header h1 { margin: 0; font-size: 20px; }
 
         .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
 
@@ -74,11 +120,13 @@
         .priority-NORMAL { background: #e0f2fe; color: #0369a1; }
         .priority-HIGH { background: #ffedd5; color: #c2410c; }
         .priority-RUSH { background: #fee2e2; color: #b91c1c; font-weight: bold; }
+        .priority-URGENT { background: #dc2626; color: #ffffff; font-weight: bold; }
 
         .status-actions {
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         select {
@@ -100,6 +148,28 @@
         }
         button.btn-primary:hover { background: #2c3e50; }
 
+        button.btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button.btn-secondary:hover { background: #cbd5e1; }
+
+        button.btn-invoice {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button.btn-invoice:hover { background: #6d28d9; }
+
         .grid-info {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -107,6 +177,224 @@
         }
         .info-block label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
         .info-block div { font-size: 15px; font-weight: bold; }
+
+        .edit-link {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 6px;
+            padding: 0;
+        }
+
+        .inline-edit-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .inline-edit-row select, .inline-edit-row input {
+            font-size: 13px;
+            padding: 4px 6px;
+        }
+
+        .inline-edit-row button {
+            font-size: 11px;
+            padding: 4px 8px;
+        }
+
+        /* ---- Item management (DocketManager-style) ---- */
+        .items-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0 4px;
+        }
+        .items-toolbar h3 { margin: 0; }
+
+        .btn-add-item {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-add-item:hover { background: #1d4ed8; }
+
+        /* Form card emulates the DM modal: single centered column */
+        .item-form-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 12px 0 4px;
+            max-width: 760px;
+        }
+        .item-form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .item-form-header strong { font-size: 15px; }
+
+        .form-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .form-field input,
+        .form-field select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .form-row .form-field { flex: 1; }
+        .form-row .form-field.narrow { flex: 0 0 110px; }
+
+        /* DM-style stacked spec sections */
+        .spec-section {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 14px;
+        }
+        .spec-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text);
+            margin: 0 0 12px;
+        }
+
+        .sides-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .side-col .col-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .stock-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .size-pair {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .size-pair input { flex: 1; min-width: 0; }
+        .size-pair .x { color: var(--muted); font-weight: bold; }
+
+        .yn-select { width: 70px !important; padding: 7px !important; }
+
+        /* Department items: DM-style inline rows with + button */
+        .di-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        .di-row:nth-child(odd) { background: #f8fafc; }
+        .di-row .form-field { margin-bottom: 0; }
+        .di-dept { flex: 0 0 130px; }
+        .di-desc { flex: 1 1 160px; }
+        .di-qty { flex: 0 0 80px; }
+        .di-unit { flex: 0 0 110px; }
+        .di-price { flex: 0 0 100px; }
+        .di-remove { flex: 0 0 34px; }
+
+        .btn-add-dept-item {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 14px;
+            width: 36px;
+            height: 34px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-add-dept-item:hover { background: #f1f5f9; }
+
+        .hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .item-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .specs-block {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .row-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 11px;
+            padding: 4px 8px;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+        .row-btn:hover { background: #e2e8f0; }
+        .row-btn-danger { color: #b91c1c; border-color: #fca5a5; }
+        .row-btn-danger:hover { background: #fee2e2; }
+
+        .notes-tag {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .notes-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 11px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+        .notes-btn:hover { background: #e2e8f0; }
 
         table {
             width: 100%;
@@ -118,6 +406,7 @@
             border-bottom: 1px solid var(--border);
             text-align: left;
             font-size: 14px;
+            vertical-align: top;
         }
         th { background: #f8fafc; color: var(--muted); font-size: 12px; text-transform: uppercase; }
 
@@ -139,114 +428,462 @@
             margin-top: 8px;
             padding-top: 10px;
         }
+
+        @media print {
+            aside, .page-header, .back-link, .status-actions, .edit-link, .notes-btn,
+            .items-toolbar, .item-form-card, .row-btn {
+                display: none !important;
+            }
+            #itemsTable th:last-child,
+            #itemsTable td:last-child {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Urban Print Shop — Order Details</h1>
+<aside>
+    <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
+        <img
+            src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+            alt="Urban Print Shop - Home"
+            class="brand-logo"
+        >
+    </a>
     <nav>
+        <a href="dashboard.html">Home / Dashboard</a>
         <a href="index.html">Customers</a>
         <a href="products.html">Products</a>
         <a href="quote-list.html">Quotes</a>
-        <a href="orders.html">Orders</a>
+        <a href="orders.html" class="active">Orders</a>
         <a href="production-queue.html">Production Queue</a>
     </nav>
-</header>
+</aside>
 
-<div class="container">
-    <a href="orders.html" class="back-link">← Back to Orders</a>
+<main>
+    <div class="page-header">
+        <h1>Urban Print Shop — Order Details</h1>
+    </div>
 
-    <div class="card" id="orderCard">
-        <div class="order-header-row">
-            <div class="order-title">
-                <h2 id="orderNumber">Loading...</h2>
-                <span id="orderPriority" class="badge-priority"></span>
+    <div class="container">
+        <a href="orders.html" class="back-link">← Back to Orders</a>
+
+        <div class="card" id="orderCard">
+            <div class="order-header-row">
+                <div class="order-title">
+                    <h2 id="orderNumber">Loading...</h2>
+                    <span id="orderPriority" class="badge-priority"></span>
+                </div>
+                <div class="status-actions">
+                    <select id="orderStatusSelect">
+                        <option value="PENDING_PAYMENT">Pending Payment</option>
+                        <option value="PENDING_FILE">Pending File</option>
+                        <option value="GRAPHICS">Graphics</option>
+                        <option value="SF_QUEUE">Small Format Queue</option>
+                        <option value="SF_PRINTING">SF Printing</option>
+                        <option value="WF_QUEUE">Wide Format Queue</option>
+                        <option value="WF_PRINTING">WF Printing</option>
+                        <option value="FINISHING">Finishing</option>
+                        <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
+                        <option value="SHIPPING">Shipping</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                    <button class="btn-primary" onclick="updateOrderStatus()">Update Status</button>
+                    <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
+                    <button class="btn-invoice" onclick="sendInvoice()">Send Invoice</button>
+                </div>
             </div>
-            <div class="status-actions">
-                <select id="orderStatusSelect">
-                    <option value="PENDING_PAYMENT">Pending Payment</option>
-                    <option value="PENDING_FILE">Pending File</option>
-                    <option value="GRAPHICS">Graphics</option>
-                    <option value="SF_QUEUE">Small Format Queue</option>
-                    <option value="SF_PRINTING">SF Printing</option>
-                    <option value="WF_QUEUE">Wide Format Queue</option>
-                    <option value="WF_PRINTING">WF Printing</option>
-                    <option value="FINISHING">Finishing</option>
-                    <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
-                    <option value="SHIPPING">Shipping</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="CANCELLED">Cancelled</option>
-                </select>
-                <button class="btn-primary" onclick="updateOrderStatus()">Update Status</button>
+
+            <div class="grid-info">
+                <div class="info-block">
+                    <label>Customer <button class="edit-link" onclick="toggleEditCustomer()">Change</button></label>
+                    <div id="customerName">-</div>
+                    <div id="customerEditRow" class="inline-edit-row" style="display:none;">
+                        <select id="customerSelect"></select>
+                        <button class="btn-primary" onclick="saveCustomerChange()">Save</button>
+                        <button class="btn-secondary" onclick="toggleEditCustomer()">Cancel</button>
+                    </div>
+                </div>
+                <div class="info-block">
+                    <label>Order Date</label>
+                    <div id="orderDate">-</div>
+                </div>
+                <div class="info-block">
+                    <label>Due Date <button class="edit-link" onclick="toggleEditDueDate()">Edit</button></label>
+                    <div id="dueDate">Not defined</div>
+                    <div id="dueDateEditRow" class="inline-edit-row" style="display:none;">
+                        <input type="date" id="dueDateInput">
+                        <button class="btn-primary" onclick="saveDueDate()">Save</button>
+                        <button class="btn-secondary" onclick="toggleEditDueDate()">Cancel</button>
+                    </div>
+                </div>
+                <div class="info-block">
+                    <label>Source Quote</label>
+                    <div id="sourceQuote">-</div>
+                </div>
             </div>
         </div>
 
-        <div class="grid-info">
-            <div class="info-block">
-                <label>Customer</label>
-                <div id="customerName">-</div>
+        <div class="card">
+            <div class="items-toolbar">
+                <h3>Order Items</h3>
+                <button type="button" class="btn-add-item" onclick="openAddItemForm()">+ Add Item</button>
             </div>
-            <div class="info-block">
-                <label>Order Date</label>
-                <div id="orderDate">-</div>
+
+            <!-- Quick Add Item — DocketManager style (stacked sections) -->
+            <div class="item-form-card" id="itemFormCard" style="display:none;">
+                <div class="item-form-header">
+                    <strong id="itemFormTitle">Add Item</strong>
+                    <button type="button" class="notes-btn" onclick="closeItemForm()">✕ Close</button>
+                </div>
+                <form id="itemForm" onsubmit="event.preventDefault(); saveItem();">
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="itemProduct">Product</label>
+                            <select id="itemProduct" onchange="onItemProductChange()">
+                                <option value="">Loading products...</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="itemDescription">Description *</label>
+                            <input type="text" id="itemDescription" placeholder="e.g. Business Card - 4/4">
+                        </div>
+                    </div>
+
+                    <div class="spec-section">
+                        <div class="spec-title">Number of Sides</div>
+                        <div class="form-row" style="margin-bottom:0;">
+                            <div class="form-field narrow">
+                                <select id="itemSides" onchange="onSidesChange()">
+                                    <option value="SINGLE_SIDED">1</option>
+                                    <option value="DOUBLE_SIDED">2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spec-section">
+                        <div class="spec-title">Press</div>
+                        <div class="form-row" style="margin-bottom:0;">
+                            <div class="form-field">
+                                <label for="itemDepartment">Group</label>
+                                <select id="itemDepartment" onchange="onDepartmentChange()">
+                                    <option value="">— Select group —</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="itemPress">Press</label>
+                                <select id="itemPress">
+                                    <option value="">— Select press —</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spec-section">
+                        <div class="sides-grid">
+                            <div class="side-col">
+                                <div class="col-title">Single Sided — Front</div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>Black Sheets</label>
+                                        <input type="number" id="fsBlack" min="0" step="1" value="0">
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Color Sheets</label>
+                                        <input type="number" id="fsColor" min="0" step="1" value="0">
+                                    </div>
+                                </div>
+                                <div class="form-row" style="margin-bottom:0;">
+                                    <div class="form-field">
+                                        <label>Mixed Sheets</label>
+                                        <input type="number" id="fsMixed" min="0" step="1" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="side-col">
+                                <div class="col-title">Double Sided — Back</div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>Black Sheets</label>
+                                        <input type="number" id="bsBlack" min="0" step="1" value="0">
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Color Sheets</label>
+                                        <input type="number" id="bsColor" min="0" step="1" value="0">
+                                    </div>
+                                </div>
+                                <div class="form-row" style="margin-bottom:0;">
+                                    <div class="form-field">
+                                        <label>Mixed Sheets</label>
+                                        <input type="number" id="bsMixed" min="0" step="1" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spec-section">
+                        <div class="spec-title">Stock</div>
+                        <div class="stock-grid">
+                            <div>
+                                <div class="form-row" style="flex-direction:column;">
+                                    <div class="form-field">
+                                        <label for="itemStock">Stock</label>
+                                        <input type="text" id="itemStock" list="stockSuggestions" placeholder="e.g. 14pt Coated Cover">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="selPriceByCarton">Price By Carton</label>
+                                        <select id="selPriceByCarton" class="yn-select">
+                                            <option>No</option>
+                                            <option>Yes</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="selBlankStock">Blank Stock</label>
+                                        <select id="selBlankStock" class="yn-select">
+                                            <option>No</option>
+                                            <option>Yes</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-row" style="flex-direction:column;">
+                                    <div class="form-field">
+                                        <label>Run Size</label>
+                                        <div class="size-pair">
+                                            <input type="number" id="runW" step="0.01" min="0" placeholder="W">
+                                            <span class="x">×</span>
+                                            <input type="number" id="runH" step="0.01" min="0" placeholder="H">
+                                        </div>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Flat Size</label>
+                                        <div class="size-pair">
+                                            <input type="number" id="flatW" step="0.01" min="0" placeholder="W">
+                                            <span class="x">×</span>
+                                            <input type="number" id="flatH" step="0.01" min="0" placeholder="H">
+                                        </div>
+                                    </div>
+                                    <div class="form-field" style="margin-bottom:0;">
+                                        <label>Finished Size</label>
+                                        <div class="size-pair">
+                                            <input type="number" id="finW" step="0.01" min="0" placeholder="W">
+                                            <span class="x">×</span>
+                                            <input type="number" id="finH" step="0.01" min="0" placeholder="H">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="selOutsourced">Outsourced</label>
+                                        <select id="selOutsourced" class="yn-select">
+                                            <option>No</option>
+                                            <option>Yes</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="selWithBleed">With Bleed</label>
+                                        <select id="selWithBleed" class="yn-select">
+                                            <option>No</option>
+                                            <option>Yes</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="margin-bottom:0;">
+                                    <div class="form-field">
+                                        <label for="itemPages">Pages</label>
+                                        <input type="number" id="itemPages" min="1" step="1" placeholder="Pages">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin: 12px 0 0;">
+                            <div class="form-field">
+                                <label for="itemExtraSpecs">Additional Print Specs</label>
+                                <input type="text" id="itemExtraSpecs" placeholder="e.g. matte laminate, rounded corners 1/4&quot;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spec-section">
+                        <div class="spec-title">Department Items</div>
+                        <div id="deptItemsRows"></div>
+                        <button type="button" class="btn-add-dept-item" onclick="addDeptItemRow()" title="Add department item">+</button>
+                    </div>
+
+                    <div class="spec-section">
+                        <div class="spec-title">Quantities</div>
+                        <div class="form-row" style="margin-bottom:0;">
+                            <div class="form-field">
+                                <label for="itemQuantity">Quantity *</label>
+                                <input type="number" id="itemQuantity" min="1" step="1" onchange="onItemFieldChange()">
+                            </div>
+                            <div class="form-field">
+                                <label for="itemUnitPrice">Price (CAD) *</label>
+                                <input type="number" id="itemUnitPrice" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="hint">Auto-pricing from press cost per sq/ft will be connected in the Inventory &amp; Costs module.</div>
+                    </div>
+
+                    <datalist id="stockSuggestions"></datalist>
+                    <datalist id="taskSuggestions"></datalist>
+
+                    <div class="item-form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeItemForm()">Cancel</button>
+                        <button type="button" class="btn-primary" onclick="saveItem()">Save</button>
+                    </div>
+                </form>
             </div>
-            <div class="info-block">
-                <label>Due Date</label>
-                <div id="dueDate">Not defined</div>
+
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Production Status</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody"></tbody>
+            </table>
+
+            <div class="totals-section">
+                <div class="totals-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="totals-row">
+                    <span>GST (<span id="gstRate">5</span>%)</span>
+                    <span id="gstAmount">$0.00</span>
+                </div>
+                <div class="totals-row">
+                    <span>PST (<span id="pstRate">7</span>%)</span>
+                    <span id="pstAmount">$0.00</span>
+                </div>
+                <div class="totals-row grand-total">
+                    <span>Total</span>
+                    <span id="totalAmount">$0.00</span>
+                </div>
             </div>
-            <div class="info-block">
-                <label>Source Quote</label>
-                <div id="sourceQuote">-</div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin: 0 0 8px;">Notes</h3>
+            <textarea id="orderNotesInput" style="width: 100%; height: 80px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; resize: vertical;" placeholder="Add notes about this order..."></textarea>
+            <div style="margin-top: 8px; text-align: right;">
+                <button class="btn-primary" onclick="saveOrderNotes()">Save Notes</button>
             </div>
         </div>
     </div>
-
-    <div class="card">
-        <h3 style="margin: 0 0 12px;">Order Items</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Production Status</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody id="itemsBody"></tbody>
-        </table>
-
-        <div class="totals-section">
-            <div class="totals-row">
-                <span>Subtotal</span>
-                <span id="subtotal">$0.00</span>
-            </div>
-            <div class="totals-row">
-                <span>GST (<span id="gstRate">5</span>%)</span>
-                <span id="gstAmount">$0.00</span>
-            </div>
-            <div class="totals-row">
-                <span>PST (<span id="pstRate">7</span>%)</span>
-                <span id="pstAmount">$0.00</span>
-            </div>
-            <div class="totals-row grand-total">
-                <span>Total</span>
-                <span id="totalAmount">$0.00</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3 style="margin: 0 0 8px;">Notes</h3>
-        <p id="orderNotes" style="color: var(--muted); margin: 0;">No notes.</p>
-    </div>
-</div>
+</main>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('id');
+    const PRODUCTS_API = "/api/products";
+    let currentOrder = null;
+    let products = [];
+    let editingItemId = null;
+
+    // =====================================================================
+    // ITEM OPTIONS — CONFIGURAÇÃO CENTRAL (edite aqui)
+    // =====================================================================
+    const ITEM_OPTIONS = {
+        departments: [
+            "Digital",
+            "Wide Format",
+            "Bindery",
+            "Finishing",
+            "Apparel",
+            "Other"
+        ],
+        presses: [
+            { name: "HP Indigo 15000", department: "Digital", type: "SF" },
+            { name: "Konica Minolta AccurioPress", department: "Digital", type: "SF" },
+            { name: "Ricoh Pro Series", department: "Digital", type: "SF" },
+            { name: "Roland VG Series", department: "Wide Format", type: "WF" },
+            { name: "Mimaki UV Flatbed", department: "Wide Format", type: "WF" },
+            { name: "Epson DTG", department: "Apparel", type: "SF" }
+        ],
+        stocks: [
+            "14pt Coated Cover (C2S)",
+            "16pt Coated Cover (C2S)",
+            "100lb Gloss Text",
+            "100lb Gloss Cover",
+            "Bright White Bond 28lb",
+            "13oz Vinyl Banner",
+            "Adhesive Vinyl",
+            "Coroplast 4mm",
+            "Foam Board 3mm",
+            "Aluminum Composite (ACM)",
+            "Apparel - Cotton Tee",
+            "Custom Stock"
+        ],
+        commonTasks: [
+            "File Prep",
+            "Cut",
+            "Trim",
+            "Rounded Corners",
+            "Crease",
+            "Score",
+            "Perforation",
+            "Fold - Bi-fold",
+            "Fold - Tri-fold",
+            "Fold - Z-fold",
+            "Fold - Half-fold",
+            "Fold - Gate-fold",
+            "Lamination - Gloss",
+            "Lamination - Matte",
+            "Lamination - Soft Touch",
+            "Spot UV",
+            "Foil Stamping",
+            "Embossing",
+            "Metallic Ink",
+            "Binding - Saddle Stitch",
+            "Binding - Spiral Coil",
+            "Binding - Wire-O",
+            "Binding - Perfect",
+            "Drilling (3-hole)",
+            "Padding",
+            "Numbering",
+            "Shrink Wrap",
+            "Packaging",
+            "Kit Assembly",
+            "Grommets",
+            "Hem",
+            "Pole Pockets",
+            "Wind Slits",
+            "Mounting",
+            "Weeding",
+            "Delivery",
+            "Installation",
+            "Other"
+        ],
+        units: [
+            "Each",
+            "Set",
+            "Hour",
+            "Sheet",
+            "Square Foot",
+            "Linear Foot",
+            "Carton"
+        ]
+    };
+
+    const SPECS_FORMAT = "urban-print-item-specs-v1";
 
     async function loadOrderDetails() {
         if (!orderId) {
@@ -259,6 +896,7 @@
             const res = await fetch(`/api/orders/${orderId}`);
             if (!res.ok) throw new Error("Order not found");
             const order = await res.json();
+            currentOrder = order;
 
             document.getElementById('orderNumber').textContent = order.orderNumber;
             document.getElementById('orderStatusSelect').value = order.status;
@@ -272,7 +910,7 @@
             document.getElementById('orderDate').textContent = order.orderDate || '-';
             document.getElementById('dueDate').textContent = order.dueDate || 'Not defined';
             document.getElementById('sourceQuote').textContent = order.quote ? order.quote.quoteNumber : 'Direct Order';
-            document.getElementById('orderNotes').textContent = order.notes || 'No notes.';
+            document.getElementById('orderNotesInput').value = order.notes || '';
 
             // Totals
             document.getElementById('subtotal').textContent = `$${(order.subtotal || 0).toFixed(2)}`;
@@ -285,14 +923,31 @@
             // Items
             const tbody = document.getElementById('itemsBody');
             tbody.innerHTML = '';
-            (order.items || []).forEach(item => {
+
+            if (!order.items || order.items.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="7" style="text-align:center; color: var(--muted); padding: 24px;">No items yet. Click <strong>+ Add Item</strong> to add the first one.</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+
+            order.items.forEach(item => {
                 const tr = document.createElement('tr');
                 const pStatus = item.productionStatus || 'PENDING_FILE';
+                const hasNotes = item.productionNotes && item.productionNotes.trim().length > 0;
+                const specsHtml = buildSpecsDisplay(item.printSpecsSummary);
+
                 tr.innerHTML = `
                     <td><strong>${escapeHtml(item.product?.productName || 'Custom Item')}</strong></td>
                     <td>
                         ${escapeHtml(item.itemDescription || '')}
-                        ${item.printSpecsSummary ? `<br><small style="color: var(--muted);">${escapeHtml(item.printSpecsSummary)}</small>` : ''}
+                        ${specsHtml}
+                        <div style="margin-top: 6px;">
+                            ${hasNotes ? `<div class="notes-tag"><strong>Notes:</strong> ${escapeHtml(item.productionNotes)}</div>` : ''}
+                            <button type="button" class="notes-btn" onclick="promptItemNotes(${item.id}, '${escapeForJs(item.productionNotes || '')}')">
+                                ${hasNotes ? 'Edit Notes' : '+ Add Note'}
+                            </button>
+                        </div>
                     </td>
                     <td>${item.quantity}</td>
                     <td>$${(item.unitPrice || 0).toFixed(2)}</td>
@@ -313,6 +968,10 @@
                         </select>
                     </td>
                     <td><strong>$${(item.totalPrice || 0).toFixed(2)}</strong></td>
+                    <td>
+                        <button type="button" class="row-btn" onclick="openEditItemForm(${item.id})">Edit</button>
+                        <button type="button" class="row-btn row-btn-danger" onclick="removeItem(${item.id})">Remove</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -322,6 +981,503 @@
             alert("Error loading order details.");
         }
     }
+
+    // ---- Item management (DocketManager-style flow) ----
+
+    async function loadProducts() {
+        const select = document.getElementById('itemProduct');
+        try {
+            const res = await fetch(PRODUCTS_API);
+            if (!res.ok) throw new Error("Could not load products.");
+            products = await res.json();
+
+            select.innerHTML = '<option value="">Custom Item (no product)</option>';
+            products.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id;
+                option.textContent = p.productName || `Product #${p.id}`;
+                select.appendChild(option);
+            });
+        } catch (e) {
+            console.error(e);
+            select.innerHTML = '<option value="">Custom Item (no product)</option>';
+        }
+    }
+
+    function initItemOptions() {
+        const deptSel = document.getElementById('itemDepartment');
+        deptSel.innerHTML = '<option value="">— Select group —</option>';
+        ITEM_OPTIONS.departments.forEach(d => deptSel.appendChild(new Option(d, d)));
+
+        populatePressOptions(null, null);
+
+        const stockList = document.getElementById('stockSuggestions');
+        ITEM_OPTIONS.stocks.forEach(s => stockList.appendChild(new Option(s, s)));
+
+        const taskList = document.getElementById('taskSuggestions');
+        ITEM_OPTIONS.commonTasks.forEach(t => taskList.appendChild(new Option(t, t)));
+    }
+
+    function populatePressOptions(department, selectedName) {
+        const pressSel = document.getElementById('itemPress');
+        const list = department
+            ? ITEM_OPTIONS.presses.filter(p => p.department === department)
+            : ITEM_OPTIONS.presses;
+
+        pressSel.innerHTML = '';
+        pressSel.appendChild(new Option('— Select press —', ''));
+        list.forEach(p => pressSel.appendChild(new Option(`${p.name} (${p.type})`, p.name)));
+
+        if (selectedName) {
+            if (![...pressSel.options].some(o => o.value === selectedName)) {
+                pressSel.appendChild(new Option(selectedName, selectedName));
+            }
+            pressSel.value = selectedName;
+        } else {
+            pressSel.value = '';
+        }
+    }
+
+    function onDepartmentChange() {
+        const dept = document.getElementById('itemDepartment').value;
+        populatePressOptions(dept || null, null);
+    }
+
+    function onSidesChange() {
+        // As duas colunas ficam visíveis (estilo DM); o select define quais
+        // contadores são usados na produção (front apenas, ou front + back).
+    }
+
+    function onItemProductChange() {
+        const productId = document.getElementById('itemProduct').value;
+        const product = products.find(p => String(p.id) === String(productId));
+        if (product && !editingItemId) {
+            prefillSpecsFromProduct(product);
+        }
+        onItemFieldChange();
+    }
+
+    function prefillSpecsFromProduct(p) {
+        const dept = (p.productionDepartment || '').trim();
+        if (dept) {
+            const deptSel = document.getElementById('itemDepartment');
+            if (![...deptSel.options].some(o => o.value === dept)) {
+                deptSel.appendChild(new Option(dept, dept));
+            }
+            deptSel.value = dept;
+            populatePressOptions(dept, null);
+        }
+
+        if (p.defaultStock) {
+            document.getElementById('itemStock').value = p.defaultStock;
+        }
+
+        if (p.sidesInks) {
+            const parts = String(p.sidesInks).split('/');
+            const hasBackInk = parts.length > 1 && parts[1].trim() !== '0';
+            document.getElementById('itemSides').value = hasBackInk ? 'DOUBLE_SIDED' : 'SINGLE_SIDED';
+        }
+
+        if (p.defaultWidth != null || p.defaultHeight != null) {
+            const w = p.defaultWidth != null ? Number(p.defaultWidth) : '';
+            const h = p.defaultHeight != null ? Number(p.defaultHeight) : '';
+            document.getElementById('finW').value = w;
+            document.getElementById('finH').value = h;
+            document.getElementById('flatW').value = w;
+            document.getElementById('flatH').value = h;
+        }
+    }
+
+    function openAddItemForm() {
+        editingItemId = null;
+        document.getElementById('itemFormTitle').textContent = 'Add Item';
+        document.getElementById('itemForm').reset();
+        resetSpecFields();
+        document.getElementById('itemFormCard').style.display = 'block';
+        document.getElementById('itemDescription').focus();
+    }
+
+    function openEditItemForm(itemId) {
+        const item = (currentOrder?.items || []).find(i => i.id === itemId);
+        if (!item) return;
+
+        editingItemId = itemId;
+        document.getElementById('itemFormTitle').textContent = `Edit Item #${itemId}`;
+        document.getElementById('itemForm').reset();
+        resetSpecFields();
+
+        document.getElementById('itemProduct').value = item.product ? String(item.product.id) : '';
+        document.getElementById('itemDescription').value = item.itemDescription || '';
+        document.getElementById('itemQuantity').value = item.quantity;
+        document.getElementById('itemUnitPrice').value = item.unitPrice != null ? Number(item.unitPrice).toFixed(2) : '';
+
+        const specs = parseSpecs(item.printSpecsSummary);
+        if (specs) {
+            populateFormFromSpecs(specs);
+        } else if (item.printSpecsSummary) {
+            // Specs antigas (texto simples) são preservadas no campo de texto livre
+            document.getElementById('itemExtraSpecs').value = item.printSpecsSummary;
+        }
+
+        document.getElementById('itemFormCard').style.display = 'block';
+        document.getElementById('itemFormCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function closeItemForm() {
+        editingItemId = null;
+        document.getElementById('itemFormCard').style.display = 'none';
+        document.getElementById('itemForm').reset();
+    }
+
+    function onItemFieldChange() {
+        const productId = document.getElementById('itemProduct').value;
+        const quantity = parseInt(document.getElementById('itemQuantity').value, 10);
+        const priceInput = document.getElementById('itemUnitPrice');
+
+        if (!productId || !quantity || quantity <= 0) return;
+
+        const product = products.find(p => String(p.id) === String(productId));
+        if (!product || !Array.isArray(product.priceScales)) return;
+
+        const scale = product.priceScales.find(s => Number(s.quantity) === quantity);
+        if (scale && scale.pricePerPiece != null) {
+            priceInput.value = Number(scale.pricePerPiece).toFixed(2);
+        }
+    }
+
+    // ---- Department Items (tasks) ----
+
+    function addDeptItemRow(data = {}) {
+        const rows = document.getElementById('deptItemsRows');
+        const tr = document.createElement('div');
+        tr.className = 'di-row';
+
+        const deptOpts = ['<option value=""></option>'].concat(
+            ITEM_OPTIONS.departments.map(d => `<option value="${escapeHtml(d)}" ${data.department === d ? 'selected' : ''}>${escapeHtml(d)}</option>`)
+        ).join('');
+
+        const unitOpts = ['<option value=""></option>'].concat(
+            ITEM_OPTIONS.units.map(u => `<option value="${escapeHtml(u)}" ${data.unit === u ? 'selected' : ''}>${escapeHtml(u)}</option>`)
+        ).join('');
+
+        tr.innerHTML = `
+            <div class="form-field di-dept">
+                <label>Department</label>
+                <select class="di-dept-sel">${deptOpts}</select>
+            </div>
+            <div class="form-field di-desc">
+                <label>Task</label>
+                <input type="text" class="di-desc-in" list="taskSuggestions" placeholder="e.g. Fold - Tri-fold" value="${escapeHtml(data.description || '')}">
+            </div>
+            <div class="form-field di-qty">
+                <label>Qty</label>
+                <input type="number" class="di-qty-in" min="0" step="0.01" value="${data.quantity != null ? data.quantity : ''}">
+            </div>
+            <div class="form-field di-unit">
+                <label>Unit</label>
+                <select class="di-unit-sel">${unitOpts}</select>
+            </div>
+            <div class="form-field di-price">
+                <label>Price</label>
+                <input type="number" class="di-price-in" min="0" step="0.01" value="${data.price != null ? data.price : ''}">
+            </div>
+            <div class="form-field di-remove">
+                <label>&nbsp;</label>
+                <button type="button" class="row-btn row-btn-danger" onclick="this.closest('.di-row').remove()">✕</button>
+            </div>
+        `;
+        rows.appendChild(tr);
+    }
+
+    // ---- Specs JSON: leitura, escrita e resumo legível ----
+
+    function parseSpecs(summaryText) {
+        if (!summaryText) return null;
+        try {
+            const obj = JSON.parse(summaryText);
+            if (obj && obj.format === SPECS_FORMAT) return obj;
+            return null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function readFormIntoSpecs() {
+        const val = id => document.getElementById(id).value.trim();
+        const num = id => { const n = parseFloat(val(id)); return isNaN(n) ? null : n; };
+        const intOr0 = id => { const n = parseInt(val(id), 10); return isNaN(n) ? 0 : n; };
+        const yn = id => document.getElementById(id).value === 'Yes';
+
+        const pressName = val('itemPress') || null;
+        const pressDef = ITEM_OPTIONS.presses.find(p => p.name === pressName);
+
+        const specs = {
+            format: SPECS_FORMAT,
+            department: val('itemDepartment') || null,
+            press: pressName,
+            pressType: pressDef ? pressDef.type : null,
+            sides: val('itemSides') || 'SINGLE_SIDED',
+            frontSheets: { black: intOr0('fsBlack'), color: intOr0('fsColor'), mixed: intOr0('fsMixed') },
+            backSheets: { black: intOr0('bsBlack'), color: intOr0('bsColor'), mixed: intOr0('bsMixed') },
+            stock: val('itemStock') || null,
+            runWidth: num('runW'), runHeight: num('runH'),
+            flatWidth: num('flatW'), flatHeight: num('flatH'),
+            finishedWidth: num('finW'), finishedHeight: num('finH'),
+            pages: num('itemPages'),
+            blankStock: yn('selBlankStock'),
+            withBleed: yn('selWithBleed'),
+            priceByCarton: yn('selPriceByCarton'),
+            outsourced: yn('selOutsourced'),
+            extraSpecs: val('itemExtraSpecs') || null,
+            departmentItems: []
+        };
+
+        document.querySelectorAll('#deptItemsRows .di-row').forEach(row => {
+            const dept = row.querySelector('.di-dept-sel').value;
+            const desc = row.querySelector('.di-desc-in').value.trim();
+            const qty = parseFloat(row.querySelector('.di-qty-in').value);
+            const unit = row.querySelector('.di-unit-sel').value;
+            const price = parseFloat(row.querySelector('.di-price-in').value);
+
+            if (!dept && !desc && isNaN(qty)) return; // ignora linhas vazias
+
+            specs.departmentItems.push({
+                department: dept || null,
+                description: desc || null,
+                quantity: isNaN(qty) ? null : qty,
+                unit: unit || null,
+                price: isNaN(price) ? null : price
+            });
+        });
+
+        return specs;
+    }
+
+    function hasMeaningfulSpecs(s) {
+        return Boolean(
+            s.department || s.press || s.stock || s.pages != null || s.extraSpecs ||
+            s.runWidth != null || s.runHeight != null ||
+            s.flatWidth != null || s.flatHeight != null ||
+            s.finishedWidth != null || s.finishedHeight != null ||
+            s.blankStock || s.withBleed || s.priceByCarton || s.outsourced ||
+            (s.frontSheets && (s.frontSheets.black || s.frontSheets.color || s.frontSheets.mixed)) ||
+            (s.backSheets && (s.backSheets.black || s.backSheets.color || s.backSheets.mixed)) ||
+            (s.departmentItems && s.departmentItems.length)
+        );
+    }
+
+    function resetSpecFields() {
+        document.getElementById('itemDepartment').value = '';
+        populatePressOptions(null, null);
+        document.getElementById('itemSides').value = 'SINGLE_SIDED';
+        ['fsBlack', 'fsColor', 'fsMixed', 'bsBlack', 'bsColor', 'bsMixed'].forEach(id => {
+            document.getElementById(id).value = 0;
+        });
+        document.getElementById('itemStock').value = '';
+        ['runW', 'runH', 'flatW', 'flatH', 'finW', 'finH', 'itemPages'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('selBlankStock').value = 'No';
+        document.getElementById('selWithBleed').value = 'No';
+        document.getElementById('selPriceByCarton').value = 'No';
+        document.getElementById('selOutsourced').value = 'No';
+        document.getElementById('itemExtraSpecs').value = '';
+        document.getElementById('deptItemsRows').innerHTML = '';
+        addDeptItemRow();
+    }
+
+    function populateFormFromSpecs(specs) {
+        const setVal = (id, v) => { document.getElementById(id).value = (v == null ? '' : v); };
+
+        const dept = specs.department || '';
+        if (dept) {
+            const deptSel = document.getElementById('itemDepartment');
+            if (![...deptSel.options].some(o => o.value === dept)) {
+                deptSel.appendChild(new Option(dept, dept));
+            }
+            deptSel.value = dept;
+        }
+        populatePressOptions(dept || null, specs.press);
+
+        setVal('itemSides', specs.sides || 'SINGLE_SIDED');
+
+        const fs = specs.frontSheets || {};
+        const bs = specs.backSheets || {};
+        setVal('fsBlack', fs.black || 0);
+        setVal('fsColor', fs.color || 0);
+        setVal('fsMixed', fs.mixed || 0);
+        setVal('bsBlack', bs.black || 0);
+        setVal('bsColor', bs.color || 0);
+        setVal('bsMixed', bs.mixed || 0);
+
+        setVal('itemStock', specs.stock);
+        setVal('runW', specs.runWidth);
+        setVal('runH', specs.runHeight);
+        setVal('flatW', specs.flatWidth);
+        setVal('flatH', specs.flatHeight);
+        setVal('finW', specs.finishedWidth);
+        setVal('finH', specs.finishedHeight);
+        setVal('itemPages', specs.pages);
+
+        document.getElementById('selBlankStock').value = specs.blankStock ? 'Yes' : 'No';
+        document.getElementById('selWithBleed').value = specs.withBleed ? 'Yes' : 'No';
+        document.getElementById('selPriceByCarton').value = specs.priceByCarton ? 'Yes' : 'No';
+        document.getElementById('selOutsourced').value = specs.outsourced ? 'Yes' : 'No';
+        setVal('itemExtraSpecs', specs.extraSpecs);
+
+        const rows = document.getElementById('deptItemsRows');
+        rows.innerHTML = '';
+        (specs.departmentItems || []).forEach(di => addDeptItemRow(di));
+        if (!(specs.departmentItems || []).length) addDeptItemRow();
+    }
+
+    function fmtSizeVal(w, h) {
+        return `${w != null ? w : '—'} × ${h != null ? h : '—'}`;
+    }
+
+    function specsToReadable(s) {
+        const lines = [];
+
+        const head = [];
+        if (s.department) head.push(s.department);
+        if (s.press) head.push(s.press + (s.pressType ? ` (${s.pressType})` : ''));
+        if (s.sides) head.push(s.sides === 'DOUBLE_SIDED' ? 'Double Sided' : 'Single Sided');
+        if (head.length) lines.push(head.join(' • '));
+
+        const fs = s.frontSheets || {};
+        const bs = s.backSheets || {};
+        const fsParts = [], bsParts = [];
+        if (fs.black) fsParts.push(`${fs.black} Black`);
+        if (fs.color) fsParts.push(`${fs.color} Color`);
+        if (fs.mixed) fsParts.push(`${fs.mixed} Mixed`);
+        if (bs.black) bsParts.push(`${bs.black} Black`);
+        if (bs.color) bsParts.push(`${bs.color} Color`);
+        if (bs.mixed) bsParts.push(`${bs.mixed} Mixed`);
+        const sheetParts = [];
+        if (fsParts.length) sheetParts.push(`Front: ${fsParts.join(', ')}`);
+        if (bsParts.length) sheetParts.push(`Back: ${bsParts.join(', ')}`);
+        if (sheetParts.length) lines.push('Sheets — ' + sheetParts.join(' | '));
+
+        const stockLine = [];
+        if (s.stock) stockLine.push(`Stock: ${s.stock}`);
+        if (s.pages) stockLine.push(`Pages: ${s.pages}`);
+        if (stockLine.length) lines.push(stockLine.join(' • '));
+
+        const sizes = [];
+        if (s.runWidth != null || s.runHeight != null) sizes.push(`Run ${fmtSizeVal(s.runWidth, s.runHeight)}`);
+        if (s.flatWidth != null || s.flatHeight != null) sizes.push(`Flat ${fmtSizeVal(s.flatWidth, s.flatHeight)}`);
+        if (s.finishedWidth != null || s.finishedHeight != null) sizes.push(`Finished ${fmtSizeVal(s.finishedWidth, s.finishedHeight)}`);
+        if (sizes.length) lines.push(sizes.join(' • '));
+
+        const flags = [];
+        if (s.blankStock) flags.push('Blank Stock');
+        if (s.withBleed) flags.push('With Bleed');
+        if (s.priceByCarton) flags.push('Price By Carton');
+        if (s.outsourced) flags.push('Outsourced');
+        if (flags.length) lines.push(flags.join(', '));
+
+        if (Array.isArray(s.departmentItems) && s.departmentItems.length) {
+            const tasks = s.departmentItems.map(t => {
+                const qty = t.quantity != null ? ` ×${t.quantity}${t.unit ? ' ' + t.unit : ''}` : '';
+                const price = t.price ? ` ($${Number(t.price).toFixed(2)})` : '';
+                return `${t.description || t.department || 'Task'}${qty}${price}`;
+            });
+            lines.push('Department Items: ' + tasks.join(' • '));
+        }
+
+        if (s.extraSpecs) lines.push(s.extraSpecs);
+
+        return lines;
+    }
+
+    function buildSpecsDisplay(printSpecsSummary) {
+        const specs = parseSpecs(printSpecsSummary);
+        if (specs) {
+            const lines = specsToReadable(specs);
+            if (lines.length) {
+                return `<div class="specs-block">${lines.map(l => `<div>${escapeHtml(l)}</div>`).join('')}</div>`;
+            }
+            return '';
+        }
+        if (printSpecsSummary) {
+            return `<br><small style="color: var(--muted); display: block; margin-top: 4px;"><strong>Specs:</strong> ${escapeHtml(printSpecsSummary)}</small>`;
+        }
+        return '';
+    }
+
+    async function saveItem() {
+        const productId = document.getElementById('itemProduct').value;
+        const description = document.getElementById('itemDescription').value.trim();
+        const quantity = parseInt(document.getElementById('itemQuantity').value, 10);
+        const unitPrice = parseFloat(document.getElementById('itemUnitPrice').value);
+
+        if (!description) {
+            alert("Please enter a description.");
+            return;
+        }
+        if (!quantity || quantity <= 0) {
+            alert("Please enter a valid quantity.");
+            return;
+        }
+        if (isNaN(unitPrice) || unitPrice < 0) {
+            alert("Please enter a valid unit price.");
+            return;
+        }
+
+        const specs = readFormIntoSpecs();
+
+        const payload = {
+            product: productId ? { id: Number(productId) } : null,
+            itemDescription: description,
+            quantity: quantity,
+            unitPrice: unitPrice,
+            printSpecsSummary: hasMeaningfulSpecs(specs) ? JSON.stringify(specs) : null
+        };
+
+        try {
+            const url = editingItemId
+                ? `/api/orders/${orderId}/items/${editingItemId}`
+                : `/api/orders/${orderId}/items`;
+            const method = editingItemId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to save item.");
+            }
+
+            alert(editingItemId ? "Item updated!" : "Item added to order!");
+            closeItemForm();
+            await loadOrderDetails();
+        } catch (e) {
+            console.error(e);
+            alert(e.message || "Error saving item.");
+        }
+    }
+
+    async function removeItem(itemId) {
+        if (!confirm("Remove this item from the order?")) return;
+
+        try {
+            const res = await fetch(`/api/orders/${orderId}/items/${itemId}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to remove item.");
+            }
+            alert("Item removed.");
+            await loadOrderDetails();
+        } catch (e) {
+            console.error(e);
+            alert(e.message || "Error removing item.");
+        }
+    }
+
+    // ---- End of item management ----
 
     async function updateOrderStatus() {
         const newStatus = document.getElementById('orderStatusSelect').value;
@@ -337,12 +1493,140 @@
 
     async function updateItemProductionStatus(itemId, newStatus) {
         try {
-            const res = await fetch(`/api/orders/${orderId}/items/${itemId}/status?status=${newStatus}`, { method: 'PATCH' });
+            const res = await fetch(`/api/order-items/${itemId}/status?status=${newStatus}`, { method: 'PATCH' });
             if (!res.ok) throw new Error("Failed to update item status");
+            await loadOrderDetails();
         } catch (e) {
             console.error(e);
             alert("Error updating item production status.");
             loadOrderDetails();
+        }
+    }
+
+    async function promptItemNotes(itemId, currentNotes) {
+        const newNotes = prompt("Production Notes for this item:", currentNotes);
+        if (newNotes === null) return; // cancelou
+
+        try {
+            const res = await fetch(`/api/order-items/${itemId}/notes`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productionNotes: newNotes })
+            });
+            if (!res.ok) throw new Error("Failed to update notes");
+            await loadOrderDetails();
+        } catch (e) {
+            console.error(e);
+            alert("Error updating item notes.");
+        }
+    }
+
+    function toggleEditDueDate() {
+        const label = document.getElementById('dueDate');
+        const row = document.getElementById('dueDateEditRow');
+        const isHidden = row.style.display === 'none';
+
+        if (isHidden) {
+            document.getElementById('dueDateInput').value = currentOrder?.dueDate || '';
+        }
+
+        label.style.display = isHidden ? 'none' : 'block';
+        row.style.display = isHidden ? 'flex' : 'none';
+    }
+
+    async function saveDueDate() {
+        const newDueDate = document.getElementById('dueDateInput').value;
+        if (!newDueDate) {
+            alert("Please select a valid date.");
+            return;
+        }
+
+        try {
+            const updatedOrder = { ...currentOrder, dueDate: newDueDate };
+
+            const res = await fetch(`/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedOrder)
+            });
+
+            if (!res.ok) throw new Error("Failed to update due date");
+            alert("Due date updated!");
+            toggleEditDueDate();
+            loadOrderDetails();
+        } catch (e) {
+            console.error(e);
+            alert("Error updating due date.");
+        }
+    }
+
+    function toggleEditCustomer() {
+        const label = document.getElementById('customerName');
+        const row = document.getElementById('customerEditRow');
+        const isHidden = row.style.display === 'none';
+
+        if (isHidden) {
+            loadCustomerOptions();
+        }
+
+        label.style.display = isHidden ? 'none' : 'block';
+        row.style.display = isHidden ? 'flex' : 'none';
+    }
+
+    async function loadCustomerOptions() {
+        try {
+            const res = await fetch("/api/customers");
+            if (!res.ok) throw new Error("Could not load customers.");
+            const customers = await res.json();
+
+            const select = document.getElementById("customerSelect");
+            select.innerHTML = customers.map(c => {
+                const name = c.customerName || c.companyName || c.name || `Customer #${c.id}`;
+                const selected = currentOrder?.customer?.id === c.id ? "selected" : "";
+                return `<option value="${c.id}" ${selected}>${name}</option>`;
+            }).join("");
+        } catch (e) {
+            console.error(e);
+            alert("Error loading customer list.");
+        }
+    }
+
+    async function saveCustomerChange() {
+        const newCustomerId = document.getElementById("customerSelect").value;
+
+        try {
+            const updatedOrder = { ...currentOrder, customer: { id: Number(newCustomerId) } };
+
+            const res = await fetch(`/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedOrder)
+            });
+
+            if (!res.ok) throw new Error("Failed to update customer");
+            alert("Customer updated!");
+            toggleEditCustomer();
+            loadOrderDetails();
+        } catch (e) {
+            console.error(e);
+            alert("Error updating customer.");
+        }
+    }
+
+    async function sendInvoice() {
+        if (!confirm("Send this invoice to the customer by email?")) return;
+
+        try {
+            const res = await fetch(`/api/orders/${orderId}/send-invoice`, { method: 'POST' });
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error || "Failed to send invoice.");
+
+            alert("Invoice email sent successfully!");
+            window.print();
+        } catch (e) {
+            console.error(e);
+            alert(e.message || "Error sending invoice.");
         }
     }
 
@@ -352,7 +1636,32 @@
         return div.innerHTML;
     }
 
-    document.addEventListener('DOMContentLoaded', loadOrderDetails);
+    function escapeForJs(val) {
+        return (val || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initItemOptions();
+        loadOrderDetails();
+        loadProducts();
+    });
+
+    async function saveOrderNotes() {
+        const notes = document.getElementById('orderNotesInput').value;
+        try {
+            const res = await fetch(`/api/orders/${orderId}/notes`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notes: notes })
+            });
+            if (!res.ok) throw new Error("Failed to update order notes");
+            alert("Order notes saved!");
+        } catch (e) {
+            console.error(e);
+            alert("Error saving order notes.");
+        }
+    }
+
 </script>
 
 </body>

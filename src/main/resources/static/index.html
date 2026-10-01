@@ -35,39 +35,48 @@
 
         /* Sidebar */
         aside {
-            width: 240px;
+            width: 230px;
             background-color: var(--primary);
             color: #fff;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 20px 12px;
         }
 
-        .brand {
-            padding: 24px 20px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .brand-logo-link {
+            display: block;
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        .brand span {
-            color: #38bdf8;
+        .brand-logo {
+            display: block;
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
         }
 
         nav {
-            margin-top: 15px;
             display: flex;
             flex-direction: column;
             gap: 4px;
-            padding: 0 10px;
         }
 
         nav a {
             color: #cbd5e1;
             text-decoration: none;
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.2s;
         }
@@ -80,6 +89,7 @@
         /* Main Workspace */
         main {
             flex: 1;
+            min-width: 0;
             display: flex;
             flex-direction: column;
         }
@@ -248,13 +258,18 @@
 
     <!-- Sidebar -->
     <aside>
-        <div class="brand">
-            URBAN <span>PRINT</span>
-        </div>
+        <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
+            <img
+                src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+                alt="Urban Print Shop - Home"
+                class="brand-logo"
+            >
+        </a>
         <nav>
-            <a href="#" class="active">Customers</a>
-            <a href="/products.html">Products</a>
-            <a href="#">Quotes</a>
+            <a href="dashboard.html">Home / Dashboard</a>
+            <a href="index.html" class="active">Customers</a>
+            <a href="products.html">Products</a>
+            <a href="quote-list.html">Quotes</a>
             <a href="orders.html">Orders</a>
             <a href="production-queue.html">Production Queue</a>
         </nav>

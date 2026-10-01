@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Print Shop — Equipment</title>
+
+    <style>
+        :root {
+            --primary: #1c2b39;
+            --primary-light: #334155;
+            --accent: #2563eb;
+            --bg: #f4f5f7;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --muted: #64748b;
+            --danger: #dc2626;
+            --success: #15803d;
+            --warning: #b45309;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        aside {
+            width: 230px;
+            background: var(--primary);
+            color: #fff;
+            padding: 20px 12px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .brand-logo-link {
+            display: block;
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .brand-logo {
+            display: block;
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        aside nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        aside nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        aside nav a:hover,
+        aside nav a.active {
+            background: var(--primary-light);
+            color: #fff;
+        }
+
+        main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .page-header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .page-header p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 28px 32px;
+        }
+
+        .toolbar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters {
+            display: flex;
+            align-items: end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--muted);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 10px 11px;
+            color: var(--text);
+            background: #fff;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+        }
+
+        .filter-field {
+            min-width: 180px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-success {
+            background: #dcfce7;
+            color: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #bbf7d0;
+        }
+
+        .table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .table-header h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .table-count {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 820px;
+        }
+
+        th,
+        td {
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .equipment-name {
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .secondary-text {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .badge-type {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .actions button {
+            padding: 7px 9px;
+            font-size: 12px;
+        }
+
+        .empty-state,
+        .loading-state {
+            padding: 42px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .error-message {
+            display: none;
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border-radius: 7px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 14px;
+        }
+
+        .success-message {
+            display: none;
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border-radius: 7px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 14px;
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 10;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 620px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: transparent;
+            color: var(--muted);
+            padding: 4px 8px;
+            font-size: 22px;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #475569;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        @media (max-width: 800px) {
+            aside {
+                width: 190px;
+            }
+
+            .page-header,
+            .content {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            body {
+                display: block;
+            }
+
+            aside {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            aside nav {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .page-header {
+                display: block;
+            }
+
+            .page-header button {
+                margin-top: 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside>
+    <a class="brand-logo-link" href="dashboard.html">
+        <img
+            class="brand-logo"
+            src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+            alt="Urban Print Shop"
+        >
+    </a>
+
+    <nav>
+        <a href="dashboard.html">Home / Dashboard</a>
+        <a href="index.html">Customers</a>
+        <a href="products.html">Products</a>
+        <a href="quote-list.html">Quotes</a>
+        <a href="orders.html">Orders</a>
+        <a href="production-queue.html">Production Queue</a>
+        <a href="equipment.html" class="active">Equipment</a>
+    </nav>
+</aside>
+
+<main>
+    <header class="page-header">
+        <div>
+            <h1>Equipment</h1>
+            <p>Manage printers, cutters, laminators and production equipment.</p>
+        </div>
+
+        <button class="btn-primary" type="button" onclick="openCreateModal()">
+            + Add Equipment
+        </button>
+    </header>
+
+    <section class="content">
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <div class="toolbar">
+            <div class="filters">
+                <div class="field filter-field">
+                    <label for="typeFilter">Equipment Type</label>
+                    <select id="typeFilter" onchange="loadEquipment()">
+                        <option value="">All Types</option>
+                        <option value="DIGITAL_PRINTING">Digital Printing</option>
+                        <option value="WIDE_FORMAT_PRINTING">Wide Format Printing</option>
+                        <option value="SUBLIMATION">Sublimation</option>
+                        <option value="LAMINATION">Lamination</option>
+                        <option value="CUTTING">Cutting</option>
+                        <option value="LASER_CUTTING">Laser Cutting</option>
+                        <option value="CNC">CNC</option>
+                        <option value="UNKNOWN">Unknown</option>
+                    </select>
+                </div>
+
+                <div class="field filter-field">
+                    <label for="activeFilter">Status</label>
+                    <select id="activeFilter" onchange="loadEquipment()">
+                        <option value="">All Statuses</option>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-secondary" type="button" onclick="loadEquipment()">
+                Refresh
+            </button>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h2>Equipment List</h2>
+                <span id="tableCount" class="table-count">Loading...</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Manufacturer</th>
+                        <th>Model</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="equipmentTableBody">
+                    <tr>
+                        <td colspan="6" class="loading-state">
+                            Loading equipment...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="equipmentModal" class="modal-backdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add Equipment</h2>
+
+            <button
+                class="modal-close"
+                type="button"
+                aria-label="Close"
+                onclick="closeModal()"
+            >
+                ×
+            </button>
+        </div>
+
+        <form id="equipmentForm" onsubmit="saveEquipment(event)">
+            <div class="modal-body">
+                <input type="hidden" id="equipmentId">
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="equipmentName">
+                            Equipment Name <span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="equipmentName"
+                            type="text"
+                            maxlength="150"
+                            required
+                            placeholder="Example: Mimaki UCJV 300-160"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="manufacturer">Manufacturer</label>
+
+                        <input
+                            id="manufacturer"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Example: Mimaki"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="model">Model</label>
+
+                        <input
+                            id="model"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Example: UCJV 300-160"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="equipmentType">
+                            Equipment Type <span class="required">*</span>
+                        </label>
+
+                        <select id="equipmentType" required>
+                            <option value="DIGITAL_PRINTING">
+                                Digital Printing
+                            </option>
+                            <option value="WIDE_FORMAT_PRINTING">
+                                Wide Format Printing
+                            </option>
+                            <option value="SUBLIMATION">
+                                Sublimation
+                            </option>
+                            <option value="LAMINATION">
+                                Lamination
+                            </option>
+                            <option value="CUTTING">
+                                Cutting
+                            </option>
+                            <option value="LASER_CUTTING">
+                                Laser Cutting
+                            </option>
+                            <option value="CNC">
+                                CNC
+                            </option>
+                            <option value="UNKNOWN">
+                                Unknown
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="equipmentActive">Status</label>
+
+                        <select id="equipmentActive">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="equipmentNotes">Notes</label>
+
+                        <textarea
+                            id="equipmentNotes"
+                            rows="4"
+                            maxlength="2000"
+                            placeholder="Additional information about this equipment"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button
+                    class="btn-secondary"
+                    type="button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    id="saveButton"
+                    class="btn-primary"
+                    type="submit"
+                >
+                    Save Equipment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_URL = "/api/equipment";
+
+    let equipmentList = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadEquipment();
+
+        document
+            .getElementById("equipmentModal")
+            .addEventListener("click", event => {
+                if (event.target.id === "equipmentModal") {
+                    closeModal();
+                }
+            });
+    });
+
+    async function loadEquipment() {
+        clearMessages();
+
+        const type = document.getElementById("typeFilter").value;
+        const active = document.getElementById("activeFilter").value;
+
+        let url = API_URL;
+
+        if (type) {
+            url = `${API_URL}/type/${encodeURIComponent(type)}`;
+        } else if (active !== "") {
+            url = `${API_URL}/active/${active}`;
+        }
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error("Unable to load equipment.");
+            }
+
+            equipmentList = await response.json();
+
+            if (type && active !== "") {
+                equipmentList = equipmentList.filter(
+                    equipment => String(equipment.active) === active
+                );
+            }
+
+            renderEquipment();
+        } catch (error) {
+            renderError(error.message);
+            document.getElementById("equipmentTableBody").innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        Unable to load equipment.
+                    </td>
+                </tr>
+            `;
+            document.getElementById("tableCount").textContent = "Unavailable";
+        }
+    }
+
+    function renderEquipment() {
+        const tbody = document.getElementById("equipmentTableBody");
+        const count = document.getElementById("tableCount");
+
+        count.textContent = `${equipmentList.length} equipment`;
+
+        if (equipmentList.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        No equipment found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = equipmentList.map(equipment => {
+            const manufacturer = equipment.manufacturer || "—";
+            const model = equipment.model || "—";
+            const typeLabel = formatEquipmentType(equipment.type);
+
+            return `
+                <tr>
+                    <td>
+                        <div class="equipment-name">
+                            ${escapeHtml(equipment.name)}
+                        </div>
+
+                        ${
+                            equipment.notes
+                                ? `<div class="secondary-text">
+                                      ${escapeHtml(equipment.notes)}
+                                   </div>`
+                                : ""
+                        }
+                    </td>
+
+                    <td>${escapeHtml(manufacturer)}</td>
+                    <td>${escapeHtml(model)}</td>
+
+                    <td>
+                        <span class="badge badge-type">
+                            ${escapeHtml(typeLabel)}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${
+                            equipment.active
+                                ? `<span class="badge badge-active">Active</span>`
+                                : `<span class="badge badge-inactive">Inactive</span>`
+                        }
+                    </td>
+
+                    <td>
+                        <div class="actions">
+                            <button
+                                class="btn-secondary"
+                                type="button"
+                                onclick="openEditModal(${equipment.id})"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="${
+                                    equipment.active
+                                        ? "btn-danger"
+                                        : "btn-success"
+                                }"
+                                type="button"
+                                onclick="toggleEquipment(
+                                    ${equipment.id},
+                                    ${equipment.active}
+                                )"
+                            >
+                                ${
+                                    equipment.active
+                                        ? "Deactivate"
+                                        : "Activate"
+                                }
+                            </button>
+
+                            <button
+                                class="btn-danger"
+                                type="button"
+                                onclick="deleteEquipment(${equipment.id})"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    function openCreateModal() {
+        document.getElementById("equipmentForm").reset();
+        document.getElementById("equipmentId").value = "";
+        document.getElementById("equipmentActive").value = "true";
+        document.getElementById("equipmentType").value = "DIGITAL_PRINTING";
+        document.getElementById("modalTitle").textContent = "Add Equipment";
+        document.getElementById("saveButton").textContent = "Save Equipment";
+        document.getElementById("equipmentModal").classList.add("open");
+        document.getElementById("equipmentName").focus();
+    }
+
+    function openEditModal(id) {
+        const equipment = equipmentList.find(
+            item => item.id === id
+        );
+
+        if (!equipment) {
+            renderError("Equipment not found.");
+            return;
+        }
+
+        document.getElementById("equipmentId").value = equipment.id;
+        document.getElementById("equipmentName").value =
+            equipment.name || "";
+        document.getElementById("manufacturer").value =
+            equipment.manufacturer || "";
+        document.getElementById("model").value =
+            equipment.model || "";
+        document.getElementById("equipmentType").value =
+            equipment.type || "UNKNOWN";
+        document.getElementById("equipmentActive").value =
+            String(equipment.active);
+        document.getElementById("equipmentNotes").value =
+            equipment.notes || "";
+
+        document.getElementById("modalTitle").textContent =
+            "Edit Equipment";
+        document.getElementById("saveButton").textContent =
+            "Update Equipment";
+        document.getElementById("equipmentModal").classList.add("open");
+        document.getElementById("equipmentName").focus();
+    }
+
+    function closeModal() {
+        document.getElementById("equipmentModal").classList.remove("open");
+    }
+
+    async function saveEquipment(event) {
+        event.preventDefault();
+        clearMessages();
+
+        const id = document.getElementById("equipmentId").value;
+
+        const payload = {
+            name: document.getElementById("equipmentName").value.trim(),
+            manufacturer: document
+                .getElementById("manufacturer")
+                .value
+                .trim() || null,
+            model: document
+                .getElementById("model")
+                .value
+                .trim() || null,
+            type: document.getElementById("equipmentType").value,
+            active: document.getElementById("equipmentActive").value === "true",
+            notes: document
+                .getElementById("equipmentNotes")
+                .value
+                .trim() || null
+        };
+
+        if (!payload.name) {
+            renderError("Equipment name is required.");
+            return;
+        }
+
+        const saveButton = document.getElementById("saveButton");
+        saveButton.disabled = true;
+
+        try {
+            const response = await fetch(
+                id ? `${API_URL}/${id}` : API_URL,
+                {
+                    method: id ? "PUT" : "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            if (!response.ok) {
+                const message = await extractErrorMessage(response);
+                throw new Error(message);
+            }
+
+            closeModal();
+            renderSuccess(
+                id
+                    ? "Equipment updated successfully."
+                    : "Equipment created successfully."
+            );
+
+            await loadEquipment();
+        } catch (error) {
+            renderError(error.message);
+        } finally {
+            saveButton.disabled = false;
+        }
+    }
+
+    async function toggleEquipment(id, currentStatus) {
+        const action = currentStatus
+            ? "deactivate"
+            : "activate";
+
+        const confirmed = confirm(
+            `Are you sure you want to ${action} this equipment?`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${API_URL}/${id}/active?active=${!currentStatus}`,
+                {
+                    method: "PATCH"
+                }
+            );
+
+            if (!response.ok) {
+                const message = await extractErrorMessage(response);
+                throw new Error(message);
+            }
+
+            renderSuccess(
+                currentStatus
+                    ? "Equipment deactivated successfully."
+                    : "Equipment activated successfully."
+            );
+
+            await loadEquipment();
+        } catch (error) {
+            renderError(error.message);
+        }
+    }
+
+    async function deleteEquipment(id) {
+        const equipment = equipmentList.find(
+            item => item.id === id
+        );
+
+        const name = equipment
+            ? equipment.name
+            : "this equipment";
+
+        const confirmed = confirm(
+            `Are you sure you want to delete "${name}"?`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${API_URL}/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            if (!response.ok) {
+                const message = await extractErrorMessage(response);
+                throw new Error(message);
+            }
+
+            renderSuccess("Equipment deleted successfully.");
+            await loadEquipment();
+        } catch (error) {
+            renderError(error.message);
+        }
+    }
+
+    function formatEquipmentType(type) {
+        const labels = {
+            DIGITAL_PRINTING: "Digital Printing",
+            WIDE_FORMAT_PRINTING: "Wide Format Printing",
+            SUBLIMATION: "Sublimation",
+            LAMINATION: "Lamination",
+            CUTTING: "Cutting",
+            LASER_CUTTING: "Laser Cutting",
+            CNC: "CNC",
+            UNKNOWN: "Unknown"
+        };
+
+        return labels[type] || type || "Unknown";
+    }
+
+    async function extractErrorMessage(response) {
+        try {
+            const data = await response.json();
+
+            if (data.message) {
+                return data.message;
+            }
+
+            if (data.error) {
+                return data.error;
+            }
+        } catch (error) {
+            // The response may not contain JSON.
+        }
+
+        return `Request failed with status ${response.status}.`;
+    }
+
+    function renderError(message) {
+        const element = document.getElementById("errorMessage");
+        element.textContent = message;
+        element.style.display = "block";
+
+        document.getElementById("successMessage").style.display = "none";
+    }
+
+    function renderSuccess(message) {
+        const element = document.getElementById("successMessage");
+        element.textContent = message;
+        element.style.display = "block";
+
+        document.getElementById("errorMessage").style.display = "none";
+
+        setTimeout(() => {
+            element.style.display = "none";
+        }, 4000);
+    }
+
+    function clearMessages() {
+        document.getElementById("errorMessage").style.display = "none";
+        document.getElementById("successMessage").style.display = "none";
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<​", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+</script>
+
+</body>
+</html>

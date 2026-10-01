@@ -2,15 +2,87 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orders - Urban Print Shop</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 0; background: #f4f5f7; color: #222; }
-  header { background: #1c2b39; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-  header h1 { font-size: 20px; margin: 0; }
-  nav a { color: #fff; text-decoration: none; margin-left: 16px; font-size: 14px; }
-  .container { padding: 24px; }
-  .toolbar { display: flex; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+  :root {
+    --primary: #1c2b39;
+    --accent: #2563eb;
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --muted: #667085;
+  }
+
+  * { box-sizing: border-box; font-family: Arial, sans-serif; }
+
+  body { margin: 0; background: var(--bg); color: #222; display: flex; min-height: 100vh; }
+
+  aside {
+    width: 230px;
+    background: var(--primary);
+    color: #fff;
+    padding: 20px 12px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .brand-logo-link {
+    display: block;
+    text-decoration: none;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #334155;
+  }
+
+  .brand-logo {
+    display: block;
+    width: 100%;
+    max-width: 190px;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+  }
+
+  aside nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  aside nav a {
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+
+  aside nav a:hover,
+  aside nav a.active {
+    background: #334155;
+    color: #fff;
+  }
+
+  main { flex: 1; min-width: 0; }
+
+  .page-header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+  }
+
+  .page-header h1 { font-size: 20px; margin: 0; }
+
+  .container { padding: 24px 32px; }
+
+  .toolbar { display: flex; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; align-items: center; }
   select, input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+  .active-filter-tag { display: inline-flex; align-items: center; gap: 8px; background: #e0e7ff; color: #3730a3; padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: bold; }
+  .active-filter-tag button { border: none; background: transparent; cursor: pointer; color: #3730a3; font-weight: bold; font-size: 14px; }
   table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
   th { background: #f0f2f5; }
@@ -28,66 +100,156 @@
   .SHIPPING { background: #27ae60; }
   .COMPLETED { background: #2c3e50; }
   .CANCELLED { background: #d9534f; }
+  .notes-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #555; font-style: italic; }
+  .empty { text-align: center; color: var(--muted); padding: 28px; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Urban Print Shop - Orders</h1>
+<aside>
+  <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
+    <img
+      src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+      alt="Urban Print Shop - Home"
+      class="brand-logo"
+    >
+  </a>
   <nav>
+    <a href="dashboard.html">Home / Dashboard</a>
     <a href="index.html">Customers</a>
     <a href="products.html">Products</a>
     <a href="quote-list.html">Quotes</a>
-    <a href="orders.html">Orders</a>
+    <a href="orders.html" class="active">Orders</a>
     <a href="production-queue.html">Production Queue</a>
   </nav>
-</header>
+</aside>
 
-<div class="container">
-  <div class="toolbar">
-    <div>
-      <label>Filter by status: </label>
-      <select id="filterStatus" onchange="loadOrders()">
-        <option value="">All</option>
-        <option value="PENDING_PAYMENT">Pending Payment</option>
-        <option value="PENDING_FILE">Pending File</option>
-        <option value="GRAPHICS">Graphics</option>
-        <option value="SF_QUEUE">Small Format Queue</option>
-        <option value="SF_PRINTING">SF Printing</option>
-        <option value="WF_QUEUE">Wide Format Queue</option>
-        <option value="WF_PRINTING">WF Printing</option>
-        <option value="FINISHING">Finishing</option>
-        <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
-        <option value="SHIPPING">Shipping</option>
-        <option value="COMPLETED">Completed</option>
-        <option value="CANCELLED">Cancelled</option>
-      </select>
-    </div>
+<main>
+  <div class="page-header">
+    <h1>Urban Print Shop - Orders</h1>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Order #</th>
-        <th>Customer</th>
-        <th>Order Date</th>
-        <th>Due Date</th>
-        <th>Priority</th>
-        <th>Status</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody id="ordersBody">
-    </tbody>
-  </table>
-  <div id="emptyMsg" class="empty" style="display:none;">No orders found.</div>
-</div>
+  <div class="container">
+    <div class="toolbar">
+      <a href="new-order.html" style="background: #2563eb; color: white; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; font-size: 14px;">+ New Order</a>
+      <div>
+        <label>Filter by status: </label>
+        <select id="filterStatus" onchange="onStatusChange()">
+          <option value="">All</option>
+          <option value="PENDING_PAYMENT">Pending Payment</option>
+          <option value="PENDING_FILE">Pending File</option>
+          <option value="GRAPHICS">Graphics</option>
+          <option value="SF_QUEUE">Small Format Queue</option>
+          <option value="SF_PRINTING">SF Printing</option>
+          <option value="WF_QUEUE">Wide Format Queue</option>
+          <option value="WF_PRINTING">WF Printing</option>
+          <option value="FINISHING">Finishing</option>
+          <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
+          <option value="SHIPPING">Shipping</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+      <div id="activeFilterTagWrapper"></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Customer</th>
+          <th>Order Date</th>
+          <th>Due Date</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Notes</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody">
+      </tbody>
+    </table>
+    <div id="emptyMsg" class="empty" style="display:none;">No orders found.</div>
+  </div>
+</main>
 
 <script>
 const API_URL = '/api/orders';
 
-async function loadOrders() {
+// Special "virtual" filters that don't map to a single backend status
+const VIRTUAL_FILTERS = {
+  active: {
+    label: 'Active Orders',
+    test: (order) => order.status !== 'COMPLETED' && order.status !== 'CANCELLED'
+  },
+  overdue: {
+    label: 'Overdue Items',
+    test: (order) => {
+      const today = new Date().toISOString().split('T')[0];
+      return order.status !== 'COMPLETED' && order.status !== 'CANCELLED'
+        && order.dueDate && order.dueDate < today;
+    }
+  },
+  production: {
+    label: 'In Production',
+    test: (order) => ['SF_QUEUE', 'SF_PRINTING', 'WF_QUEUE', 'WF_PRINTING', 'FINISHING'].includes(order.status)
+  }
+};
+
+function getQueryParams() {
+  return new URLSearchParams(window.location.search);
+}
+
+function initFromUrl() {
+  const params = getQueryParams();
+  const status = params.get('status');
+  const filter = params.get('filter');
+
+  if (status) {
+    document.getElementById('filterStatus').value = status;
+  }
+
+  renderActiveFilterTag(status, filter);
+}
+
+function renderActiveFilterTag(status, filter) {
+  const wrapper = document.getElementById('activeFilterTagWrapper');
+  wrapper.innerHTML = '';
+
+  let label = null;
+
+  if (filter && VIRTUAL_FILTERS[filter]) {
+    label = VIRTUAL_FILTERS[filter].label;
+  } else if (status) {
+    label = status.replaceAll('_', ' ');
+  }
+
+  if (!label) return;
+
+  const tag = document.createElement('span');
+  tag.className = 'active-filter-tag';
+  tag.innerHTML = `Showing: ${label} <button onclick="clearFilter()">✕</button>`;
+  wrapper.appendChild(tag);
+}
+
+function clearFilter() {
+  window.location.href = 'orders.html';
+}
+
+function onStatusChange() {
   const status = document.getElementById('filterStatus').value;
+  const url = status ? `orders.html?status=${status}` : 'orders.html';
+  window.location.href = url;
+}
+
+
+
+async function loadOrders() {
+  const params = getQueryParams();
+  const status = params.get('status') || '';
+  const filter = params.get('filter') || '';
+
   const url = status ? `${API_URL}/status/${status}` : API_URL;
 
   const tbody = document.getElementById('ordersBody');
@@ -101,10 +263,14 @@ async function loadOrders() {
       throw new Error(`API error ${res.status}: ${errorText}`);
     }
 
-    const orders = await res.json();
+    let orders = await res.json();
 
     if (!Array.isArray(orders)) {
       throw new Error('The API response is not an order list.');
+    }
+
+    if (filter && VIRTUAL_FILTERS[filter]) {
+      orders = orders.filter(VIRTUAL_FILTERS[filter].test);
     }
 
     tbody.innerHTML = '';
@@ -149,7 +315,16 @@ async function loadOrders() {
             ${statusText}
           </span>
         </td>
+        <td class="notes-cell">${order.notes ? order.notes : ''}</td>
         <td>$${total}</td>
+        <td style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button onclick="reorderClick(event, ${order.id})" style="background:#0ea5e9;color:#fff;border:none;padding:6px 10px;border-radius:4px;font-size:12px;font-weight:bold;cursor:pointer;">
+            Re-order
+          </button>
+          <button onclick="convertToQuoteClick(event, ${order.id})" style="background:#8e44ad;color:#fff;border:none;padding:6px 10px;border-radius:4px;font-size:12px;font-weight:bold;cursor:pointer;">
+            Convert to Quote
+          </button>
+        </td>
       `;
 
       tbody.appendChild(tr);
@@ -164,6 +339,33 @@ async function loadOrders() {
   }
 }
 
+async function reorderClick(event, orderId) {
+  event.stopPropagation();
+
+  if (!confirm('Create a new order based on this one?')) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/${orderId}/reorder`, {
+      method: 'POST'
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`API error ${res.status}: ${errorText}`);
+    }
+
+    const newOrder = await res.json();
+
+    window.location.href = `order-details.html?id=${newOrder.id}`;
+  } catch (error) {
+    console.error('Error reordering:', error);
+    alert('Error creating re-order. Check the backend terminal.');
+  }
+}
+
+initFromUrl();
 loadOrders();
 </script>
 

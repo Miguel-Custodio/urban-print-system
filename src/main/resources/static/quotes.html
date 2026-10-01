@@ -34,22 +34,29 @@
         }
 
         aside {
-            width: 250px;
+            width: 230px;
             background: var(--primary);
             color: white;
             padding: 24px 14px;
             flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        .brand {
+        .brand-link {
+            display: block;
             padding: 0 8px 24px;
-            font-weight: bold;
-            font-size: 1.15rem;
             border-bottom: 1px solid #475569;
         }
 
-        .brand span {
-            color: #38bdf8;
+        .brand-logo {
+            width: 100%;
+            max-height: 70px;
+            object-fit: contain;
+            display: block;
         }
 
         nav {
@@ -333,6 +340,8 @@
 
             aside {
                 width: 100%;
+                height: auto;
+                position: static;
             }
 
             nav {
@@ -358,13 +367,15 @@
 <body>
 
 <aside>
-    <div class="brand">URBAN <span>PRINT</span></div>
+    <a href="dashboard.html" class="brand-link">
+        <img src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png" alt="Urban Print Shop" class="brand-logo">
+    </a>
 
     <nav>
-        <a href="/">Customers</a>
-        <a href="/products.html">Products & Pricing</a>
-        <a href="/quote-list.html" class="active">Quotes</a>
-        <a href="/quotes.html">New Quote</a>
+        <a href="dashboard.html">Home / Dashboard</a>
+        <a href="index.html">Customers</a>
+        <a href="products.html">Products & Pricing</a>
+        <a href="quote-list.html" class="active">Quotes</a>
         <a href="orders.html">Orders</a>
         <a href="production-queue.html">Production Queue</a>
     </nav>

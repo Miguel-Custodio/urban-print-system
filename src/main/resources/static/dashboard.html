@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Print Shop — Dashboard</title>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --primary-light: #334155;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        aside {
+            width: 230px;
+            background: var(--primary);
+            color: white;
+            padding: 20px 12px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .brand-logo-link {
+            display: block;
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #475569;
+        }
+
+        .brand-logo {
+            display: block;
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: white;
+            background: var(--primary-light);
+        }
+
+        main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 32px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .refresh-button {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 6px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .refresh-button:hover {
+            background: var(--primary-light);
+        }
+
+        .content {
+            max-width: 1700px;
+            padding: 28px 32px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            display: block;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        a.summary-card:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+
+        .summary-card .label {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .summary-card .value {
+            margin-top: 8px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .summary-card.active-card { border-left: 5px solid var(--accent); }
+        .summary-card.warning-card { border-left: 5px solid var(--warning); }
+        .summary-card.danger-card { border-left: 5px solid var(--danger); }
+        .summary-card.success-card { border-left: 5px solid var(--success); }
+        .summary-card.graphics-card { border-left: 5px solid #7c3aed; }
+        .summary-card.production-card { border-left: 5px solid #0891b2; }
+        .summary-card.financial-card { border-left: 5px solid #0f766e; }
+
+        .summary-card.financial-card .value {
+            font-size: 1.65rem;
+            white-space: nowrap;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .panel-header a.panel-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .panel-total {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        /* ---- Charts row (DocketManager style) ---- */
+        .charts-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr);
+            gap: 22px;
+            margin-bottom: 22px;
+        }
+
+        .donut-body {
+            display: flex;
+            gap: 20px;
+            padding: 18px 20px;
+            align-items: center;
+        }
+
+        .donut-wrap {
+            position: relative;
+            width: 170px;
+            height: 170px;
+            flex-shrink: 0;
+        }
+
+        .donut-wrap svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .donut-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+            padding: 0 24px;
+        }
+
+        .donut-center .dc-value {
+            font-weight: bold;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .donut-center .dc-label {
+            color: var(--muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .donut-legend {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 6px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .legend-row:last-child {
+            border-bottom: none;
+        }
+
+        .legend-row:hover {
+            background: #f8fafc;
+        }
+
+        .swatch {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .l-label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: capitalize;
+        }
+
+        .l-count {
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .l-value {
+            margin-left: auto;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .sales-chart-body {
+            padding: 14px 20px 10px;
+        }
+
+        .sales-chart-body svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ---- Production value bar ---- */
+        .prod-bar-body {
+            padding: 18px 20px;
+        }
+
+        .prod-bar-track {
+            display: flex;
+            height: 38px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+        }
+
+        .prod-seg {
+            min-width: 4px;
+            height: 100%;
+        }
+
+        .prod-bar-empty {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .prod-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 2px 24px;
+            margin-top: 16px;
+        }
+
+        .prod-legend-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 6px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.8rem;
+        }
+
+        .prod-legend-row:hover {
+            background: #f8fafc;
+        }
+
+        .prod-legend-row .plabel {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .prod-legend-row .pcount {
+            color: var(--muted);
+        }
+
+        .prod-legend-row .pvalue {
+            margin-left: auto;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+            gap: 22px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            padding: 3px;
+            border-radius: 6px;
+        }
+
+        .view-toggle button {
+            border: none;
+            background: transparent;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+        .view-toggle button.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 680px;
+        }
+
+        th, td {
+            padding: 13px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+        }
+
+        th {
+            color: var(--muted);
+            background: #f8fafc;
+            font-size: 0.73rem;
+            text-transform: uppercase;
+            letter-spacing: 0.45px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .order-link {
+            color: var(--accent);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .order-link:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-badge-link {
+            text-decoration: none;
+        }
+
+        .PENDING_PAYMENT { background: #fef3c7; color: #92400e; }
+        .PENDING_FILE { background: #ffedd5; color: #c2410c; }
+        .GRAPHICS { background: #ede9fe; color: #6b21a8; }
+        .SF_QUEUE { background: #e0e7ff; color: #3730a3; }
+        .SF_PRINTING { background: #dbeafe; color: #1e40af; }
+        .WF_QUEUE { background: #ccfbf1; color: #115e59; }
+        .WF_PRINTING { background: #99f6e4; color: #0f766e; }
+        .FINISHING { background: #fae8ff; color: #86198f; }
+        .READY_FOR_PICKUP { background: #dcfce7; color: #166534; }
+        .SHIPPING { background: #f0fdf4; color: #15803d; }
+        .COMPLETED { background: #f1f5f9; color: #334155; }
+        .CANCELLED { background: #fee2e2; color: #991b1b; }
+
+        .overdue { color: var(--danger); font-weight: bold; }
+        .due-today { color: var(--warning); font-weight: bold; }
+
+        /* ---- Bottleneck bar chart ---- */
+        .stage-list {
+            padding: 14px 20px 18px;
+        }
+
+        .bar-row-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .bar-row {
+            margin-bottom: 13px;
+        }
+
+        .bar-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .bar-row .bar-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.78rem;
+        }
+
+        .bar-row .bar-label .count {
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .bar-track {
+            background: #f1f5f9;
+            border-radius: 6px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .empty-state {
+            padding: 35px 20px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 13px 16px;
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+        }
+
+        /* ---- Kanban board ---- */
+        .kanban-board {
+            display: flex;
+            gap: 14px;
+            padding: 18px 20px;
+            overflow-x: auto;
+        }
+
+        .kanban-column {
+            flex: 0 0 250px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            max-height: 640px;
+        }
+
+        .kanban-column-header {
+            padding: 12px 14px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 8px 8px 0 0;
+            text-decoration: none;
+        }
+
+        .kanban-column-header .title {
+            font-size: 0.78rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .kanban-column-header .count-pill {
+            background: var(--primary);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .kanban-cards {
+            padding: 10px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .kanban-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+
+        .kanban-card .card-order {
+            font-weight: bold;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.83rem;
+        }
+
+        .kanban-card .card-order:hover {
+            text-decoration: underline;
+        }
+
+        .kanban-card .card-customer {
+            margin-top: 3px;
+            color: var(--text);
+            font-weight: bold;
+        }
+
+        .kanban-card .card-item {
+            margin-top: 2px;
+            color: var(--muted);
+        }
+
+        .kanban-card .card-footer {
+            margin-top: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+
+        .kanban-empty {
+            padding: 18px 8px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            text-align: center;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .donut-body {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .donut-wrap {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside>
+        <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
+            <img
+                src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+                alt="Urban Print Shop - Home"
+                class="brand-logo"
+            >
+        </a>
+
+        <nav>
+            <a href="dashboard.html" class="active">Home / Dashboard</a>
+            <a href="index.html">Customers</a>
+            <a href="products.html">Products</a>
+            <a href="quote-list.html">Quotes</a>
+            <a href="orders.html">Orders</a>
+            <a href="production-queue.html">Production Queue</a>
+        </nav>
+    </aside>
+
+    <main>
+        <header>
+            <div>
+                <h1>Operations Dashboard</h1>
+                <p>Live overview of sales, orders and production workload.</p>
+            </div>
+
+            <button class="refresh-button" onclick="loadDashboard()">↻ Refresh</button>
+        </header>
+
+        <div class="content">
+            <div id="errorMessage" class="error-message"></div>
+
+            <section class="summary-grid">
+                <a href="orders.html?filter=active" class="summary-card active-card">
+                    <div class="label">Active Orders</div>
+                    <div id="activeOrdersCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?filter=overdue" class="summary-card danger-card">
+                    <div class="label">Overdue Items</div>
+                    <div id="overdueItemsCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?status=PENDING_PAYMENT" class="summary-card warning-card">
+                    <div class="label">Pending Payment</div>
+                    <div id="pendingPaymentCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?status=PENDING_FILE" class="summary-card warning-card">
+                    <div class="label">Pending File</div>
+                    <div id="pendingFileCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?status=GRAPHICS" class="summary-card graphics-card">
+                    <div class="label">Graphics</div>
+                    <div id="graphicsCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?filter=production" class="summary-card production-card">
+                    <div class="label">In Production</div>
+                    <div id="inProductionCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?status=READY_FOR_PICKUP" class="summary-card success-card">
+                    <div class="label">Ready for Pick Up</div>
+                    <div id="readyPickupCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?status=SHIPPING" class="summary-card success-card">
+                    <div class="label">Shipping</div>
+                    <div id="shippingCount" class="value">—</div>
+                </a>
+
+                <a href="orders.html?filter=active" class="summary-card financial-card">
+                    <div class="label">Active Pipeline Value</div>
+                    <div id="activePipelineValue" class="value">—</div>
+                </a>
+
+                <a href="orders.html?status=PENDING_PAYMENT" class="summary-card financial-card">
+                    <div class="label">Pending Payment Value</div>
+                    <div id="pendingPaymentValue" class="value">—</div>
+                </a>
+
+                <a href="orders.html?status=COMPLETED" class="summary-card financial-card">
+                    <div class="label">Completed Orders Value</div>
+                    <div id="completedOrdersValue" class="value">—</div>
+                </a>
+            </section>
+
+            <section class="panel" style="margin-bottom: 22px;">
+                <div class="panel-header">
+                    <h2>Production Pipeline — Value by Stage</h2>
+                    <a href="production-queue.html" class="panel-link">View queue →</a>
+                </div>
+
+                <div class="prod-bar-body">
+                    <div class="panel-total" id="prodBarTotal" style="margin-bottom: 12px;">—</div>
+                    <div class="prod-bar-track" id="prodBarTrack"></div>
+                    <div class="prod-legend" id="prodBarLegend"></div>
+                </div>
+            </section>
+
+            <section class="charts-row">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Orders</h2>
+                        <a href="orders.html" class="panel-link">View all →</a>
+                    </div>
+
+                    <div class="donut-body">
+                        <div class="donut-wrap">
+                            <svg id="ordersDonut" viewBox="0 0 160 160" role="img"></svg>
+                            <div class="donut-center">
+                                <div class="dc-value" id="ordersDonutTotal">$0.00</div>
+                                <div class="dc-label">Total</div>
+                            </div>
+                        </div>
+                        <div class="donut-legend" id="ordersDonutLegend"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Quotes</h2>
+                        <a href="quote-list.html" class="panel-link">View all →</a>
+                    </div>
+
+                    <div class="donut-body" id="quotesCardBody">
+                        <div class="donut-wrap">
+                            <svg id="quotesDonut" viewBox="0 0 160 160" role="img"></svg>
+                            <div class="donut-center">
+                                <div class="dc-value" id="quotesDonutTotal">$0.00</div>
+                                <div class="dc-label">Total</div>
+                            </div>
+                        </div>
+                        <div class="donut-legend" id="quotesDonutLegend"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Sales — Last 12 Months</h2>
+                        <span class="panel-total" id="salesTotal">—</span>
+                    </div>
+
+                    <div class="sales-chart-body">
+                        <svg id="salesChartSvg" viewBox="0 0 620 225" role="img"></svg>
+                        <div id="salesEmpty" class="empty-state" style="display: none;">
+                            No sales data with order dates found yet.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-grid">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Upcoming Production Items</h2>
+                        <div class="view-toggle">
+                            <button id="tableViewBtn" class="active" onclick="setView('table')">Table</button>
+                            <button id="kanbanViewBtn" onclick="setView('kanban')">Kanban</button>
+                        </div>
+                    </div>
+
+                    <div id="tableView" class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Customer</th>
+                                    <th>Item</th>
+                                    <th>Order Value</th>
+                                    <th>Due Date</th>
+                                    <th>Stage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="upcomingItemsBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="upcomingEmptyState" class="empty-state" style="display: none;">
+                        No active production items found.
+                    </div>
+
+                    <div id="kanbanView" class="kanban-board" style="display: none;"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Bottleneck by Stage</h2>
+                        <a href="production-queue.html" class="panel-link">View all →</a>
+                    </div>
+
+                    <div id="stageList" class="stage-list"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const STAGES = {
+            PENDING_PAYMENT: "Pending Payment",
+            PENDING_FILE: "Pending File",
+            GRAPHICS: "Graphics",
+            SF_QUEUE: "Small Format Queue",
+            SF_PRINTING: "SF Printing",
+            WF_QUEUE: "Wide Format Queue",
+            WF_PRINTING: "WF Printing",
+            FINISHING: "Finishing",
+            READY_FOR_PICKUP: "Ready for Pick Up",
+            SHIPPING: "Shipping",
+            COMPLETED: "Completed",
+            CANCELLED: "Cancelled"
+        };
+
+        const STAGE_COLORS = {
+            PENDING_PAYMENT: "#d97706",
+            PENDING_FILE: "#c2410c",
+            GRAPHICS: "#7c3aed",
+            SF_QUEUE: "#3730a3",
+            SF_PRINTING: "#1e40af",
+            WF_QUEUE: "#115e59",
+            WF_PRINTING: "#0f766e",
+            FINISHING: "#86198f",
+            READY_FOR_PICKUP: "#166534",
+            SHIPPING: "#15803d",
+            COMPLETED: "#334155",
+            CANCELLED: "#991b1b"
+        };
+
+        const ORDER_STATUS_COLORS = {
+            PENDING_PAYMENT: "#d97706",
+            COMPLETED: "#334155",
+            CANCELLED: "#991b1b"
+        };
+
+        const QUOTE_STATUS_COLORS = {
+            DRAFT: "#64748b",
+            SENT: "#2563eb",
+            ACCEPTED: "#16a34a"
+        };
+
+        const FALLBACK_PALETTE = ["#2563eb", "#7c3aed", "#0891b2", "#16a34a", "#db2777", "#ca8a04", "#0f766e", "#4f46e5"];
+
+        let currentView = "table";
+        let lastAllItems = [];
+        let lastToday = "";
+
+        async function loadDashboard() {
+            const errBox = document.getElementById("errorMessage");
+            errBox.style.display = "none";
+
+            try {
+                const res = await fetch("/api/orders");
+                if (!res.ok) {
+                    throw new Error("Server returned HTTP " + res.status);
+                }
+
+                const orders = await res.json();
+
+                let quotes = null;
+                try {
+                    const qRes = await fetch("/api/quotes");
+                    if (qRes.ok) {
+                        quotes = await qRes.json();
+                    }
+                } catch (qErr) {
+                    console.warn("Quotes could not be loaded:", qErr);
+                }
+
+                renderAll(orders, quotes);
+            } catch (err) {
+                console.error("Dashboard error:", err);
+                errBox.textContent = "Error loading data: " + err.message;
+                errBox.style.display = "block";
+            }
+        }
+
+        function setView(view) {
+            currentView = view;
+
+            document.getElementById("tableViewBtn").classList.toggle("active", view === "table");
+            document.getElementById("kanbanViewBtn").classList.toggle("active", view === "kanban");
+
+            document.getElementById("tableView").style.display = view === "table" ? "block" : "none";
+            document.getElementById("kanbanView").style.display = view === "kanban" ? "flex" : "none";
+
+            document.getElementById("upcomingEmptyState").style.display =
+                view === "table" && lastAllItems.filter(x => {
+                    const s = x.item.productionStatus || "PENDING_FILE";
+                    return s !== "COMPLETED" && s !== "CANCELLED";
+                }).length === 0 ? "block" : "none";
+        }
+
+        function renderAll(orders, quotes) {
+            const allItems = [];
+            orders.forEach(order => {
+                (order.items || []).forEach(item => {
+                    allItems.push({ order: order, item: item });
+                });
+            });
+
+            const activeOrders = orders.filter(o => o.status !== "COMPLETED" && o.status !== "CANCELLED");
+            document.getElementById("activeOrdersCount").textContent = activeOrders.length;
+
+            const activePipelineValue = activeOrders.reduce((sum, order) => sum + getOrderTotal(order), 0);
+            const pendingPaymentValue = orders
+                .filter(order => order.status === "PENDING_PAYMENT")
+                .reduce((sum, order) => sum + getOrderTotal(order), 0);
+            const completedOrdersValue = orders
+                .filter(order => order.status === "COMPLETED")
+                .reduce((sum, order) => sum + getOrderTotal(order), 0);
+
+            document.getElementById("activePipelineValue").textContent = formatCurrency(activePipelineValue);
+            document.getElementById("pendingPaymentValue").textContent = formatCurrency(pendingPaymentValue);
+            document.getElementById("completedOrdersValue").textContent = formatCurrency(completedOrdersValue);
+
+            const today = new Date().toISOString().split("T")[0];
+            const overdue = allItems.filter(x => {
+                const s = x.item.productionStatus || "PENDING_FILE";
+                return s !== "COMPLETED" && s !== "CANCELLED" && x.order.dueDate && x.order.dueDate < today;
+            });
+            document.getElementById("overdueItemsCount").textContent = overdue.length;
+
+            document.getElementById("pendingPaymentCount").textContent =
+                allItems.filter(x => (x.item.productionStatus || "") === "PENDING_PAYMENT").length;
+
+            document.getElementById("pendingFileCount").textContent =
+                allItems.filter(x => (x.item.productionStatus || "PENDING_FILE") === "PENDING_FILE").length;
+
+            document.getElementById("graphicsCount").textContent =
+                allItems.filter(x => (x.item.productionStatus || "") === "GRAPHICS").length;
+
+            const prodStages = ["SF_QUEUE", "SF_PRINTING", "WF_QUEUE", "WF_PRINTING", "FINISHING"];
+            document.getElementById("inProductionCount").textContent =
+                allItems.filter(x => prodStages.includes(x.item.productionStatus || "")).length;
+
+            document.getElementById("readyPickupCount").textContent =
+                allItems.filter(x => (x.item.productionStatus || "") === "READY_FOR_PICKUP").length;
+
+            document.getElementById("shippingCount").textContent =
+                allItems.filter(x => (x.item.productionStatus || "") === "SHIPPING").length;
+
+            lastAllItems = allItems;
+            lastToday = today;
+
+            renderProductionBar(allItems);
+            renderOrdersDonut(orders);
+            renderQuotesDonut(quotes);
+            renderSalesChart(orders);
+
+            renderTable(allItems, today);
+            renderStageBars(allItems);
+            renderKanban(allItems, today);
+
+            setView(currentView);
+        }
+
+        /* ---- Production value bar (top) ---- */
+        function renderProductionBar(allItems) {
+            const track = document.getElementById("prodBarTrack");
+            const legend = document.getElementById("prodBarLegend");
+            const totalEl = document.getElementById("prodBarTotal");
+
+            const active = allItems.filter(x => {
+                const s = x.item.productionStatus || "PENDING_FILE";
+                return s !== "COMPLETED" && s !== "CANCELLED";
+            });
+
+            const byStage = {};
+            Object.keys(STAGES).forEach(k => { byStage[k] = { count: 0, value: 0 }; });
+
+            active.forEach(x => {
+                const s = x.item.productionStatus || "PENDING_FILE";
+                byStage[s].count++;
+                byStage[s].value += getOrderTotal(x.order);
+            });
+
+            const usedStages = Object.keys(STAGES).filter(k => byStage[k].count > 0);
+            const totalValue = usedStages.reduce((s, k) => s + byStage[k].value, 0);
+
+            totalEl.textContent = formatCurrency(totalValue) + " · " + active.length + " active items";
+
+            if (usedStages.length === 0) {
+                track.innerHTML = '<div class="prod-bar-empty">No active production value right now.</div>';
+                legend.innerHTML = "";
+                return;
+            }
+
+            track.innerHTML = usedStages.map(k => {
+                const pct = (byStage[k].value / totalValue) * 100;
+                const title = STAGES[k] + ": " + formatCurrency(byStage[k].value) + " (" + byStage[k].count + " items)";
+                return '<div class="prod-seg" style="width: ' + pct + '%; background: ' + STAGE_COLORS[k] + ';" title="' + escapeHtml(title) + '"></div>';
+            }).join("");
+
+            legend.innerHTML = usedStages.map(k => `
+                <a href="orders.html?status=${k}" class="prod-legend-row">
+                    <span class="swatch" style="background: ${STAGE_COLORS[k]};"></span>
+                    <span class="plabel">${escapeHtml(STAGES[k])}</span>
+                    <span class="pcount">×${byStage[k].count}</span>
+                    <span class="pvalue">${formatCurrency(byStage[k].value)}</span>
+                </a>
+            `).join("");
+        }
+
+        /* ---- Donuts ---- */
+        function groupByStatus(records, totalFn) {
+            const groups = {};
+            records.forEach(rec => {
+                const s = (rec.status || "UNKNOWN").replace(/_/g, " ");
+                if (!groups[s]) groups[s] = { count: 0, value: 0 };
+                groups[s].count++;
+                groups[s].value += totalFn(rec);
+            });
+            return Object.keys(groups)
+                .map(k => ({ label: k, count: groups[k].count, value: groups[k].value }))
+                .sort((a, b) => b.value - a.value);
+        }
+
+        function renderDonut(svgId, totalId, legendId, segments, linkFn) {
+            const svg = document.getElementById(svgId);
+            const totalEl = document.getElementById(totalId);
+            const legend = document.getElementById(legendId);
+
+            const totalValue = segments.reduce((s, x) => s + x.value, 0);
+            const totalCount = segments.reduce((s, x) => s + x.count, 0);
+            totalEl.textContent = formatCurrency(totalValue);
+
+            const C = 2 * Math.PI * 62;
+            let acc = 0;
+            let circles = "";
+
+            segments.forEach((seg, i) => {
+                if (seg.value <= 0 || totalValue <= 0) return;
+                const len = (seg.value / totalValue) * C;
+                const title = seg.label + ": " + formatCurrency(seg.value) + " (" + seg.count + ")";
+                circles += `<circle cx="80" cy="80" r="62" fill="none" stroke="${seg.color}" stroke-width="24" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-acc}"><title>${escapeHtml(title)}</title></circle>`;
+                acc += len;
+            });
+
+            if (!circles) {
+                circles = '<circle cx="80" cy="80" r="62" fill="none" stroke="#e2e8f0" stroke-width="24"></circle>';
+            }
+
+            svg.innerHTML = '<g transform="rotate(-90 80 80)">' + circles + '</g>';
+
+            if (segments.length === 0 || totalCount === 0) {
+                legend.innerHTML = '<div class="empty-state" style="padding: 20px 6px;">No records.</div>';
+                return;
+            }
+
+            legend.innerHTML = segments.map(seg => {
+                const href = linkFn ? linkFn(seg) : null;
+                const inner = `
+                    <span class="swatch" style="background: ${seg.color};"></span>
+                    <span class="l-label">${escapeHtml(seg.label)}</span>
+                    <span class="l-count">×${seg.count}</span>
+                    <span class="l-value">${formatCurrency(seg.value)}</span>
+                `;
+                return href
+                    ? `<a class="legend-row" href="${href}">${inner}</a>`
+                    : `<div class="legend-row">${inner}</div>`;
+            }).join("");
+        }
+
+        function renderOrdersDonut(orders) {
+            const segments = groupByStatus(orders, getOrderTotal).map((seg, i) => ({
+                ...seg,
+                color: ORDER_STATUS_COLORS[seg.label.replace(/ /g, "_")] || FALLBACK_PALETTE[i % FALLBACK_PALETTE.length]
+            }));
+            renderDonut("ordersDonut", "ordersDonutTotal", "ordersDonutLegend", segments,
+                seg => "orders.html?status=" + seg.label.replace(/ /g, "_"));
+        }
+
+        function renderQuotesDonut(quotes) {
+            const body = document.getElementById("quotesCardBody");
+
+            if (!Array.isArray(quotes)) {
+                body.innerHTML = '<div class="empty-state">Could not load quotes from /api/quotes.</div>';
+                return;
+            }
+
+            const segments = groupByStatus(quotes, computeQuoteTotal).map((seg, i) => ({
+                ...seg,
+                color: QUOTE_STATUS_COLORS[seg.label.replace(/ /g, "_")] || FALLBACK_PALETTE[i % FALLBACK_PALETTE.length]
+            }));
+            renderDonut("quotesDonut", "quotesDonutTotal", "quotesDonutLegend", segments, null);
+        }
+
+        /* ---- Sales by month ---- */
+        function renderSalesChart(orders) {
+            const now = new Date();
+            const keys = [];
+
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                keys.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"));
+            }
+
+            const buckets = {};
+            keys.forEach(k => { buckets[k] = { value: 0, count: 0 }; });
+
+            orders.forEach(o => {
+                if (o.status === "CANCELLED") return;
+                const d = o.orderDate || "";
+                const k = typeof d === "string" ? d.slice(0, 7) : "";
+                if (buckets[k]) {
+                    buckets[k].value += getOrderTotal(o);
+                    buckets[k].count++;
+                }
+            });
+
+            const total = keys.reduce((s, k) => s + buckets[k].value, 0);
+            document.getElementById("salesTotal").textContent = formatCurrency(total);
+
+            const svgEl = document.getElementById("salesChartSvg");
+            const emptyEl = document.getElementById("salesEmpty");
+            const max = Math.max(...keys.map(k => buckets[k].value));
+
+            if (max <= 0) {
+                svgEl.innerHTML = "";
+                svgEl.style.display = "none";
+                emptyEl.style.display = "block";
+                return;
+            }
+
+            svgEl.style.display = "block";
+            emptyEl.style.display = "none";
+
+            const W = 620, H = 225, padL = 10, padR = 10, padT = 14, padB = 26;
+            const plotH = H - padB - padT;
+            const slot = (W - padL - padR) / 12;
+            const barW = slot * 0.58;
+            const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const nowKey = keys[11];
+
+            let bars = "";
+
+            keys.forEach((k, i) => {
+                const v = buckets[k].value;
+                const h = v > 0 ? Math.max(3, (v / max) * plotH) : 0;
+                const x = padL + slot * i + (slot - barW) / 2;
+                const y = padT + plotH - h;
+                const color = k === nowKey ? "#2563eb" : "#93c5fd";
+                const label = MONTHS[parseInt(k.slice(5, 7), 10) - 1];
+                const title = label + " " + k.slice(0, 4) + ": " + formatCurrency(v) + " (" + buckets[k].count + " orders)";
+
+                bars += `
+                    <g>
+                        <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="2"><title>${escapeHtml(title)}</title></rect>
+                        <text x="${x + barW / 2}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#64748b">${label}</text>
+                    </g>
+                `;
+            });
+
+            svgEl.innerHTML =
+                `<line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="#e2e8f0" stroke-width="1"></line>` +
+                bars;
+        }
+
+        function renderTable(allItems, today) {
+            const tbody = document.getElementById("upcomingItemsBody");
+            tbody.innerHTML = "";
+
+            const active = allItems.filter(x => {
+                const s = x.item.productionStatus || "PENDING_FILE";
+                return s !== "COMPLETED" && s !== "CANCELLED";
+            });
+
+            active.sort((a, b) => {
+                const da = a.order.dueDate || "9999-12-31";
+                const db = b.order.dueDate || "9999-12-31";
+                return da.localeCompare(db);
+            });
+
+            const top10 = active.slice(0, 10);
+
+            top10.forEach(({ order, item }) => {
+                const cust = order.customer || {};
+                const custName = cust.customerName || cust.name || cust.contactName || "N/A";
+                const itemName = (item.product && item.product.productName) || item.itemDescription || "Custom Item";
+                const st = item.productionStatus || "PENDING_FILE";
+
+                let dueClass = "";
+                if (order.dueDate) {
+                    if (order.dueDate < today) dueClass = "overdue";
+                    else if (order.dueDate === today) dueClass = "due-today";
+                }
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><a href="order-details.html?id=${order.id}" class="order-link">${escapeHtml(order.orderNumber)}</a></td>
+                    <td>${escapeHtml(custName)}</td>
+                    <td>${escapeHtml(itemName)}</td>
+                    <td>${formatCurrency(getOrderTotal(order))}</td>
+                    <td class="${dueClass}">${escapeHtml(order.dueDate || "Not set")}</td>
+                    <td><a href="orders.html?status=${st}" class="status-badge-link"><span class="status-badge ${st}">${escapeHtml(STAGES[st] || st)}</span></a></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderStageBars(allItems) {
+            const container = document.getElementById("stageList");
+            container.innerHTML = "";
+
+            const counts = {};
+            Object.keys(STAGES).forEach(key => {
+                counts[key] = allItems.filter(x => (x.item.productionStatus || "PENDING_FILE") === key).length;
+            });
+
+            const maxCount = Math.max(1, ...Object.values(counts));
+
+            Object.entries(STAGES).forEach(([key, label]) => {
+                const count = counts[key];
+                const pct = Math.round((count / maxCount) * 100);
+                const color = STAGE_COLORS[key] || "#1e293b";
+
+                const link = document.createElement("a");
+                link.className = "bar-row-link";
+                link.href = "orders.html?status=" + key;
+                link.innerHTML = `
+                    <div class="bar-row">
+                        <div class="bar-label">
+                            <span>${escapeHtml(label)}</span>
+                            <span class="count">${count}</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: ${pct}%; background: ${color};"></div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(link);
+            });
+        }
+
+        function renderKanban(allItems, today) {
+            const board = document.getElementById("kanbanView");
+            board.innerHTML = "";
+
+            Object.entries(STAGES).forEach(([key, label]) => {
+                const items = allItems.filter(x => (x.item.productionStatus || "PENDING_FILE") === key);
+
+                items.sort((a, b) => {
+                    const da = a.order.dueDate || "9999-12-31";
+                    const db = b.order.dueDate || "9999-12-31";
+                    return da.localeCompare(db);
+                });
+
+                const color = STAGE_COLORS[key] || "#1e293b";
+
+                const column = document.createElement("div");
+                column.className = "kanban-column";
+
+                let cardsHtml = "";
+                if (items.length === 0) {
+                    cardsHtml = `<div class="kanban-empty">No items</div>`;
+                } else {
+                    items.forEach(({ order, item }) => {
+                        const cust = order.customer || {};
+                        const custName = cust.customerName || cust.name || cust.contactName || "N/A";
+                        const itemName = (item.product && item.product.productName) || item.itemDescription || "Custom Item";
+
+                        let dueClass = "";
+                        if (order.dueDate) {
+                            if (order.dueDate < today) dueClass = "overdue";
+                            else if (order.dueDate === today) dueClass = "due-today";
+                        }
+
+                        cardsHtml += `
+                            <div class="kanban-card">
+                                <a href="order-details.html?id=${order.id}" class="card-order">${escapeHtml(order.orderNumber)}</a>
+                                <div class="card-customer">${escapeHtml(custName)}</div>
+                                <div class="card-item">${escapeHtml(itemName)}</div>
+                                <div class="card-footer">
+                                    <span class="${dueClass}">${escapeHtml(order.dueDate || "No due date")}</span>
+                                    <span>${formatCurrency(getOrderTotal(order))}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                column.innerHTML = `
+                    <a href="orders.html?status=${key}" class="kanban-column-header" style="border-bottom-color: ${color};">
+                        <span class="title">${escapeHtml(label)}</span>
+                        <span class="count-pill" style="background: ${color};">${items.length}</span>
+                    </a>
+                    <div class="kanban-cards">${cardsHtml}</div>
+                `;
+
+                board.appendChild(column);
+            });
+        }
+
+        function getOrderTotal(order) {
+            const amount = Number(order && order.totalAmount);
+            return Number.isFinite(amount) ? amount : 0;
+        }
+
+        function computeQuoteTotal(quote) {
+            const amount = Number(quote && quote.totalAmount);
+            if (Number.isFinite(amount) && amount > 0) return amount;
+            return (quote && quote.items ? quote.items : [])
+                .reduce((sum, it) => sum + (Number(it.totalPrice) || 0), 0);
+        }
+
+        function formatCurrency(amount) {
+            return "$" + Number(amount || 0).toFixed(2);
+        }
+
+        function escapeHtml(val) {
+            const d = document.createElement("div");
+            d.textContent = val == null ? "" : String(val);
+            return d.innerHTML;
+        }
+
+        window.addEventListener("DOMContentLoaded", loadDashboard);
+    </script>
+</body>
+</html>

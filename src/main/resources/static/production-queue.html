@@ -1,453 +1,685 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Queue - Urban Print Shop</title>
+<meta charset="UTF-8">
+<title>Production Queue - Urban Print Shop</title>
+<style>
+  * { box-sizing: border-box; font-family: Arial, sans-serif; }
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+  :root {
+    --primary: #1c2b39;
+    --accent: #2563eb;
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --muted: #667085;
+    --danger: #dc2626;
+    --warning: #d97706;
+  }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f5f7;
-            color: #222;
-        }
+  body {
+    margin: 0;
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg);
+    color: #1e293b;
+  }
 
-        header {
-            background: #1c2b39;
-            color: white;
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+  aside {
+    width: 230px;
+    background: var(--primary);
+    color: #fff;
+    padding: 20px 12px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
 
-        header h1 {
-            margin: 0;
-            font-size: 20px;
-        }
+  .brand-logo-link {
+    display: block;
+    text-decoration: none;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #334155;
+  }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 16px;
-            font-size: 14px;
-        }
+  .brand-logo {
+    display: block;
+    width: 100%;
+    max-width: 190px;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+  }
 
-        .container {
-            max-width: 1400px;
-            margin: 24px auto;
-            padding: 0 20px;
-        }
+  aside nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-        .toolbar {
-            background: white;
-            padding: 18px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+  aside nav a {
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
 
-        .toolbar h2 {
-            margin: 0;
-            color: #1c2b39;
-        }
+  aside nav a:hover,
+  aside nav a.active {
+    background: #334155;
+    color: #fff;
+  }
 
-        select,
-        button {
-            padding: 9px 13px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
+  main {
+    flex: 1;
+    min-width: 0;
+  }
 
-        select {
-            border: 1px solid #bbb;
-        }
+  .container { padding: 24px; }
 
-        button {
-            border: none;
-            background: #1c2b39;
-            color: white;
-            cursor: pointer;
-        }
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
 
-        button:hover {
-            background: #294255;
-        }
+  .search-box input {
+    padding: 9px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 280px;
+    font-size: 14px;
+  }
 
-        .table-card {
-            background: white;
-            border-radius: 6px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, .1);
-            overflow-x: auto;
-        }
+  .sector-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 950px;
-        }
+  .sector-tabs button {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--muted);
+    cursor: pointer;
+  }
 
-        th,
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #e5e5e5;
-            text-align: left;
-            font-size: 14px;
-            vertical-align: middle;
-        }
+  .sector-tabs button.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
 
-        th {
-            background: #eef1f4;
-            color: #1c2b39;
-        }
+  .queue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
 
-        tr:hover {
-            background: #fafafa;
-        }
+  .queue-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
-        .order-link {
-            color: #1769aa;
-            font-weight: bold;
-            text-decoration: none;
-        }
+  .queue-card.overdue { border-left-color: var(--danger); }
+  .queue-card.due-today { border-left-color: var(--warning); }
 
-        .badge {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 13px;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            white-space: nowrap;
-        }
+  .queue-card .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
 
-        .PENDING {
-            background: #f0ad4e;
-        }
+  .queue-card .order-num {
+    font-weight: bold;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 15px;
+  }
 
-        .IN_PRODUCTION {
-            background: #2499c6;
-        }
+  .queue-card .order-num:hover { text-decoration: underline; }
 
-        .QUALITY_CHECK {
-            background: #8e44ad;
-        }
+  .due-tag {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
 
-        .READY_FOR_PICKUP {
-            background: #46a447;
-        }
+  .due-tag.overdue { background: #fee2e2; color: var(--danger); }
+  .due-tag.due-today { background: #fef3c7; color: var(--warning); }
+  .due-tag.normal { background: #f1f5f9; color: var(--muted); }
 
-        .DELIVERED {
-            background: #2c3e50;
-        }
+  .queue-card .customer {
+    margin-top: 8px;
+    font-weight: bold;
+    font-size: 14px;
+  }
 
-        .CANCELLED {
-            background: #d9534f;
-        }
+  .queue-card .item-desc {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #475569;
+  }
 
-        .LOW {
-            color: #777;
-        }
+  .queue-card .specs-preview {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    background: #f8fafc;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border-left: 2px solid #cbd5e1;
+    white-space: pre-wrap;
+    max-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-        .NORMAL {
-            color: #333;
-        }
+  .queue-card .notes-badge {
+    margin-top: 6px;
+    display: inline-block;
+    font-size: 11px;
+    background: #fef3c7;
+    color: #b45309;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
 
-        .HIGH {
-            color: #e67e22;
-            font-weight: bold;
-        }
+  .queue-card .due-date {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
 
-        .RUSH {
-            color: #d9534f;
-            font-weight: bold;
-        }
+  .queue-card .status-row {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+  }
 
-        .due-date-overdue {
-            color: #d9534f;
-            font-weight: bold;
-        }
+  .queue-card select.status-select {
+    flex: 1;
+    padding: 7px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 13px;
+  }
 
-        .due-date-today {
-            color: #e67e22;
-            font-weight: bold;
-        }
+  .queue-card select.status-select.hidden {
+    display: none;
+  }
 
-        .empty,
-        .loading,
-        .error {
-            padding: 40px;
-            text-align: center;
-            color: #777;
-        }
+  .queue-card .move-btn {
+    padding: 7px 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+  }
 
-        .error {
-            color: #b00020;
-        }
+  .queue-card .move-btn:hover { background: #101c27; }
 
-        .summary {
-            color: #666;
-            font-size: 14px;
-        }
-    </style>
+  .queue-card .specs-btn {
+    padding: 7px 10px;
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .queue-card .specs-btn:hover { background: #e2e8f0; }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+  }
+
+  .error-message {
+    display: none;
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    color: #991b1b;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-box {
+    background: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+
+  .modal-header h3 { margin: 0; font-size: 18px; }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--muted);
+  }
+
+  .modal-section { margin-bottom: 14px; }
+  .modal-section label {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .modal-specs-content {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 13px;
+    white-space: pre-wrap;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  .modal-notes-textarea {
+    width: 100%;
+    height: 90px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 13px;
+    resize: vertical;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .btn-save {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
 </head>
-
 <body>
 
-<header>
-    <h1>Urban Print Shop - Production Queue</h1>
+<aside>
+  <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
+    <img
+      src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+      alt="Urban Print Shop - Home"
+      class="brand-logo"
+    >
+  </a>
+  <nav>
+    <a href="dashboard.html">Home / Dashboard</a>
+    <a href="index.html">Customers</a>
+    <a href="products.html">Products</a>
+    <a href="quote-list.html">Quotes</a>
+    <a href="orders.html">Orders</a>
+    <a href="production-queue.html" class="active">Production Queue</a>
+  </nav>
+</aside>
 
-    <nav>
-        <a href="index.html">Customers</a>
-        <a href="products.html">Products</a>
-        <a href="quote-list.html">Quotes</a>
-        <a href="orders.html">Orders</a>
-        <a href="production-queue.html">Production Queue</a>
-    </nav>
-</header>
-
-<div class="container">
+<main>
+  <div class="container">
+    <div id="errorMessage" class="error-message"></div>
 
     <div class="toolbar">
-        <div>
-            <h2>Production Queue</h2>
-            <div id="summary" class="summary">Loading...</div>
-        </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search order #, customer or item..." oninput="renderQueue()">
+      </div>
 
-        <div>
-            <label for="statusFilter">Filter:</label>
-
-            <select id="statusFilter" onchange="renderQueue()">
-                <option value="">All active items</option>
-                <option value="PENDING">Pending</option>
-                <option value="IN_PRODUCTION">In Production</option>
-                <option value="QUALITY_CHECK">Quality Check</option>
-                <option value="READY_FOR_PICKUP">Ready for Pickup</option>
-                <option value="DELIVERED">Delivered</option>
-                <option value="CANCELLED">Cancelled</option>
-            </select>
-
-            <button onclick="loadQueue()">Refresh</button>
-        </div>
+      <div class="sector-tabs" id="sectorTabs"></div>
     </div>
 
-    <div class="table-card">
-        <div id="loading" class="loading">Loading production queue...</div>
+    <div id="queueGrid" class="queue-grid"></div>
+  </div>
+</main>
 
-        <div id="error" class="error" style="display: none;"></div>
-
-        <table id="queueTable" style="display: none;">
-            <thead>
-                <tr>
-                    <th>Order</th>
-                    <th>Customer</th>
-                    <th>Product</th>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Due Date</th>
-                    <th>Priority</th>
-                    <th>Production Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody id="queueBody"></tbody>
-        </table>
-
-        <div id="empty" class="empty" style="display: none;">
-            No production items found.
-        </div>
+<!-- MODAL SPECS & NOTES -->
+<div id="specsModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitle">Item Details</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
     </div>
+    <div class="modal-section">
+      <label>Print Specs Summary</label>
+      <div id="modalSpecs" class="modal-specs-content">No specs specified.</div>
+    </div>
+    <div class="modal-section">
+      <label>Production Notes (Shop Floor)</label>
+      <textarea id="modalNotes" class="modal-notes-textarea" placeholder="Add notes for print operator, finishing, media batch..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-close" style="font-size: 13px;" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="btnSaveNotes" onclick="saveModalNotes()">Save Notes</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    const API_URL = '/api/orders';
-    let allQueueItems = [];
+const STAGES = {
+  PENDING_PAYMENT: "Pending Payment",
+  PENDING_FILE: "Pending File",
+  GRAPHICS: "Graphics",
+  SF_QUEUE: "Small Format Queue",
+  SF_PRINTING: "SF Printing",
+  WF_QUEUE: "Wide Format Queue",
+  WF_PRINTING: "WF Printing",
+  FINISHING: "Finishing",
+  READY_FOR_PICKUP: "Ready for Pick Up",
+  SHIPPING: "Shipping",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled"
+};
 
-    function getCustomerName(customer) {
-        if (!customer) {
-            return '';
-        }
+const STAGE_ORDER = Object.keys(STAGES);
 
-        return customer.name
-            || customer.customerName
-            || customer.contactName
-            || '';
+const SECTORS = {
+  all: { label: "All Active", statuses: STAGE_ORDER.filter(s => s !== "COMPLETED" && s !== "CANCELLED") },
+  pending_payment: { label: "Pending Payment", statuses: ["PENDING_PAYMENT"] },
+  pending_file: { label: "Pending File", statuses: ["PENDING_FILE"] },
+  graphics: { label: "Graphics", statuses: ["GRAPHICS"] },
+  sf_queue: { label: "Small Format Queue", statuses: ["SF_QUEUE"] },
+  sf_printing: { label: "SF Printing", statuses: ["SF_PRINTING"] },
+  wf_queue: { label: "Wide Format Queue", statuses: ["WF_QUEUE"] },
+  wf_printing: { label: "WF Printing", statuses: ["WF_PRINTING"] },
+  finishing: { label: "Finishing", statuses: ["FINISHING"] },
+  ready: { label: "Ready for Pick Up", statuses: ["READY_FOR_PICKUP"] },
+  shipping: { label: "Shipping", statuses: ["SHIPPING"] },
+  completed: { label: "Completed", statuses: ["COMPLETED"] },
+  cancelled: { label: "Cancelled", statuses: ["CANCELLED"] }
+};
+
+let allItems = [];
+let currentSector = "all";
+let today = new Date().toISOString().split("T")[0];
+let activeItemId = null;
+
+async function loadQueue() {
+  const errBox = document.getElementById("errorMessage");
+  errBox.style.display = "none";
+
+  try {
+    const res = await fetch("/api/orders");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const orders = await res.json();
+
+    allItems = [];
+    orders.forEach(order => {
+      (order.items || []).forEach(item => {
+        allItems.push({ order, item });
+      });
+    });
+
+    renderTabs();
+    renderQueue();
+  } catch (err) {
+    console.error(err);
+    errBox.textContent = "Error loading production queue: " + err.message;
+    errBox.style.display = "block";
+  }
+}
+
+function renderTabs() {
+  const wrap = document.getElementById("sectorTabs");
+  wrap.innerHTML = "";
+
+  Object.entries(SECTORS).forEach(([key, sector]) => {
+    const count = allItems.filter(x => sector.statuses.includes(x.item.productionStatus || "PENDING_FILE")).length;
+
+    const btn = document.createElement("button");
+    btn.textContent = `${sector.label} (${count})`;
+    btn.className = key === currentSector ? "active" : "";
+    btn.onclick = () => { currentSector = key; renderTabs(); renderQueue(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderQueue() {
+  const grid = document.getElementById("queueGrid");
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
+  const sector = SECTORS[currentSector];
+
+  let filtered = allItems.filter(x => sector.statuses.includes(x.item.productionStatus || "PENDING_FILE"));
+
+  if (search) {
+    filtered = filtered.filter(({ order, item }) => {
+      const custName = getCustomerName(order).toLowerCase();
+      const itemName = getItemName(item).toLowerCase();
+      const orderNum = (order.orderNumber || "").toLowerCase();
+      return custName.includes(search) || itemName.includes(search) || orderNum.includes(search);
+    });
+  }
+
+  filtered.sort((a, b) => {
+    const da = a.order.dueDate || "9999-12-31";
+    const db = b.order.dueDate || "9999-12-31";
+    return da.localeCompare(db);
+  });
+
+  grid.innerHTML = "";
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state">No items found in this queue.</div>`;
+    return;
+  }
+
+  filtered.forEach(({ order, item }) => {
+    grid.appendChild(buildCard(order, item));
+  });
+}
+
+function buildCard(order, item) {
+  const status = item.productionStatus || "PENDING_FILE";
+  const custName = getCustomerName(order);
+  const itemName = getItemName(item);
+
+  let dueClass = "normal";
+  let dueLabel = order.dueDate || "No due date";
+  if (order.dueDate) {
+    if (order.dueDate < today) { dueClass = "overdue"; dueLabel = "OVERDUE — " + order.dueDate; }
+    else if (order.dueDate === today) { dueClass = "due-today"; dueLabel = "DUE TODAY"; }
+  }
+
+  const card = document.createElement("div");
+  card.className = "queue-card " + (dueClass !== "normal" ? dueClass : "");
+
+  const optionsHtml = STAGE_ORDER.map(key =>
+    `<option value="${key}" ${key === status ? "selected" : ""}>${STAGES[key]}</option>`
+  ).join("");
+
+  card.innerHTML = `
+    <div>
+      <div class="top-row">
+        <a href="order-details.html?id=${order.id}" class="order-num">${escapeHtml(order.orderNumber || "")}</a>
+        <span class="due-tag ${dueClass}">${escapeHtml(dueLabel)}</span>
+      </div>
+      <div class="customer">${escapeHtml(custName)}</div>
+      <div class="item-desc"><strong>Qty: ${item.quantity || 1}</strong> — ${escapeHtml(itemName)}</div>
+      ${item.printSpecsSummary ? `<div class="specs-preview">${escapeHtml(item.printSpecsSummary)}</div>` : ''}
+      ${item.productionNotes ? `<span class="notes-badge">📝 Notes attached</span>` : ''}
+    </div>
+
+    <div class="status-row">
+      <button class="specs-btn" onclick="openModal(${item.id})">Specs / Notes</button>
+      <select class="status-select hidden" data-item-id="${item.id}">${optionsHtml}</select>
+      <button class="move-btn" data-item-id="${item.id}">Move ▾</button>
+    </div>
+  `;
+
+  const select = card.querySelector(".status-select");
+  const moveBtn = card.querySelector(".move-btn");
+
+  moveBtn.addEventListener("click", () => {
+    select.classList.remove("hidden");
+    moveBtn.style.display = "none";
+
+    if (typeof select.showPicker === "function") {
+      select.focus();
+      select.showPicker();
+    } else {
+      select.focus();
+    }
+  });
+
+  select.addEventListener("change", (e) => {
+    updateItemStatus(item.id, e.target.value);
+  });
+
+  select.addEventListener("blur", () => {
+    select.classList.add("hidden");
+    moveBtn.style.display = "inline-block";
+  });
+
+  return card;
+}
+
+async function updateItemStatus(itemId, newStatus) {
+  const errBox = document.getElementById("errorMessage");
+  errBox.style.display = "none";
+
+  try {
+    const res = await fetch(`/api/order-items/${itemId}/status?status=${newStatus}`, {
+      method: "PATCH"
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error("HTTP " + res.status + " — " + text);
     }
 
-    function formatStatus(status) {
-        return String(status || '')
-            .replaceAll('_', ' ');
-    }
+    await loadQueue();
+  } catch (err) {
+    console.error(err);
+    errBox.textContent = "Error updating status: " + err.message;
+    errBox.style.display = "block";
+  }
+}
 
-    function isOverdue(date) {
-        if (!date) {
-            return false;
-        }
+function openModal(itemId) {
+  const entry = allItems.find(x => x.item.id === itemId);
+  if (!entry) return;
 
-        const today = new Date().toISOString().split('T')[0];
-        return date < today;
-    }
+  activeItemId = itemId;
+  document.getElementById("modalTitle").textContent = `${entry.order.orderNumber} — ${getItemName(entry.item)}`;
+  document.getElementById("modalSpecs").textContent = entry.item.printSpecsSummary || "No print specifications provided for this item.";
+  document.getElementById("modalNotes").value = entry.item.productionNotes || "";
+  document.getElementById("specsModal").style.display = "flex";
+}
 
-    function isToday(date) {
-        if (!date) {
-            return false;
-        }
+function closeModal() {
+  document.getElementById("specsModal").style.display = "none";
+  activeItemId = null;
+}
 
-        const today = new Date().toISOString().split('T')[0];
-        return date === today;
-    }
+async function saveModalNotes() {
+  if (!activeItemId) return;
+  const notes = document.getElementById("modalNotes").value;
+  const btn = document.getElementById("btnSaveNotes");
+  btn.disabled = true;
 
-    async function loadQueue() {
-        const loading = document.getElementById('loading');
-        const error = document.getElementById('error');
-        const table = document.getElementById('queueTable');
+  try {
+    const res = await fetch(`/api/order-items/${activeItemId}/notes`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productionNotes: notes })
+    });
 
-        loading.style.display = 'block';
-        error.style.display = 'none';
-        table.style.display = 'none';
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    closeModal();
+    await loadQueue();
+  } catch (err) {
+    alert("Error saving notes: " + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
 
-        try {
-            const response = await fetch(API_URL);
+function getCustomerName(order) {
+  const c = order.customer || {};
+  return c.customerName || c.name || c.contactName || "N/A";
+}
 
-            if (!response.ok) {
-                throw new Error('Could not load orders.');
-            }
+function getItemName(item) {
+  return (item.product && item.product.productName) || item.itemDescription || "Custom Item";
+}
 
-            const orders = await response.json();
+function escapeHtml(val) {
+  const d = document.createElement("div");
+  d.textContent = val == null ? "" : String(val);
+  return d.innerHTML;
+}
 
-            allQueueItems = [];
-
-            orders.forEach(order => {
-                (order.items || []).forEach(item => {
-                    allQueueItems.push({
-                        order: order,
-                        item: item
-                    });
-                });
-            });
-
-            loading.style.display = 'none';
-            renderQueue();
-
-        } catch (e) {
-            loading.style.display = 'none';
-            error.textContent = e.message;
-            error.style.display = 'block';
-        }
-    }
-
-    function renderQueue() {
-        const filter = document.getElementById('statusFilter').value;
-        const tbody = document.getElementById('queueBody');
-        const table = document.getElementById('queueTable');
-        const empty = document.getElementById('empty');
-        const summary = document.getElementById('summary');
-
-        const filteredItems = allQueueItems.filter(({ item }) => {
-            const status = item.productionStatus || 'PENDING';
-
-            if (!filter) {
-                return status !== 'DELIVERED' && status !== 'CANCELLED';
-            }
-
-            return status === filter;
-        });
-
-        tbody.innerHTML = '';
-
-        summary.textContent =
-            `${filteredItems.length} production item(s)`;
-
-        if (filteredItems.length === 0) {
-            table.style.display = 'none';
-            empty.style.display = 'block';
-            return;
-        }
-
-        empty.style.display = 'none';
-        table.style.display = 'table';
-
-        filteredItems.sort((a, b) => {
-            const dateA = a.order.dueDate || '9999-12-31';
-            const dateB = b.order.dueDate || '9999-12-31';
-
-            return dateA.localeCompare(dateB);
-        });
-
-        filteredItems.forEach(({ order, item }) => {
-            const row = document.createElement('tr');
-
-            const dueDateClass = isOverdue(order.dueDate)
-                ? 'due-date-overdue'
-                : isToday(order.dueDate)
-                    ? 'due-date-today'
-                    : '';
-
-            const productName = item.product
-                ? item.product.productName || ''
-                : '';
-
-            row.innerHTML = `
-                <td>
-                    <a class="order-link"
-                       href="order-details.html?id=${order.id}">
-                        ${order.orderNumber || ''}
-                    </a>
-                </td>
-
-                <td>${getCustomerName(order.customer)}</td>
-
-                <td>${productName}</td>
-
-                <td>
-                    ${item.itemDescription || ''}
-                    <br>
-                    <small>${item.printSpecsSummary || ''}</small>
-                </td>
-
-                <td>${item.quantity || 0}</td>
-
-                <td class="${dueDateClass}">
-                    ${order.dueDate || 'Not defined'}
-                </td>
-
-                <td class="${order.priority || 'NORMAL'}">
-                    ${order.priority || 'NORMAL'}
-                </td>
-
-                <td>
-                    <span class="badge ${item.productionStatus || 'PENDING'}">
-                        ${formatStatus(item.productionStatus || 'PENDING')}
-                    </span>
-                </td>
-
-                <td>
-                    <button onclick="openOrder(${order.id})">
-                        Open Order
-                    </button>
-                </td>
-            `;
-
-            tbody.appendChild(row);
-        });
-    }
-
-    function openOrder(orderId) {
-        window.location.href = `order-details.html?id=${orderId}`;
-    }
-
-    loadQueue();
+window.addEventListener("DOMContentLoaded", loadQueue);
 </script>
 
 </body>

@@ -33,37 +33,46 @@
         }
 
         aside {
-            width: 250px;
+            width: 230px;
             background: var(--primary);
             color: white;
-            padding: 24px 14px;
+            padding: 20px 12px;
             flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        .brand {
-            padding: 0 8px 24px;
-            font-weight: bold;
-            font-size: 1.15rem;
+        .brand-logo-link {
+            display: block;
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
             border-bottom: 1px solid #475569;
         }
 
-        .brand span {
-            color: #38bdf8;
+        .brand-logo {
+            display: block;
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
         }
 
         nav {
-            margin-top: 20px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         nav a {
             color: #cbd5e1;
             text-decoration: none;
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         nav a:hover,
@@ -74,6 +83,7 @@
 
         main {
             flex: 1;
+            min-width: 0;
         }
 
         header {
@@ -83,6 +93,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         header h1 {
@@ -99,6 +111,7 @@
         .header-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .content {
@@ -208,6 +221,15 @@
             font-size: 0.92rem;
         }
 
+        .edit-customer-select {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            width: 100%;
+            margin-top: 6px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -285,13 +307,19 @@
 <body>
 
 <aside>
-    <div class="brand">URBAN <span>PRINT</span></div>
+    <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
+        <img
+            src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+            alt="Urban Print Shop - Home"
+            class="brand-logo"
+        >
+    </a>
 
     <nav>
-        <a href="/">Customers</a>
-        <a href="/products.html">Products & Pricing</a>
-        <a href="/quote-list.html" class="active">Quotes</a>
-        <a href="/quotes.html">New Quote</a>
+        <a href="dashboard.html">Home / Dashboard</a>
+        <a href="index.html">Customers</a>
+        <a href="products.html">Products</a>
+        <a href="quote-list.html" class="active">Quotes</a>
         <a href="orders.html">Orders</a>
         <a href="production-queue.html">Production Queue</a>
     </nav>
@@ -324,6 +352,7 @@
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const quoteId = urlParams.get('id');
+    let currentQuote = null;
 
     document.addEventListener("DOMContentLoaded", () => {
         if (!quoteId) {
@@ -353,6 +382,8 @@
     }
 
     function renderQuote(quote) {
+        currentQuote = quote;
+
         document.getElementById("pageTitle").textContent = `Quote ${quote.quoteNumber || ''}`;
 
         const convertBtn = document.getElementById("convertBtn");
@@ -410,11 +441,20 @@
 
             <div class="parties-grid">
                 <div class="party-box">
-                    <h4>Prepared For (Customer)</h4>
-                    <p><strong>${escapeHtml(customerName)}</strong></p>
-                    <p>Email: ${escapeHtml(email)}</p>
-                    <p>Phone: ${escapeHtml(phone)}</p>
-                    <p>Address: ${escapeHtml(address)}</p>
+                    <h4>Prepared For (Customer)
+                        <button onclick="toggleEditCustomer()" style="float:right;background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.78rem;font-weight:bold;">Change</button>
+                    </h4>
+                    <div id="customerViewMode">
+                        <p><strong>${escapeHtml(customerName)}</strong></p>
+                        <p>Email: ${escapeHtml(email)}</p>
+                        <p>Phone: ${escapeHtml(phone)}</p>
+                        <p>Address: ${escapeHtml(address)}</p>
+                    </div>
+                    <div id="customerEditMode" style="display:none;">
+                        <select id="customerSelect" class="edit-customer-select"></select>
+                        <button class="btn btn-primary" style="margin-top:8px;padding:6px 12px;font-size:0.8rem;" onclick="saveCustomerChange()">Save</button>
+                        <button class="btn btn-secondary" style="margin-top:8px;padding:6px 12px;font-size:0.8rem;" onclick="toggleEditCustomer()">Cancel</button>
+                    </div>
                 </div>
 
                 <div class="party-box">
@@ -466,6 +506,58 @@
                 </div>
             ` : ''}
         `;
+    }
+
+    function toggleEditCustomer() {
+        const viewMode = document.getElementById("customerViewMode");
+        const editMode = document.getElementById("customerEditMode");
+        const isHidden = editMode.style.display === "none";
+
+        if (isHidden) {
+            loadCustomerOptions();
+        }
+
+        viewMode.style.display = isHidden ? "none" : "block";
+        editMode.style.display = isHidden ? "block" : "none";
+    }
+
+    async function loadCustomerOptions() {
+        try {
+            const res = await fetch("/api/customers");
+            if (!res.ok) throw new Error("Could not load customers.");
+            const customers = await res.json();
+
+            const select = document.getElementById("customerSelect");
+            select.innerHTML = customers.map(c => {
+                const name = c.customerName || c.companyName || c.name || `Customer #${c.id}`;
+                const selected = currentQuote?.customer?.id === c.id ? "selected" : "";
+                return `<option value="${c.id}" ${selected}>${name}</option>`;
+            }).join("");
+        } catch (e) {
+            console.error(e);
+            alert("Error loading customer list.");
+        }
+    }
+
+    async function saveCustomerChange() {
+        const newCustomerId = document.getElementById("customerSelect").value;
+
+        try {
+            const updatedQuote = { ...currentQuote, customer: { id: Number(newCustomerId) } };
+
+            const res = await fetch(`/api/quotes/${quoteId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedQuote)
+            });
+
+            if (!res.ok) throw new Error("Could not update customer.");
+            alert("Customer updated successfully!");
+            loadQuoteDetails();
+        } catch (e) {
+            console.error(e);
+            alert("Error updating customer.");
+        }
     }
 
     async function markAsSent() {
