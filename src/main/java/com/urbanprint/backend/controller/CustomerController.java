@@ -43,6 +43,10 @@ public class CustomerController {
                 .map(existingCustomer -> {
                     existingCustomer.setName(customer.getName());
                     existingCustomer.setCompanyName(customer.getCompanyName());
+                    existingCustomer.setContactPosition(
+                            customer.getContactPosition()
+                    );
+                    existingCustomer.setWebsite(customer.getWebsite());
                     existingCustomer.setEmail(customer.getEmail());
                     existingCustomer.setPhone(customer.getPhone());
                     existingCustomer.setAddress(customer.getAddress());

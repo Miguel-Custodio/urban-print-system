@@ -1,7 +1,7 @@
 package com.urbanprint.backend.controller;
 
 import com.urbanprint.backend.model.Product;
-import com.urbanprint.backend.model.ProductPriceScale;
+import com.urbanprint.backend.model.ProductSize;
 import com.urbanprint.backend.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,18 +51,16 @@ public class ProductController {
                     existingProduct.setBaseCost(product.getBaseCost());
                     existingProduct.setBasePrice(product.getBasePrice());
                     existingProduct.setMinimumOrderFee(product.getMinimumOrderFee());
-                    existingProduct.setDefaultWidth(product.getDefaultWidth());
-                    existingProduct.setDefaultHeight(product.getDefaultHeight());
                     existingProduct.setDefaultStock(product.getDefaultStock());
                     existingProduct.setSidesInks(product.getSidesInks());
                     existingProduct.setProductionDepartment(product.getProductionDepartment());
                     existingProduct.setTurnaroundDays(product.getTurnaroundDays());
                     existingProduct.setActive(product.isActive());
 
-                    existingProduct.getPriceScales().clear();
-                    if (product.getPriceScales() != null) {
-                        for (ProductPriceScale scale : product.getPriceScales()) {
-                            existingProduct.addPriceScale(scale);
+                    existingProduct.getSizes().clear();
+                    if (product.getSizes() != null) {
+                        for (ProductSize size : product.getSizes()) {
+                            existingProduct.addSize(size);
                         }
                     }
 
@@ -73,11 +71,10 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return productService.findById(id)
-                .map(product -> {
-                    productService.deleteById(id);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if (productService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        productService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

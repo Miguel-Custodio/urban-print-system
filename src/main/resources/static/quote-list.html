@@ -196,6 +196,16 @@
             text-transform: uppercase;
         }
 
+        .quote-link {
+            color: var(--accent);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .quote-link:hover {
+            text-decoration: underline;
+        }
+
         .status {
             display: inline-block;
             padding: 5px 9px;
@@ -314,7 +324,7 @@
                     </select>
                 </div>
 
-                <a href="/quotes.html" class="button-link btn-primary">
+                <a href="/quote-details.html" class="button-link btn-primary">
                     + New Quote
                 </a>
             </div>
@@ -412,7 +422,11 @@
             return `
                 <tr>
                     <td>
-                        <strong>${escapeHtml(quote.quoteNumber || "-")}</strong>
+                        <a href="/quote-print.html?id=${quote.id}"
+                           class="quote-link"
+                           title="View quote">
+                            ${escapeHtml(quote.quoteNumber || "-")}
+                        </a>
                     </td>
 
                     <td>${escapeHtml(customerName)}</td>
@@ -437,8 +451,8 @@
 
                     <td>
                         <button class="btn-secondary"
-                                onclick="viewQuote(${quote.id})">
-                            View
+                                onclick="editQuote(${quote.id})">
+                            Edit
                         </button>
 
                         <button class="btn-danger"
@@ -456,10 +470,14 @@
             return "-";
         }
 
-        return customer.customerName
-            || customer.companyName
-            || customer.name
-            || `Customer #${customer.id}`;
+        const company = customer.companyName || "";
+        const contact = customer.name || "";
+
+        if (company && contact) {
+            return `${company} — ${contact}`;
+        }
+
+        return company || contact || `Customer #${customer.id}`;
     }
 
     function formatCurrency(value) {
@@ -471,7 +489,7 @@
         }).format(number);
     }
 
-    function viewQuote(id) {
+    function editQuote(id) {
         window.location.href = `/quote-details.html?id=${id}`;
     }
 

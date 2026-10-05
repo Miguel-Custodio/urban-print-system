@@ -20,6 +20,10 @@ public class Customer {
 
     private String companyName;
 
+    private String contactPosition;
+
+    private String website;
+
     private String email;
 
     private String phone;
@@ -38,6 +42,8 @@ public class Customer {
     public Customer(
             String name,
             String companyName,
+            String contactPosition,
+            String website,
             String email,
             String phone,
             String address,
@@ -46,6 +52,8 @@ public class Customer {
     ) {
         this.name = name;
         this.companyName = companyName;
+        this.contactPosition = contactPosition;
+        this.website = website;
         this.email = email;
         this.phone = phone;
         this.address = address;
@@ -72,6 +80,22 @@ public class Customer {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public String getContactPosition() {
+        return contactPosition;
+    }
+
+    public void setContactPosition(String contactPosition) {
+        this.contactPosition = contactPosition;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     public String getEmail() {

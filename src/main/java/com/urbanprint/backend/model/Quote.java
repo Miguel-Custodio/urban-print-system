@@ -31,6 +31,9 @@ public class Quote {
     @Column(nullable = false)
     private String status = "DRAFT"; // DRAFT, SENT, ACCEPTED, REJECTED, CONVERTED
 
+    // Delivery: PICKUP, ZONE_A, ZONE_B, ZONE_C, ZONE_F, COURIER
+    private String deliveryMethod;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
@@ -78,6 +81,9 @@ public class Quote {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getDeliveryMethod() { return deliveryMethod; }
+    public void setDeliveryMethod(String deliveryMethod) { this.deliveryMethod = deliveryMethod; }
 
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }

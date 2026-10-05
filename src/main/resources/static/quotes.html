@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urban Print Shop — Quotes</title>
+    <title>Quote Details - Urban Print Shop</title>
 
     <style>
         :root {
             --primary: #1e293b;
             --accent: #2563eb;
-            --accent-hover: #1d4ed8;
             --success: #16a34a;
             --danger: #dc2626;
             --bg: #f8fafc;
@@ -17,7 +16,6 @@
             --border: #e2e8f0;
             --text: #0f172a;
             --muted: #64748b;
-            --section-title: #0284c7;
         }
 
         * {
@@ -35,43 +33,45 @@
 
         aside {
             width: 230px;
-            background: var(--primary);
+            background: #1e293b;
             color: white;
-            padding: 24px 14px;
+            padding: 20px 12px;
             flex-shrink: 0;
             position: sticky;
             top: 0;
-            align-self: flex-start;
             height: 100vh;
             overflow-y: auto;
         }
 
-        .brand-link {
+        .brand-logo-link {
             display: block;
-            padding: 0 8px 24px;
+            text-decoration: none;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
             border-bottom: 1px solid #475569;
         }
 
         .brand-logo {
-            width: 100%;
-            max-height: 70px;
-            object-fit: contain;
             display: block;
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
         }
 
         nav {
-            margin-top: 20px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         nav a {
             color: #cbd5e1;
             text-decoration: none;
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         nav a:hover,
@@ -82,136 +82,73 @@
 
         main {
             flex: 1;
+            min-width: 0;
+            padding: 22px;
         }
 
-        header {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 20px 32px;
-        }
-
-        header h1 {
+        h1 {
             margin: 0;
-            font-size: 1.4rem;
+            font-size: 22px;
+            color: #172235;
         }
 
-        header p {
-            margin: 5px 0 0;
+        .subtitle {
+            margin: 5px 0 20px;
             color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        .content {
-            padding: 28px 32px;
-            max-width: 1500px;
+            font-size: 13px;
         }
 
         .card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px #0000000d;
+            border-radius: 7px;
+            padding: 18px;
+            margin-bottom: 18px;
         }
 
-        .section-header {
-            font-size: 0.92rem;
-            font-weight: bold;
-            color: var(--section-title);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 0 0 14px;
-            padding-bottom: 7px;
-            border-bottom: 1px solid var(--border);
+        .message {
+            display: none;
+            padding: 10px 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
+        .message.success {
+            display: block;
+            background: #ddf8e8;
+            color: #08753e;
         }
 
-        .form-group {
+        .message.error {
+            display: block;
+            background: #ffe4e4;
+            color: #a51f1f;
+            word-break: break-word;
+        }
+
+        .edit-banner {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            color: var(--muted);
-            font-size: 0.82rem;
-            font-weight: bold;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.92rem;
-            background: white;
-        }
-
-        textarea {
-            min-height: 85px;
-            resize: vertical;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .customer-info {
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
             background: #eff6ff;
             border: 1px solid #bfdbfe;
-            color: #1e3a8a;
-            border-radius: 6px;
-            padding: 12px;
-            margin-top: 16px;
-            display: none;
-            font-size: 0.88rem;
+            flex-wrap: wrap;
         }
 
-        .item-builder {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 16px;
+        .banner-actions {
+            display: flex;
+            gap: 8px;
         }
 
-        .builder-grid {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 1.5fr 1fr auto;
-            gap: 12px;
-            align-items: end;
-        }
-
-        .btn {
+        button {
             border: 0;
-            border-radius: 6px;
-            padding: 11px 18px;
+            border-radius: 4px;
+            padding: 9px 13px;
             cursor: pointer;
+            font-size: 12px;
             font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
         }
 
         .btn-success {
@@ -220,120 +157,211 @@
         }
 
         .btn-success:hover {
-            background: #15803d;
+            background: #12813b;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text);
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-danger {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 7px 10px;
+            background: #ffe1e1;
+            color: #b42323;
         }
 
-        .btn-danger:hover {
-            background: #fecaca;
+        .btn-small {
+            padding: 6px 9px;
+            font-size: 11px;
         }
 
-        .btn-add {
-            background: #dbeafe;
-            color: #1d4ed8;
-            white-space: nowrap;
-        }
-
-        .price-preview {
-            height: 38px;
-            padding: 10px;
-            background: #e2e8f0;
-            color: #0f172a;
-            border-radius: 6px;
+        label {
+            font-size: 11px;
+            color: #536071;
             font-weight: bold;
-            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: block;
         }
 
-        .table-responsive {
+        input,
+        select {
+            width: 100%;
+            border: 1px solid #d5dce5;
+            border-radius: 4px;
+            padding: 9px 10px;
+            font-size: 13px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+        }
+
+        .delivery-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .delivery-row label {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .delivery-row select {
+            width: 220px;
+        }
+
+        .table-wrapper {
             overflow-x: auto;
         }
 
-        table {
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        .items-table th {
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 10px 8px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table td {
+            border-bottom: 1px solid var(--border);
+            padding: 8px 6px;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        .num {
+            text-align: right;
+        }
+
+        .num-input {
+            text-align: right;
+        }
+
+        .items-table input {
+            padding: 7px 8px;
+            font-size: 12px;
+        }
+
+        .section-title {
+            color: #0879bd;
+            font-weight: bold;
+            font-size: 13px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+        }
+
+        .add-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 2fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .scale-box {
+            display: none;
+            margin-top: 14px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+
+        .options-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .scale-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        th,
-        td {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--border);
+        .scale-table th {
             text-align: left;
-            font-size: 0.88rem;
-            vertical-align: top;
-        }
-
-        th {
+            font-size: 10px;
             color: var(--muted);
-            background: #f1f5f9;
-            font-size: 0.75rem;
-            text-transform: uppercase;
+            padding: 5px 8px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .empty {
-            text-align: center;
-            color: var(--muted);
-            padding: 24px;
+        .scale-table td {
+            font-size: 12px;
+            padding: 7px 8px;
+            border-bottom: 1px solid #eef2f7;
         }
 
-        .summary {
+        .scale-row {
+            cursor: pointer;
+        }
+
+        .scale-row:hover {
+            background: #eff6ff;
+        }
+
+        .totals {
             margin-left: auto;
-            max-width: 380px;
-            margin-top: 22px;
+            width: 320px;
+            margin-top: 20px;
         }
 
-        .summary-row {
+        .totals-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            padding: 7px 0;
             color: var(--muted);
+            font-size: 0.92rem;
         }
 
-        .summary-total {
-            display: flex;
-            justify-content: space-between;
-            border-top: 2px solid var(--border);
-            margin-top: 8px;
-            padding-top: 14px;
-            font-size: 1.25rem;
-            font-weight: bold;
+        .totals-row strong {
             color: var(--text);
         }
 
-        .actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 24px;
+        .totals-row.grand {
+            border-top: 2px solid var(--primary);
+            margin-top: 6px;
+            padding-top: 12px;
+            font-size: 1.1rem;
         }
 
-        .message {
-            display: none;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+        .totals-row.grand strong {
+            font-size: 1.1rem;
         }
 
-        .message.success {
-            display: block;
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #86efac;
+        @media (max-width: 1100px) {
+            .add-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        .message.error {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-
-        @media (max-width: 900px) {
+        @media (max-width: 700px) {
             body {
                 display: block;
             }
@@ -341,7 +369,7 @@
             aside {
                 width: 100%;
                 height: auto;
-                position: static;
+                position: relative;
             }
 
             nav {
@@ -349,16 +377,16 @@
                 flex-wrap: wrap;
             }
 
-            .content {
-                padding: 20px 14px;
+            main {
+                padding: 12px;
             }
 
-            .builder-grid {
+            .add-grid {
                 grid-template-columns: 1fr;
             }
 
-            .actions {
-                flex-direction: column;
+            .totals {
+                width: 100%;
             }
         }
     </style>
@@ -367,14 +395,18 @@
 <body>
 
 <aside>
-    <a href="dashboard.html" class="brand-link">
-        <img src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png" alt="Urban Print Shop" class="brand-logo">
+    <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
+        <img
+            src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+            alt="Urban Print Shop - Home"
+            class="brand-logo"
+        >
     </a>
 
     <nav>
         <a href="dashboard.html">Home / Dashboard</a>
         <a href="index.html">Customers</a>
-        <a href="products.html">Products & Pricing</a>
+        <a href="products.html">Products</a>
         <a href="quote-list.html" class="active">Quotes</a>
         <a href="orders.html">Orders</a>
         <a href="production-queue.html">Production Queue</a>
@@ -382,419 +414,283 @@
 </aside>
 
 <main>
-    <header>
-        <h1>Create Quote</h1>
-        <p>Select a customer, add products, and prepare a professional quotation.</p>
-    </header>
+    <h1 id="pageTitle">Quote</h1>
+    <div class="subtitle">Review customer quotation summary.</div>
 
-    <div class="content">
+    <div id="message" class="message"></div>
 
-        <div id="message" class="message"></div>
+    <div class="card edit-banner">
+        <div>
+            <strong>Editing quote.</strong>
+            Add, remove or change items, then click Save Changes.
+        </div>
 
-        <section class="card">
-            <div class="section-header">1. Quote Information</div>
+        <div class="banner-actions">
+            <button type="button" class="btn-success" onclick="saveQuote()">
+                Save Changes
+            </button>
+            <a href="quote-list.html" class="btn-secondary">Cancel</a>
+        </div>
+    </div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="customerSelect">Customer *</label>
-                    <select id="customerSelect" required>
-                        <option value="">Loading customers...</option>
-                    </select>
+    <div class="card">
+        <div class="delivery-row">
+            <label for="deliveryMethod">Delivery Method:</label>
+            <select id="deliveryMethod"></select>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="items-table">
+                <thead>
+                <tr>
+                    <th>Product / Description</th>
+                    <th>Print Specs</th>
+                    <th class="num">Quantity</th>
+                    <th class="num">Unit Price ($)</th>
+                    <th class="num">Total</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="itemsBody">
+                <tr>
+                    <td colspan="6">Loading quote...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="add-item-box" style="margin-top: 22px;">
+            <div class="section-title">Add Item</div>
+
+            <div class="add-grid">
+                <div>
+                    <label for="addProduct">Product</label>
+                    <select id="addProduct" onchange="onAddProductChange()"></select>
                 </div>
 
-                <div class="form-group">
-                    <label for="issueDate">Issue Date *</label>
-                    <input type="date" id="issueDate" required>
+                <div id="sizeGroup" style="display: none;">
+                    <label for="addSize">Size / Variation</label>
+                    <select id="addSize" onchange="onAddSizeChange()"></select>
                 </div>
 
-                <div class="form-group">
-                    <label for="expiryDate">Expiry Date *</label>
-                    <input type="date" id="expiryDate" required>
+                <div>
+                    <label for="addDescription">Description</label>
+                    <input id="addDescription" placeholder="Item description">
                 </div>
 
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <select id="status">
-                        <option value="DRAFT">Draft</option>
-                        <option value="SENT">Sent</option>
-                    </select>
+                <div>
+                    <label for="addQuantity">Quantity</label>
+                    <input id="addQuantity" type="number" min="1" step="1"
+                           oninput="onAddQuantityInput()">
                 </div>
 
-                <div class="form-group">
-                    <label for="gstRate">GST Rate (%)</label>
-                    <input type="number" id="gstRate" value="5.00" min="0" step="0.01"
-                           oninput="calculateTotals()">
+                <div>
+                    <label for="addUnitPrice">Unit Price ($)</label>
+                    <input id="addUnitPrice" type="number" min="0" step="0.01"
+                           oninput="updateAddPreview()">
                 </div>
 
-                <div class="form-group">
-                    <label for="pstRate">PST Rate (%)</label>
-                    <input type="number" id="pstRate" value="7.00" min="0" step="0.01"
-                           oninput="calculateTotals()">
-                </div>
-
-                <div class="form-group form-full">
-                    <label for="notes">Notes / Terms</label>
-                    <textarea id="notes"
-                              placeholder="Payment terms, production notes, delivery information..."></textarea>
-                </div>
-            </div>
-
-            <div id="customerInfo" class="customer-info"></div>
-        </section>
-
-        <section class="card">
-            <div class="section-header">2. Add Quote Items</div>
-
-            <div class="item-builder">
-                <div class="builder-grid">
-                    <div class="form-group">
-                        <label for="productSelect">Product *</label>
-                        <select id="productSelect" onchange="loadProductScales()">
-                            <option value="">Loading products...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="scaleSelect">Quantity / Price *</label>
-                        <select id="scaleSelect" onchange="updatePricePreview()">
-                            <option value="">Select a product first</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="customDescription">Description</label>
-                        <input id="customDescription"
-                               placeholder="Optional custom description">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Selected Price</label>
-                        <div id="pricePreview" class="price-preview">$0.00</div>
-                    </div>
-
-                    <button type="button" class="btn btn-add" onclick="addQuoteItem()">
+                <div>
+                    <button type="button" class="btn-primary" onclick="addItemFromForm()">
                         + Add Item
                     </button>
                 </div>
             </div>
 
-            <div class="table-responsive" style="margin-top: 22px;">
-                <table>
+            <div id="addTotalPreviewRow" style="margin-top: 10px; font-size: 12px; color: #64748b;">
+                Item total: <strong id="addTotalPreview">—</strong>
+            </div>
+
+            <div id="scaleBox" class="scale-box">
+                <div class="options-title" id="scaleTitle"></div>
+                <table class="scale-table">
                     <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Description / Specs</th>
                         <th>Quantity</th>
                         <th>Unit Price</th>
-                        <th>Total Price</th>
-                        <th>Action</th>
+                        <th>Total</th>
                     </tr>
                     </thead>
-
-                    <tbody id="quoteItemsBody">
-                    <tr>
-                        <td colspan="6" class="empty">
-                            No items added to this quote yet.
-                        </td>
-                    </tr>
-                    </tbody>
+                    <tbody id="scaleTableBody"></tbody>
                 </table>
             </div>
+        </div>
 
-            <div class="summary">
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <strong id="subtotal">$0.00</strong>
-                </div>
-
-                <div class="summary-row">
-                    <span>GST (5%)</span>
-                    <strong id="gstAmount">$0.00</strong>
-                </div>
-
-                <div class="summary-row">
-                    <span>PST (7%)</span>
-                    <strong id="pstAmount">$0.00</strong>
-                </div>
-
-                <div class="summary-total">
-                    <span>Total</span>
-                    <span id="totalAmount">$0.00</span>
-                </div>
+        <div class="totals">
+            <div class="totals-row">
+                <span>Subtotal</span>
+                <strong id="subtotalCell">$0.00</strong>
             </div>
-
-            <div class="actions">
-                <button type="button" class="btn btn-primary" onclick="saveQuote()">
-                    Save Quote
-                </button>
+            <div class="totals-row">
+                <span id="gstLabel">GST</span>
+                <strong id="gstCell">$0.00</strong>
             </div>
-        </section>
+            <div class="totals-row">
+                <span id="pstLabel">PST</span>
+                <strong id="pstCell">$0.00</strong>
+            </div>
+            <div class="totals-row grand">
+                <span>Total</span>
+                <strong id="totalCell">$0.00 CAD</strong>
+            </div>
+        </div>
     </div>
 </main>
 
 <script>
-    const CUSTOMERS_API = "/api/customers";
-    const PRODUCTS_API = "/api/products";
     const QUOTES_API = "/api/quotes";
+    const PRODUCTS_API = "/api/products";
+    const CUSTOMERS_API = "/api/customers";
 
-    let customers = [];
+    const DELIVERY_OPTIONS = [
+        { value: "PICKUP", label: "Pick-up" },
+        { value: "ZONE_A", label: "Delivery Zone A" },
+        { value: "ZONE_B", label: "Delivery Zone B" },
+        { value: "ZONE_C", label: "Delivery Zone C" },
+        { value: "ZONE_F", label: "Delivery Zone F" },
+        { value: "COURIER", label: "Courier" }
+    ];
+
+    let quote = null;
     let products = [];
-    let quoteItems = [];
+    let customers = [];
+    let items = [];
 
-    document.addEventListener("DOMContentLoaded", async () => {
-        setDefaultDates();
-        await loadCustomers();
-        await loadProducts();
+    document.addEventListener("DOMContentLoaded", init);
 
-        document.getElementById("customerSelect")
-            .addEventListener("change", showCustomerInfo);
-    });
+    async function init() {
+        const quoteId = new URLSearchParams(window.location.search).get("id");
 
-    function setDefaultDates() {
-        const today = new Date();
-        const expiry = new Date(today);
-        expiry.setDate(expiry.getDate() + 30);
-
-        document.getElementById("issueDate").value = formatDate(today);
-        document.getElementById("expiryDate").value = formatDate(expiry);
-    }
-
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-
-        return `${year}-${month}-${day}`;
-    }
-
-    async function loadCustomers() {
-        const select = document.getElementById("customerSelect");
+        if (!quoteId) {
+            showMessage("No quote id was provided in the URL. Open this page from the quotes list.", "error");
+            return;
+        }
 
         try {
-            const response = await fetch(CUSTOMERS_API);
+            const results = await Promise.all([
+                loadQuote(quoteId),
+                fetchJson(PRODUCTS_API).catch(() => []),
+                fetchJson(CUSTOMERS_API).catch(() => [])
+            ]);
 
-            if (!response.ok) {
-                throw new Error("Could not load customers.");
+            quote = results[0];
+            products = results[1] || [];
+            customers = results[2] || [];
+
+            if (!quote) {
+                showMessage("Quote not found. Check if the quote id is correct.", "error");
+                return;
             }
 
-            customers = await response.json();
+            items = (Array.isArray(quote.items) ? quote.items : []).map(normalizeItem);
 
-            select.innerHTML = '<option value="">Select a customer</option>';
-
-            customers.forEach(customer => {
-                const option = document.createElement("option");
-                option.value = customer.id;
-                option.textContent = getCustomerName(customer);
-                select.appendChild(option);
-            });
+            renderHeader();
+            renderDelivery();
+            renderItems();
+            renderTotals();
+            renderAddForm();
         } catch (error) {
             console.error(error);
-            select.innerHTML = '<option value="">Failed to load customers</option>';
+            showMessage("Could not load this quote. Check the backend terminal and reload the page.", "error");
         }
     }
 
-    async function loadProducts() {
-        const select = document.getElementById("productSelect");
+    async function fetchJson(url) {
+        const response = await fetch(url);
 
+        if (!response.ok) {
+            throw new Error(`Request failed: ${url}`);
+        }
+
+        return response.json();
+    }
+
+    async function loadQuote(id) {
         try {
-            const response = await fetch(PRODUCTS_API);
-
-            if (!response.ok) {
-                throw new Error("Could not load products.");
-            }
-
-            products = await response.json();
-
-            select.innerHTML = '<option value="">Select a product</option>';
-
-            products
-                .filter(product => product.active !== false)
-                .forEach(product => {
-                    const option = document.createElement("option");
-                    option.value = product.id;
-                    option.textContent = product.productName;
-                    select.appendChild(option);
-                });
+            return await fetchJson(`${QUOTES_API}/${id}`);
         } catch (error) {
-            console.error(error);
-            select.innerHTML = '<option value="">Failed to load products</option>';
+            const list = await fetchJson(QUOTES_API);
+
+            return (Array.isArray(list) ? list : [])
+                .find(item => item.id === Number(id));
         }
     }
 
-    function getCustomerName(customer) {
-        return customer.customerName
-            || customer.companyName
-            || customer.name
-            || `Customer #${customer.id}`;
+    function normalizeItem(raw) {
+        return {
+            id: raw.id ?? null,
+            productId: raw.product?.id ?? raw.productId ?? null,
+            itemDescription: raw.itemDescription || "",
+            printSpecsSummary: raw.printSpecsSummary || "",
+            quantity: Number(raw.quantity || 0),
+            unitPrice: Number(raw.unitPrice || 0),
+            totalPrice: Number(raw.totalPrice || 0)
+        };
     }
 
-    function getCustomerEmail(customer) {
-        return customer.email
-            || customer.emailAddress
-            || "";
+    function renderHeader() {
+        const quoteNumber =
+            quote.quoteNumber || quote.quote_number || `#${quote.id}`;
+
+        document.getElementById("pageTitle").textContent = `Quote ${quoteNumber}`;
     }
 
-    function showCustomerInfo() {
-        const customerId = Number(document.getElementById("customerSelect").value);
-        const customer = customers.find(item => item.id === customerId);
-        const info = document.getElementById("customerInfo");
+    function renderDelivery() {
+        const select = document.getElementById("deliveryMethod");
 
-        if (!customer) {
-            info.style.display = "none";
-            info.innerHTML = "";
-            return;
+        select.innerHTML = DELIVERY_OPTIONS.map(option =>
+            `<option value="${option.value}" ${
+                quote.deliveryMethod === option.value ? "selected" : ""
+            }>${option.label}</option>`
+        ).join("");
+
+        if (quote.deliveryMethod
+            && !DELIVERY_OPTIONS.some(option => option.value === quote.deliveryMethod)) {
+            select.insertAdjacentHTML(
+                "afterbegin",
+                `<option value="${escapeHtml(quote.deliveryMethod)}" selected>${escapeHtml(quote.deliveryMethod)}</option>`
+            );
         }
-
-        const email = getCustomerEmail(customer);
-
-        info.innerHTML = `
-            <strong>${escapeHtml(getCustomerName(customer))}</strong>
-            ${email ? `<br>Email: ${escapeHtml(email)}` : ""}
-        `;
-
-        info.style.display = "block";
     }
 
-    function loadProductScales() {
-        const productId = Number(document.getElementById("productSelect").value);
-        const product = products.find(item => item.id === productId);
-        const scaleSelect = document.getElementById("scaleSelect");
+    function renderItems() {
+        const tbody = document.getElementById("itemsBody");
 
-        scaleSelect.innerHTML = "";
-
-        if (!product) {
-            scaleSelect.innerHTML =
-                '<option value="">Select a product first</option>';
-            updatePricePreview();
-            return;
-        }
-
-        const scales = product.priceScales || [];
-
-        if (scales.length === 0) {
-            scaleSelect.innerHTML =
-                '<option value="">No quantity scale configured</option>';
-            updatePricePreview();
-            return;
-        }
-
-        scaleSelect.innerHTML =
-            '<option value="">Select quantity and price</option>';
-
-        scales
-            .sort((a, b) => a.quantity - b.quantity)
-            .forEach(scale => {
-                const option = document.createElement("option");
-                option.value = scale.id || `${scale.quantity}-${scale.totalPrice}`;
-                option.dataset.quantity = scale.quantity;
-                option.dataset.totalPrice = scale.totalPrice;
-                option.dataset.unitPrice =
-                    scale.pricePerPiece || (scale.totalPrice / scale.quantity);
-
-                option.textContent =
-                    `${scale.quantity} pcs — $${Number(scale.totalPrice).toFixed(2)}`;
-
-                scaleSelect.appendChild(option);
-            });
-
-        updatePricePreview();
-    }
-
-    function updatePricePreview() {
-        const select = document.getElementById("scaleSelect");
-        const option = select.options[select.selectedIndex];
-        const preview = document.getElementById("pricePreview");
-
-        if (!option || !option.dataset.totalPrice) {
-            preview.textContent = "$0.00";
-            return;
-        }
-
-        const quantity = Number(option.dataset.quantity);
-        const totalPrice = Number(option.dataset.totalPrice);
-        const unitPrice = totalPrice / quantity;
-
-        preview.textContent =
-            `$${totalPrice.toFixed(2)} total ($${unitPrice.toFixed(4)} /ea)`;
-    }
-
-    function addQuoteItem() {
-        const productId = Number(document.getElementById("productSelect").value);
-        const scaleSelect = document.getElementById("scaleSelect");
-        const scaleOption = scaleSelect.options[scaleSelect.selectedIndex];
-
-        const product = products.find(item => item.id === productId);
-
-        if (!product) {
-            showMessage("Please select a product.", "error");
-            return;
-        }
-
-        if (!scaleOption || !scaleOption.dataset.quantity) {
-            showMessage("Please select a quantity and price.", "error");
-            return;
-        }
-
-        const quantity = Number(scaleOption.dataset.quantity);
-        const totalPrice = Number(scaleOption.dataset.totalPrice);
-        const unitPrice = totalPrice / quantity;
-
-        const descriptionInput =
-            document.getElementById("customDescription").value.trim();
-
-        const defaultSpecs = [
-            product.defaultWidth && product.defaultHeight
-                ? `${product.defaultWidth}" x ${product.defaultHeight}"`
-                : "",
-            product.defaultStock || "",
-            product.sidesInks || ""
-        ].filter(Boolean).join(" | ");
-
-        quoteItems.push({
-            productId: product.id,
-            productName: product.productName,
-            itemDescription: descriptionInput || product.productName,
-            quantity: quantity,
-            unitPrice: unitPrice,
-            totalPrice: totalPrice,
-            printSpecsSummary: defaultSpecs
-        });
-
-        document.getElementById("customDescription").value = "";
-
-        renderQuoteItems();
-        calculateTotals();
-    }
-
-    function renderQuoteItems() {
-        const body = document.getElementById("quoteItemsBody");
-
-        if (quoteItems.length === 0) {
-            body.innerHTML = `
+        if (!items.length) {
+            tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="empty">
-                        No items added to this quote yet.
-                    </td>
+                    <td colspan="6">No items yet. Use the Add Item section below.</td>
                 </tr>
             `;
             return;
         }
 
-        body.innerHTML = quoteItems.map((item, index) => `
-            <tr>
-                <td><strong>${escapeHtml(item.productName)}</strong></td>
+        tbody.innerHTML = items.map((item, index) => `
+            <tr data-index="${index}">
                 <td>
-                    ${escapeHtml(item.itemDescription)}
-                    ${item.printSpecsSummary
-                        ? `<br><small>${escapeHtml(item.printSpecsSummary)}</small>`
-                        : ""}
+                    <input class="cell-input" value="${escapeAttr(item.itemDescription)}"
+                           oninput="updateItemField(${index}, 'itemDescription', this.value)">
                 </td>
-                <td>${item.quantity}</td>
-                <td>$${item.unitPrice.toFixed(4)}</td>
-                <td><strong>$${item.totalPrice.toFixed(2)}</strong></td>
                 <td>
-                    <button class="btn btn-danger"
-                            onclick="removeQuoteItem(${index})">
+                    <input class="cell-input" value="${escapeAttr(item.printSpecsSummary)}"
+                           oninput="updateItemField(${index}, 'printSpecsSummary', this.value)">
+                </td>
+                <td class="num">
+                    <input class="cell-input num-input" type="number" min="1" step="1"
+                           value="${item.quantity}"
+                           oninput="updateItemQuantity(${index}, this.value)">
+                </td>
+                <td class="num">
+                    <input class="cell-input num-input unit-input" type="number" min="0" step="0.01"
+                           value="${item.unitPrice}"
+                           oninput="updateItemUnitPrice(${index}, this.value)">
+                </td>
+                <td class="num">
+                    <strong class="total-cell">${formatMoney(item.totalPrice)}</strong>
+                </td>
+                <td>
+                    <button type="button" class="btn-danger btn-small"
+                            onclick="removeItem(${index})">
                         Remove
                     </button>
                 </td>
@@ -802,145 +698,465 @@
         `).join("");
     }
 
-    function removeQuoteItem(index) {
-        quoteItems.splice(index, 1);
-        renderQuoteItems();
-        calculateTotals();
+    function updateItemField(index, field, value) {
+        items[index][field] = value;
     }
 
-    function calculateTotals() {
-        const subtotal = quoteItems.reduce(
-            (sum, item) => sum + Number(item.totalPrice),
-            0
-        );
+    function updateItemQuantity(index, value) {
+        const item = items[index];
+        item.quantity = Number(value) || 0;
 
-        const gstRate = Number(document.getElementById("gstRate").value) || 0;
-        const pstRate = Number(document.getElementById("pstRate").value) || 0;
+        const autoPrice = findScalePrice(item, item.quantity);
 
-        const gstAmount = subtotal * gstRate / 100;
-        const pstAmount = subtotal * pstRate / 100;
-        const totalAmount = subtotal + gstAmount + pstAmount;
+        if (autoPrice != null) {
+            item.unitPrice = autoPrice;
+            item.totalPrice = roundTo(item.quantity * autoPrice, 2);
+        } else {
+            item.totalPrice = roundTo(item.quantity * item.unitPrice, 2);
+        }
 
-        document.getElementById("subtotal").textContent =
-            formatCurrency(subtotal);
-
-        document.getElementById("gstAmount").textContent =
-            formatCurrency(gstAmount);
-
-        document.getElementById("pstAmount").textContent =
-            formatCurrency(pstAmount);
-
-        document.getElementById("totalAmount").textContent =
-            formatCurrency(totalAmount);
+        refreshItemRow(index);
+        renderTotals();
     }
 
-    async function saveQuote() {
-        const customerId =
-            Number(document.getElementById("customerSelect").value);
+    function updateItemUnitPrice(index, value) {
+        const item = items[index];
+        item.unitPrice = Number(value) || 0;
+        item.totalPrice = roundTo(item.quantity * item.unitPrice, 2);
 
-        if (!customerId) {
-            showMessage("Please select a customer.", "error");
+        refreshItemRow(index);
+        renderTotals();
+    }
+
+    function refreshItemRow(index) {
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+
+        if (!row) {
             return;
         }
 
-        if (quoteItems.length === 0) {
-            showMessage("Please add at least one item to the quote.", "error");
+        const unitInput = row.querySelector(".unit-input");
+
+        if (document.activeElement !== unitInput) {
+            unitInput.value = items[index].unitPrice;
+        }
+
+        row.querySelector(".total-cell").textContent = formatMoney(items[index].totalPrice);
+    }
+
+    function removeItem(index) {
+        items.splice(index, 1);
+        renderItems();
+        renderTotals();
+    }
+
+    function renderAddForm() {
+        const select = document.getElementById("addProduct");
+
+        select.innerHTML = `<option value="">— Custom item (manual entry) —</option>`
+            + products.map(product =>
+                `<option value="${product.id}">${escapeHtml(product.productName || `Product #${product.id}`)}</option>`
+            ).join("");
+    }
+
+    function onAddProductChange() {
+        const productId = document.getElementById("addProduct").value;
+        const sizeGroup = document.getElementById("sizeGroup");
+        const scaleBox = document.getElementById("scaleBox");
+        const descriptionInput = document.getElementById("addDescription");
+
+        if (!productId) {
+            sizeGroup.style.display = "none";
+            scaleBox.style.display = "none";
             return;
         }
 
-        const quote = {
-            customer: {
-                id: customerId
-            },
-            issueDate: document.getElementById("issueDate").value,
-            expiryDate: document.getElementById("expiryDate").value,
-            status: document.getElementById("status").value,
-            gstRate: Number(document.getElementById("gstRate").value) || 5.00,
-            pstRate: Number(document.getElementById("pstRate").value) || 7.00,
-            notes: document.getElementById("notes").value.trim(),
-            items: quoteItems.map(item => ({
-                product: {
-                    id: item.productId
-                },
+        const product = getProduct(productId);
+        const sizes = product.sizes || [];
+        const sizeSelect = document.getElementById("addSize");
+
+        sizeSelect.innerHTML = sizes.length
+            ? sizes.map((size, index) =>
+                `<option value="${index}">${escapeHtml(size.label || `Size ${index + 1}`)}</option>`
+            ).join("")
+            : `<option value="">No sizes registered</option>`;
+
+        sizeGroup.style.display = "";
+
+        if (!descriptionInput.value) {
+            descriptionInput.value = product.productName || "";
+        }
+
+        onAddSizeChange();
+    }
+
+    function onAddSizeChange() {
+        const size = getSelectedAddSize();
+
+        if (!size) {
+            document.getElementById("scaleBox").style.display = "none";
+            return;
+        }
+
+        buildScalePreview(size);
+    }
+
+    function getSelectedAddSize() {
+        const productId = document.getElementById("addProduct").value;
+
+        if (!productId) {
+            return null;
+        }
+
+        const product = getProduct(productId);
+        const sizeIndex = Number(document.getElementById("addSize").value);
+
+        return (product.sizes || [])[sizeIndex] || null;
+    }
+
+    function buildScalePreview(size) {
+        const scales = (size.priceScales || [])
+            .filter(scale => scale.quantity != null)
+            .sort((a, b) => a.quantity - b.quantity);
+
+        const box = document.getElementById("scaleBox");
+
+        if (!scales.length) {
+            box.style.display = "none";
+            return;
+        }
+
+        document.getElementById("scaleTitle").textContent =
+            `Quantity price options — ${size.label} (click a row to use that price)`;
+
+        document.getElementById("scaleTableBody").innerHTML = scales.map(scale => {
+            const total = Number(scale.totalPrice || 0);
+            const unit = scale.pricePerPiece != null
+                ? Number(scale.pricePerPiece)
+                : roundTo(total / Number(scale.quantity), 4);
+
+            return `
+                <tr class="scale-row" onclick="useScalePrice(${Number(scale.quantity)}, ${unit})">
+                    <td>${scale.quantity} pcs</td>
+                    <td>${formatUnit(unit)} /ea</td>
+                    <td>$${total.toFixed(2)}</td>
+                </tr>
+            `;
+        }).join("");
+
+        box.style.display = "";
+    }
+
+    function useScalePrice(quantity, unitPrice) {
+        document.getElementById("addQuantity").value = quantity;
+        document.getElementById("addUnitPrice").value = unitPrice;
+        updateAddPreview();
+    }
+
+    function onAddQuantityInput() {
+        const productId = document.getElementById("addProduct").value;
+        const quantity = Number(document.getElementById("addQuantity").value);
+
+        if (productId && quantity > 0) {
+            const sizeIndex = Number(document.getElementById("addSize").value);
+            const autoPrice = findScalePriceFor(productId, sizeIndex, quantity);
+
+            if (autoPrice != null) {
+                document.getElementById("addUnitPrice").value = autoPrice;
+            }
+        }
+
+        updateAddPreview();
+    }
+
+    function updateAddPreview() {
+        const quantity = Number(document.getElementById("addQuantity").value);
+        const unitPrice = Number(document.getElementById("addUnitPrice").value);
+
+        document.getElementById("addTotalPreview").textContent =
+            quantity > 0 && unitPrice >= 0
+                ? formatMoney(roundTo(quantity * unitPrice, 2))
+                : "—";
+    }
+
+    function addItemFromForm() {
+        const productId = document.getElementById("addProduct").value;
+        const description = document.getElementById("addDescription").value.trim();
+        const quantity = Number(document.getElementById("addQuantity").value);
+        const unitPrice = Number(document.getElementById("addUnitPrice").value);
+
+        if (!description) {
+            showMessage("Enter a description for the item.", "error");
+            return;
+        }
+
+        if (!quantity || quantity <= 0) {
+            showMessage("Enter a quantity greater than zero.", "error");
+            return;
+        }
+
+        let specs = "";
+        let resolvedProductId = null;
+
+        if (productId) {
+            const product = getProduct(productId);
+            resolvedProductId = product.id;
+
+            const size = getSelectedAddSize();
+
+            if (size) {
+                specs = buildSpecs(size);
+            }
+        }
+
+        items.push(normalizeItem({
+            product: resolvedProductId ? { id: resolvedProductId } : null,
+            itemDescription: description,
+            printSpecsSummary: specs,
+            quantity: quantity,
+            unitPrice: unitPrice,
+            totalPrice: roundTo(quantity * unitPrice, 2)
+        }));
+
+        renderItems();
+        renderTotals();
+
+        document.getElementById("addQuantity").value = "";
+        document.getElementById("addUnitPrice").value = "";
+        document.getElementById("addDescription").value =
+            productId ? (getProduct(productId).productName || "") : "";
+        document.getElementById("scaleBox").style.display = productId ? "" : "none";
+
+        updateAddPreview();
+        showMessage("Item added. Click Save Changes to persist.", "success");
+    }
+
+    function buildSpecs(size) {
+        const parts = [];
+
+        if (size.label) {
+            parts.push(`Size: ${size.label}`);
+        }
+
+        if (size.stock) {
+            parts.push(`Media: ${size.stock}`);
+        }
+
+        if (size.sidesInks) {
+            parts.push(size.sidesInks);
+        }
+
+        return parts.join(" ");
+    }
+
+    function saveQuote() {
+        const payload = {
+            quoteNumber: quote.quoteNumber || null,
+            customer: resolveCustomerForSave(),
+            issueDate: quote.issueDate || null,
+            expiryDate: quote.expiryDate || null,
+            status: quote.status || "DRAFT",
+            notes: quote.notes || null,
+            gstRate: quote.gstRate != null ? Number(quote.gstRate) : 5,
+            pstRate: quote.pstRate != null ? Number(quote.pstRate) : 7,
+            deliveryMethod: document.getElementById("deliveryMethod").value || null,
+            items: items.map(item => ({
+                id: item.id,
+                product: item.productId ? { id: Number(item.productId) } : null,
                 itemDescription: item.itemDescription,
+                printSpecsSummary: item.printSpecsSummary || null,
                 quantity: item.quantity,
-                unitPrice: Number(item.unitPrice.toFixed(4)),
-                totalPrice: Number(item.totalPrice.toFixed(2)),
-                printSpecsSummary: item.printSpecsSummary
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice
             }))
         };
 
-        try {
-            const response = await fetch(QUOTES_API, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(quote)
-            });
-
+        fetch(`${QUOTES_API}/${quote.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        }).then(async response => {
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error(errorText);
-                throw new Error("Could not save quote.");
+                const detail = await extractErrorDetail(response);
+                throw new Error(detail);
             }
 
-            const savedQuote = await response.json();
-
-            showMessage(
-                `Quote ${savedQuote.quoteNumber} was saved successfully.`,
-                "success"
-            );
-
-            resetQuoteForm();
-        } catch (error) {
-            console.error(error);
-            showMessage(
-                "Error saving quote. Check the backend terminal for details.",
-                "error"
-            );
-        }
+            showMessage("Quote saved successfully. Returning to the quotes list...", "success");
+            setTimeout(() => {
+                window.location.href = "quote-list.html";
+            }, 900);
+        }).catch(error => {
+            console.error("Error saving quote:", error);
+            showMessage("Error saving quote changes: " + error.message, "error");
+        });
     }
 
-    function resetQuoteForm() {
-        quoteItems = [];
-        document.getElementById("notes").value = "";
-        document.getElementById("status").value = "DRAFT";
-        document.getElementById("gstRate").value = "5.00";
-        document.getElementById("pstRate").value = "7.00";
-        document.getElementById("customerSelect").value = "";
-        document.getElementById("productSelect").value = "";
-        document.getElementById("scaleSelect").innerHTML =
-            '<option value="">Select a product first</option>';
-        document.getElementById("customerInfo").style.display = "none";
+    function resolveCustomerForSave() {
+        const customer = quote.customer
+            || customers.find(item => item.id === Number(quote.customerId));
 
-        setDefaultDates();
-        renderQuoteItems();
-        calculateTotals();
+        return customer ? { id: customer.id } : null;
+    }
+
+    function getProduct(id) {
+        return products.find(product => product.id === Number(id)) || null;
+    }
+
+    function findScalePrice(item, quantity) {
+        const product = getProduct(item.productId);
+
+        if (!product) {
+            return null;
+        }
+
+        const size = getSizeForItem(item, product);
+
+        if (!size) {
+            return null;
+        }
+
+        return scalePriceFor(size, quantity);
+    }
+
+    function findScalePriceFor(productId, sizeIndex, quantity) {
+        const product = getProduct(productId);
+        const size = (product?.sizes || [])[sizeIndex];
+
+        return size ? scalePriceFor(size, quantity) : null;
+    }
+
+    function scalePriceFor(size, quantity) {
+        const scale = (size.priceScales || []).find(
+            entry => Number(entry.quantity) === Number(quantity)
+        );
+
+        if (!scale) {
+            return null;
+        }
+
+        return scale.pricePerPiece != null
+            ? Number(scale.pricePerPiece)
+            : roundTo(Number(scale.totalPrice) / Number(scale.quantity), 4);
+    }
+
+    function getSizeForItem(item, product) {
+        const sizes = product.sizes || [];
+
+        if (!sizes.length) {
+            return null;
+        }
+
+        const specs = (item.printSpecsSummary || "").toLowerCase();
+
+        const labelMatches = sizes
+            .filter(size => size.label && specs.includes(size.label.toLowerCase()))
+            .sort((a, b) => (b.label || "").length - (a.label || "").length);
+
+        if (labelMatches.length > 0) {
+            return labelMatches[0];
+        }
+
+        const fullMatches = sizes.filter(size =>
+            (size.priceScales || []).some(scale =>
+                Number(scale.quantity) === Number(item.quantity) &&
+                Math.abs(Number(scale.totalPrice) - Number(item.totalPrice)) < 0.005
+            )
+        );
+
+        return fullMatches.length === 1 ? fullMatches[0] : null;
+    }
+
+    function renderTotals() {
+        const subtotal = items.reduce(
+            (sum, item) => sum + Number(item.totalPrice || 0),
+            0
+        );
+
+        const gstRate = quote.gstRate != null ? Number(quote.gstRate) : 5;
+        const pstRate = quote.pstRate != null ? Number(quote.pstRate) : 7;
+
+        const gstAmount = subtotal * gstRate / 100;
+        const pstAmount = subtotal * pstRate / 100;
+
+        document.getElementById("gstLabel").textContent = `GST (${gstRate.toFixed(2)}%)`;
+        document.getElementById("pstLabel").textContent = `PST (${pstRate.toFixed(2)}%)`;
+        document.getElementById("subtotalCell").textContent = formatMoney(subtotal);
+        document.getElementById("gstCell").textContent = formatMoney(gstAmount);
+        document.getElementById("pstCell").textContent = formatMoney(pstAmount);
+        document.getElementById("totalCell").textContent =
+            formatMoney(subtotal + gstAmount + pstAmount) + " CAD";
+    }
+
+    async function extractErrorDetail(response) {
+        let detail = "HTTP " + response.status + " " + response.statusText;
+
+        try {
+            const text = await response.text();
+
+            if (text) {
+                try {
+                    const data = JSON.parse(text);
+
+                    if (data.message) {
+                        detail += " - " + data.message;
+                    } else if (data.error) {
+                        detail += " - " + data.error;
+                    } else {
+                        detail += " - " + text;
+                    }
+                } catch (parseError) {
+                    detail += " - " + text;
+                }
+            }
+        } catch (readError) {
+            console.error("Unable to read error response body:", readError);
+        }
+
+        if (detail.length > 600) {
+            detail = detail.substring(0, 600) + "... (full detail in browser console - F12)";
+        }
+
+        return detail;
     }
 
     function showMessage(text, type) {
         const message = document.getElementById("message");
         message.textContent = text;
-        message.className = `message ${type}`;
+        message.className = "message " + type;
 
-        setTimeout(() => {
-            message.className = "message";
-            message.textContent = "";
-        }, 5000);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     }
 
-    function formatCurrency(value) {
-        return new Intl.NumberFormat("en-CA", {
-            style: "currency",
-            currency: "CAD"
-        }).format(value);
+    function formatMoney(value) {
+        return "$" + Number(value || 0).toFixed(2);
+    }
+
+    function formatUnit(value) {
+        const rounded = Number(Number(value).toFixed(2));
+
+        return Math.abs(rounded - Number(value)) < 0.00001
+            ? `$${rounded.toFixed(2)}`
+            : `$${Number(value).toFixed(4)}`;
+    }
+
+    function roundTo(value, decimals) {
+        return Number(Number(value).toFixed(decimals));
     }
 
     function escapeHtml(value) {
-        const div = document.createElement("div");
-        div.textContent = value == null ? "" : String(value);
-        return div.innerHTML;
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<​", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+        return escapeHtml(value);
     }
 </script>
 

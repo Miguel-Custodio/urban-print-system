@@ -2,6 +2,7 @@ package com.urbanprint.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -29,9 +30,9 @@ public class ProductPriceScale {
     private BigDecimal markupPercentage; // Markup %
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "size_id")
     @JsonBackReference
-    private Product product;
+    private ProductSize size;
 
     public ProductPriceScale() {
     }
@@ -56,8 +57,13 @@ public class ProductPriceScale {
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getQuantity() {
@@ -100,11 +106,11 @@ public class ProductPriceScale {
         this.markupPercentage = markupPercentage;
     }
 
-    public Product getProduct() {
-        return product;
+    public ProductSize getSize() {
+        return size;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setSize(ProductSize size) {
+        this.size = size;
     }
 }

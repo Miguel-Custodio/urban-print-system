@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urban Print Shop — Quote Details</title>
+    <title>Quote Details - Urban Print Shop</title>
 
     <style>
         :root {
             --primary: #1e293b;
             --accent: #2563eb;
-            --accent-hover: #1d4ed8;
             --success: #16a34a;
             --danger: #dc2626;
             --bg: #f8fafc;
@@ -34,7 +33,7 @@
 
         aside {
             width: 230px;
-            background: var(--primary);
+            background: #1e293b;
             color: white;
             padding: 20px 12px;
             flex-shrink: 0;
@@ -84,221 +83,501 @@
         main {
             flex: 1;
             min-width: 0;
+            padding: 22px;
         }
 
-        header {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 20px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        header h1 {
+        h1 {
             margin: 0;
-            font-size: 1.4rem;
+            font-size: 22px;
+            color: #172235;
         }
 
-        header p {
-            margin: 5px 0 0;
+        .subtitle {
+            margin: 5px 0 20px;
             color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .content {
-            padding: 28px 32px;
-            max-width: 1200px;
+            font-size: 13px;
         }
 
         .card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 32px;
-            box-shadow: 0 1px 3px #0000000d;
-            margin-bottom: 24px;
+            border-radius: 7px;
+            padding: 18px;
+            margin-bottom: 18px;
         }
 
-        .btn {
-            border: 0;
-            border-radius: 6px;
-            padding: 10px 16px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 0.88rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        .message {
+            display: none;
+            padding: 10px 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-secondary { background: #e2e8f0; color: #334155; }
-        .btn-secondary:hover { background: #cbd5e1; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #15803d; }
+        .message.success {
+            display: block;
+            background: #ddf8e8;
+            color: #08753e;
+        }
 
-        .quote-header-info {
+        .message.error {
+            display: block;
+            background: #ffe4e4;
+            color: #a51f1f;
+            word-break: break-word;
+        }
+
+        .edit-banner {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 24px;
-            margin-bottom: 24px;
+            align-items: center;
+            gap: 12px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            flex-wrap: wrap;
         }
 
-        .company-meta h2 {
-            margin: 0 0 6px;
-            font-size: 1.3rem;
-            color: var(--primary);
+        .banner-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .company-meta p {
-            margin: 2px 0;
-            color: var(--muted);
-            font-size: 0.88rem;
+        button {
+            border: 0;
+            border-radius: 4px;
+            padding: 9px 13px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .quote-meta {
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text);
+            text-decoration: none;
+            display: inline-block;
+            border: 0;
+            border-radius: 4px;
+            padding: 9px 13px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-danger {
+            background: #ffe1e1;
+            color: #b42323;
+        }
+
+        .btn-small {
+            padding: 6px 9px;
+            font-size: 11px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            color: #536071;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            border: 1px solid #d5dce5;
+            border-radius: 4px;
+            padding: 9px 10px;
+            font-size: 13px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+        }
+
+        .delivery-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .delivery-row label {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .delivery-row select {
+            width: 220px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 980px;
+        }
+
+        .items-table th {
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 10px 8px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table td {
+            border-bottom: 1px solid var(--border);
+            padding: 8px 6px;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        .cell-input {
+            min-width: 110px;
+        }
+
+        .num {
             text-align: right;
         }
 
-        .quote-meta h3 {
-            margin: 0 0 6px;
-            font-size: 1.5rem;
-            color: var(--accent);
+        .num-input {
+            text-align: right;
+            min-width: 90px;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
+        .items-table input {
+            padding: 7px 8px;
+            font-size: 12px;
+        }
+
+        .section-title {
+            color: #0879bd;
             font-weight: bold;
-            margin-top: 6px;
+            font-size: 13px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 14px;
         }
 
-        .status-DRAFT { background: #fef3c7; color: #92400e; }
-        .status-SENT { background: #dbeafe; color: #1e40af; }
-        .status-ACCEPTED { background: #dcfce7; color: #166534; }
-        .status-REJECTED { background: #fee2e2; color: #991b1b; }
-        .status-CONVERTED { background: #ede9fe; color: #5b21b6; }
-
-        .parties-grid {
+        .add-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            margin-bottom: 30px;
+            grid-template-columns: 2fr 1.5fr 2fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
         }
 
-        .party-box {
+        .scale-box {
+            display: none;
+            margin-top: 14px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+        }
+
+        .options-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .scale-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .scale-table th {
+            text-align: left;
+            font-size: 10px;
+            color: var(--muted);
+            padding: 5px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .scale-table td {
+            font-size: 12px;
+            padding: 7px 8px;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .scale-row {
+            cursor: pointer;
+        }
+
+        .scale-row:hover {
+            background: #eff6ff;
+        }
+
+        .options-notice {
+            display: none;
+            margin-top: 16px;
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .options-notice.visible {
+            display: block;
+        }
+
+        .totals {
+            margin-left: auto;
+            width: 320px;
+            margin-top: 20px;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .totals-row strong {
+            color: var(--text);
+        }
+
+        .totals-row.grand {
+            border-top: 2px solid var(--primary);
+            margin-top: 6px;
+            padding-top: 12px;
+            font-size: 1.1rem;
+        }
+
+        .totals-row.grand strong {
+            font-size: 1.1rem;
+        }
+
+        .custom-item-card {
+            display: none;
             background: #f8fafc;
             border: 1px solid var(--border);
             border-radius: 6px;
             padding: 16px;
+            margin-top: 18px;
         }
 
-        .party-box h4 {
-            margin: 0 0 10px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--muted);
-            letter-spacing: 0.5px;
+        .custom-form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        .party-box p {
-            margin: 4px 0;
-            font-size: 0.92rem;
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
         }
 
-        .edit-customer-select {
-            padding: 8px;
+        .form-row .form-field { flex: 1; min-width: 140px; }
+        .form-row .form-field.narrow { flex: 0 0 120px; }
+
+        .spec-section {
+            background: white;
             border: 1px solid var(--border);
             border-radius: 6px;
-            font-size: 0.9rem;
-            width: 100%;
-            margin-top: 6px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-        }
-
-        th, td {
             padding: 14px;
-            border-bottom: 1px solid var(--border);
-            text-align: left;
-            font-size: 0.9rem;
+            margin-top: 12px;
         }
 
-        th {
-            background: #f1f5f9;
-            color: var(--muted);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-        }
-
-        .summary-box {
-            margin-left: auto;
-            max-width: 350px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            color: var(--muted);
-        }
-
-        .summary-total {
-            display: flex;
-            justify-content: space-between;
-            border-top: 2px solid var(--border);
-            margin-top: 8px;
-            padding-top: 14px;
-            font-size: 1.3rem;
+        .spec-title {
+            font-size: 11px;
             font-weight: bold;
-            color: var(--text);
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
         }
 
-        .notes-box {
-            margin-top: 24px;
-            padding: 16px;
-            background: #fffbeb;
-            border: 1px solid #fef3c7;
+        .sides-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .side-col .col-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .size-pair {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .size-pair input { flex: 1; min-width: 0; }
+        .size-pair .x { color: var(--muted); font-weight: bold; }
+
+        .yn-select { width: 80px !important; padding: 7px !important; }
+
+        .di-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            padding: 8px;
             border-radius: 6px;
-            font-size: 0.9rem;
         }
 
-        .notes-box strong {
-            display: block;
-            margin-bottom: 6px;
-            color: #92400e;
+        .di-row:nth-child(odd) { background: #f1f5f9; }
+        .di-dept { flex: 0 0 130px; }
+        .di-desc { flex: 1 1 160px; }
+        .di-qty { flex: 0 0 80px; }
+        .di-unit { flex: 0 0 110px; }
+        .di-price { flex: 0 0 100px; }
+        .di-remove { flex: 0 0 50px; }
+
+        .price-calc-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #1e293b;
         }
 
-        @media print {
-            aside, header, .header-actions {
-                display: none;
+        .price-calc-box .calc-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        .price-calc-box .calc-row.total {
+            border-top: 1px solid #bfdbfe;
+            margin-top: 6px;
+            padding-top: 8px;
+            font-weight: bold;
+        }
+
+        /* ===== Searchable select (type to filter) ===== */
+        .searchable-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .searchable-input {
+            width: 100%;
+            background: white;
+        }
+
+        .searchable-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 60;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .searchable-option {
+            padding: 8px 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .searchable-option:hover,
+        .searchable-option.active {
+            background: #eff6ff;
+        }
+
+        .searchable-empty {
+            padding: 8px 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .searchable-hidden-select {
+            display: none !important;
+        }
+
+        @media (max-width: 1100px) {
+            .add-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
+        }
+
+        @media (max-width: 700px) {
             body {
-                background: white;
+                display: block;
             }
-            .card {
-                border: none;
-                box-shadow: none;
-                padding: 0;
+
+            aside {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            main {
+                padding: 12px;
+            }
+
+            .add-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .delivery-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .delivery-row select {
+                width: 100%;
+            }
+
+            .totals {
+                width: 100%;
             }
         }
     </style>
@@ -326,314 +605,2555 @@
 </aside>
 
 <main>
-    <header>
-        <div>
-            <h1 id="pageTitle">Quote Details</h1>
-            <p>Review customer quotation summary.</p>
-        </div>
-        <div class="header-actions">
-            <a href="/quote-list.html" class="btn btn-secondary">← Back to Quotes</a>
-            <button class="btn btn-secondary" onclick="window.print()">Print / PDF</button>
-            <button class="btn btn-primary" onclick="markAsSent()">Mark as Sent</button>
-            <button id="acceptBtn" class="btn btn-success" style="display:none;" onclick="markAsAccepted()">Mark as Accepted</button>
-            <button id="convertBtn" class="btn btn-success" style="display:none;" onclick="convertToOrder()">Convert to Order</button>
-        </div>
-    </header>
+    <h1 id="pageTitle">Quote</h1>
 
-    <div class="content">
-        <div class="card" id="quoteContainer">
-            <div id="loadingMessage" style="text-align: center; color: var(--muted); padding: 40px;">
-                Loading quote details...
+    <div class="subtitle">
+        Edit products, quantities, prices and delivery information.
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="card edit-banner">
+        <div>
+            <strong>Editing quote.</strong>
+            Add, duplicate, remove or change items, then save the quotation.
+        </div>
+
+        <div class="banner-actions">
+            <button type="button" class="btn-success" onclick="saveQuote()">
+                Save Changes
+            </button>
+
+            <a href="quote-list.html" class="btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <div class="delivery-row">
+            <label for="customerSelect">Customer / Contact:</label>
+
+            <select
+                id="customerSelect"
+                style="width: min(420px, 100%);"
+            ></select>
+        </div>
+
+        <div class="delivery-row">
+            <label for="deliveryMethod">Delivery Method:</label>
+
+            <select id="deliveryMethod">
+                <option value="PICKUP">Pickup</option>
+                <option value="ZONE_A">Zone A — $10</option>
+                <option value="ZONE_B">Zone B — $15</option>
+                <option value="ZONE_C">Zone C — $20</option>
+                <option value="ZONE_F">Free Delivery</option>
+                <option value="COURIER">Courier — To Be Confirmed</option>
+            </select>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="items-table">
+                <thead>
+                <tr>
+                    <th>Product / Description</th>
+                    <th>Print Specs</th>
+                    <th class="num">Quantity</th>
+                    <th class="num">Unit Price ($)</th>
+                    <th class="num">Total</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="itemsBody">
+                <tr>
+                    <td colspan="6">Loading quote...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="add-item-box" style="margin-top: 22px;">
+            <div class="section-title">Add Item</div>
+
+            <div class="add-grid">
+
+                <div>
+                    <label for="addProduct">Product</label>
+
+                    <select id="addProduct" onchange="onAddProductChange()">
+                        <option value="">
+                            — Custom item (manual entry) —
+                        </option>
+                    </select>
+                </div>
+
+                <div id="sizeGroup" style="display: none;">
+                    <label for="addSize">Size / Variation</label>
+
+                    <select id="addSize" onchange="onAddSizeChange()">
+                    </select>
+                </div>
+
+                <div>
+                    <label for="addDescription">Description</label>
+
+                    <input
+                        id="addDescription"
+                        placeholder="Item description"
+                    >
+                </div>
+
+                <div>
+                    <label for="addQuantity">Quantity</label>
+
+                    <input
+                        id="addQuantity"
+                        type="number"
+                        min="1"
+                        step="1"
+                        oninput="onAddQuantityInput()"
+                    >
+                </div>
+
+                <div>
+                    <label for="addUnitPrice">Unit Price ($)</label>
+
+                    <input
+                        id="addUnitPrice"
+                        type="number"
+                        min="0"
+                        step="0.0001"
+                        oninput="updateAddPreview()"
+                    >
+                </div>
+
+                <div>
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        onclick="addItemFromForm()"
+                    >
+                        + Add Item
+                    </button>
+                </div>
+
+            </div>
+
+            <div
+                id="addTotalPreviewRow"
+                style="margin-top: 10px; font-size: 12px; color: #64748b;"
+            >
+                Item total:
+                <strong id="addTotalPreview">—</strong>
+            </div>
+
+            <div id="scaleBox" class="scale-box">
+                <div id="scaleTitle" class="options-title"></div>
+
+                <table class="scale-table">
+                    <thead>
+                    <tr>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="scaleTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="customItemCard" class="custom-item-card">
+            <div class="custom-form-header">
+                <strong>Custom Item — Full Specification</strong>
+                <button type="button" class="btn-secondary btn-small" onclick="closeCustomItemForm()">
+                    ✕ Close
+                </button>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="ciDescription">Description *</label>
+                    <input id="ciDescription" placeholder="e.g. Banner 4ft x 8ft">
+                </div>
+                <div class="form-field narrow">
+                    <label for="ciSides">Sides</label>
+                    <select id="ciSides" onchange="onCustomFieldChange()">
+                        <option value="SINGLE_SIDED">Single Sided</option>
+                        <option value="DOUBLE_SIDED">Double Sided</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="spec-section">
+                <div class="spec-title">Press</div>
+
+                <div class="form-row" style="margin-bottom: 0;">
+                    <div class="form-field">
+                        <label for="ciDepartment">Group</label>
+                        <select id="ciDepartment" onchange="onCustomDepartmentChange()"></select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ciPress">Press</label>
+                        <select id="ciPress" onchange="onCustomFieldChange()"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spec-section">
+                <div class="spec-title">Sheets / Passes</div>
+
+                <div class="sides-grid">
+                    <div class="side-col">
+                        <div class="col-title">Front</div>
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>Black</label>
+                                <input type="number" id="ciFsBlack" min="0" step="1" value="0" oninput="onCustomFieldChange()">
+                            </div>
+                            <div class="form-field">
+                                <label>Color</label>
+                                <input type="number" id="ciFsColor" min="0" step="1" value="0" oninput="onCustomFieldChange()">
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-bottom: 0;">
+                            <div class="form-field">
+                                <label>Mixed</label>
+                                <input type="number" id="ciFsMixed" min="0" step="1" value="0" oninput="onCustomFieldChange()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="side-col">
+                        <div class="col-title">Back (used when Double Sided)</div>
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>Black</label>
+                                <input type="number" id="ciBsBlack" min="0" step="1" value="0" oninput="onCustomFieldChange()">
+                            </div>
+                            <div class="form-field">
+                                <label>Color</label>
+                                <input type="number" id="ciBsColor" min="0" step="1" value="0" oninput="onCustomFieldChange()">
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-bottom: 0;">
+                            <div class="form-field">
+                                <label>Mixed</label>
+                                <input type="number" id="ciBsMixed" min="0" step="1" value="0" oninput="onCustomFieldChange()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spec-section">
+                <div class="spec-title">Stock &amp; Sizes</div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ciStock">Stock</label>
+                        <input type="text" id="ciStock" list="ciStockSuggestions" placeholder="e.g. 13oz Vinyl Banner">
+                    </div>
+                    <div class="form-field narrow">
+                        <label for="ciPages">Pages</label>
+                        <input type="number" id="ciPages" min="1" step="1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Run Size</label>
+                        <div class="size-pair">
+                            <input type="number" id="ciRunW" step="0.01" min="0" placeholder="W" oninput="onCustomFieldChange()">
+                            <span class="x">×</span>
+                            <input type="number" id="ciRunH" step="0.01" min="0" placeholder="H" oninput="onCustomFieldChange()">
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label>Flat Size</label>
+                        <div class="size-pair">
+                            <input type="number" id="ciFlatW" step="0.01" min="0" placeholder="W" oninput="onCustomFieldChange()">
+                            <span class="x">×</span>
+                            <input type="number" id="ciFlatH" step="0.01" min="0" placeholder="H" oninput="onCustomFieldChange()">
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label>Finished Size</label>
+                        <div class="size-pair">
+                            <input type="number" id="ciFinW" step="0.01" min="0" placeholder="W" oninput="onCustomFieldChange()">
+                            <span class="x">×</span>
+                            <input type="number" id="ciFinH" step="0.01" min="0" placeholder="H" oninput="onCustomFieldChange()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ciBlankStock">Blank Stock</label>
+                        <select id="ciBlankStock" class="yn-select">
+                            <option>No</option>
+                            <option>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ciWithBleed">With Bleed</label>
+                        <select id="ciWithBleed" class="yn-select">
+                            <option>No</option>
+                            <option>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ciPriceByCarton">Price By Carton</label>
+                        <select id="ciPriceByCarton" class="yn-select">
+                            <option>No</option>
+                            <option>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ciOutsourced">Outsourced</label>
+                        <select id="ciOutsourced" class="yn-select">
+                            <option>No</option>
+                            <option>Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row" style="margin-bottom: 0; margin-top: 10px;">
+                    <div class="form-field">
+                        <label for="ciExtraSpecs">Additional Print Specs</label>
+                        <input type="text" id="ciExtraSpecs" placeholder="e.g. matte laminate, grommets every 2ft">
+                    </div>
+                </div>
+            </div>
+
+            <div class="spec-section">
+                <div class="spec-title">Department Items (finishing &amp; tasks)</div>
+                <div id="ciDeptRows"></div>
+                <button type="button" class="btn-secondary btn-small" onclick="addCustomDeptRow()" style="margin-top: 8px;">
+                    + Add Task
+                </button>
+            </div>
+
+            <div class="spec-section">
+                <div class="spec-title">Quantities &amp; Price</div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ciQuantity">Quantity *</label>
+                        <input type="number" id="ciQuantity" min="1" step="1" oninput="onCustomFieldChange()">
+                    </div>
+                    <div class="form-field">
+                        <label for="ciMarkup">Markup %</label>
+                        <input type="number" id="ciMarkup" min="0" step="1" value="0" oninput="onCustomFieldChange()">
+                    </div>
+                    <div class="form-field">
+                        <label for="ciPrice">Unit Price (CAD) *</label>
+                        <input type="number" id="ciPrice" min="0" step="0.0001">
+                    </div>
+                </div>
+
+                <div id="ciCalcBox" class="price-calc-box">
+                    Select a press and enter the quantity to see the automatic price.
+                </div>
+            </div>
+
+            <datalist id="ciStockSuggestions"></datalist>
+            <datalist id="ciTaskSuggestions"></datalist>
+
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px;">
+                <button type="button" class="btn-secondary" onclick="closeCustomItemForm()">
+                    Cancel
+                </button>
+                <button type="button" class="btn-primary" onclick="saveCustomItem()">
+                    Add Custom Item
+                </button>
+            </div>
+        </div>
+
+        <div id="optionsNotice" class="options-notice"></div>
+
+        <div class="totals">
+            <div class="totals-row">
+                <span>Subtotal</span>
+                <strong id="subtotalCell">$0.00</strong>
+            </div>
+
+            <div class="totals-row">
+                <span id="gstLabel">GST</span>
+                <strong id="gstCell">$0.00</strong>
+            </div>
+
+            <div class="totals-row">
+                <span id="pstLabel">PST</span>
+                <strong id="pstCell">$0.00</strong>
+            </div>
+
+            <div class="totals-row grand">
+                <span>Total</span>
+                <strong id="totalCell">$0.00 CAD</strong>
             </div>
         </div>
     </div>
 </main>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const quoteId = urlParams.get('id');
-    let currentQuote = null;
+    const QUOTES_API = "/api/quotes";
+    const PRODUCTS_API = "/api/products";
+    const CUSTOMERS_API = "/api/customers";
+    const DELIVERY_FEES = {
+        PICKUP: 0,
+        ZONE_A: 10,
+        ZONE_B: 15,
+        ZONE_C: 20,
+        ZONE_F: 0,
+        COURIER: null
+    };
 
-    document.addEventListener("DOMContentLoaded", () => {
-        if (!quoteId) {
-            document.getElementById("quoteContainer").innerHTML = `
-                <div style="color: var(--danger); text-align: center;">No quote ID provided in URL.</div>
-            `;
-            return;
+    const DELIVERY_OPTIONS = [
+        {
+            value: "PICKUP",
+            label: "Pick-up"
+        },
+        {
+            value: "ZONE_A",
+            label: "Delivery Zone A"
+        },
+        {
+            value: "ZONE_B",
+            label: "Delivery Zone B"
+        },
+        {
+            value: "ZONE_C",
+            label: "Delivery Zone C"
+        },
+        {
+            value: "ZONE_F",
+            label: "Delivery Zone F"
+        },
+        {
+            value: "COURIER",
+            label: "Courier"
         }
-        loadQuoteDetails();
-    });
+    ];
 
-    async function loadQuoteDetails() {
+    let quote = null;
+    let products = [];
+    let customers = [];
+    let items = [];
+
+    document.addEventListener("DOMContentLoaded", init);
+
+    async function init() {
+        const params = new URLSearchParams(window.location.search);
+        const quoteId = params.get("id");
+
         try {
-            const response = await fetch(`/api/quotes/${quoteId}`);
-            if (!response.ok) {
-                throw new Error("Could not find quote.");
+            const quotePromise = quoteId
+                ? loadQuote(quoteId)
+                : Promise.resolve(null);
+
+            const productsPromise = fetchJson(PRODUCTS_API)
+                .catch(error => {
+                    console.error("Could not load products:", error);
+                    return [];
+                });
+
+            const customersPromise = fetchJson(CUSTOMERS_API)
+                .catch(error => {
+                    console.error("Could not load customers:", error);
+                    return [];
+                });
+
+            quote = await quotePromise;
+            products = await productsPromise;
+            customers = await customersPromise;
+
+            if (!quote && !quoteId) {
+                quote = {
+                    status: "DRAFT"
+                };
             }
 
-            const quote = await response.json();
-            renderQuote(quote);
+            if (quoteId && !quote) {
+                showMessage(
+                    "Quote not found. Check if the quote id is correct.",
+                    "error"
+                );
+
+                return;
+            }
+
+            items = quote && Array.isArray(quote.items)
+                ? quote.items.map(normalizeItem)
+                : [];
+
+            renderHeader();
+            renderCustomerSelect();
+            renderDelivery();
+            renderItems();
+            renderTotals();
+            renderAddForm();
+
         } catch (error) {
-            console.error(error);
-            document.getElementById("quoteContainer").innerHTML = `
-                <div style="color: var(--danger); text-align: center;">Failed to load quote details.</div>
-            `;
+            console.error("Error loading quote:", error);
+
+            showMessage(
+                "Could not load this quote. Check if the backend is running.",
+                "error"
+            );
         }
     }
 
-    function renderQuote(quote) {
-        currentQuote = quote;
+    async function fetchJson(url) {
+        const response = await fetch(url);
 
-        document.getElementById("pageTitle").textContent = `Quote ${quote.quoteNumber || ''}`;
-
-        const convertBtn = document.getElementById("convertBtn");
-        if (quote.status === "ACCEPTED") {
-            convertBtn.style.display = "inline-flex";
-        } else {
-            convertBtn.style.display = "none";
-        }
-        const acceptBtn = document.getElementById("acceptBtn");
-        if (quote.status === "SENT" || quote.status === "DRAFT") {
-            acceptBtn.style.display = "inline-flex";
-        } else {
-            acceptBtn.style.display = "none";
+        if (!response.ok) {
+            throw new Error(
+                "Request failed: " + url + " - HTTP " + response.status
+            );
         }
 
-        const customer = quote.customer || {};
-        const customerName = customer.customerName || customer.companyName || customer.name || "N/A";
-        const email = customer.email || customer.emailAddress || "N/A";
-        const phone = customer.phone || customer.phoneNumber || "N/A";
-        const address = customer.address || "N/A";
+        return response.json();
+    }
 
-        const gstRate = Number(quote.gstRate != null ? quote.gstRate : 5.00);
-        const pstRate = Number(quote.pstRate != null ? quote.pstRate : 7.00);
-        const gstAmount = Number(quote.gstAmount != null ? quote.gstAmount : (quote.subtotal * gstRate / 100));
-        const pstAmount = Number(quote.pstAmount != null ? quote.pstAmount : (quote.subtotal * pstRate / 100));
+    async function loadQuote(id) {
+        try {
+            return await fetchJson(`${QUOTES_API}/${id}`);
+        } catch (error) {
+            console.warn(
+                "Could not load quote directly. Trying quote list...",
+                error
+            );
 
-        const itemsHtml = (quote.items || []).map(item => `
-            <tr>
-                <td>
-                    <strong>${escapeHtml(item.product?.productName || item.itemDescription)}</strong>
-                    ${item.printSpecsSummary ? `<br><small style="color: var(--muted);">${escapeHtml(item.printSpecsSummary)}</small>` : ''}
-                </td>
-                <td>${escapeHtml(item.itemDescription || '')}</td>
-                <td>${item.quantity}</td>
-                <td>$${Number(item.unitPrice || 0).toFixed(4)}</td>
-                <td><strong>$${Number(item.totalPrice || 0).toFixed(2)}</strong></td>
-            </tr>
+            const list = await fetchJson(QUOTES_API);
+
+            return (Array.isArray(list) ? list : [])
+                .find(item => Number(item.id) === Number(id));
+        }
+    }
+
+    function normalizeItem(raw) {
+        const productId =
+            raw.product?.id
+            ?? raw.productId
+            ?? null;
+
+        const quantity = Number(raw.quantity || 0);
+        const unitPrice = Number(raw.unitPrice || 0);
+
+        const totalPrice = raw.totalPrice != null
+            ? Number(raw.totalPrice)
+            : roundTo(quantity * unitPrice, 2);
+
+        return {
+            id: raw.id ?? null,
+            productId: productId,
+            itemDescription: raw.itemDescription || "",
+            printSpecsSummary: raw.printSpecsSummary || "",
+            quantity: quantity,
+            unitPrice: unitPrice,
+            totalPrice: totalPrice
+        };
+    }
+
+    function renderHeader() {
+        const quoteNumber = quote && quote.id
+            ? (quote.quoteNumber || quote.quote_number || `#${quote.id}`)
+            : null;
+
+        document.getElementById("pageTitle").textContent = quoteNumber
+            ? `Quote ${quoteNumber}`
+            : "New Quote";
+
+        const bannerText = document.querySelector(".edit-banner strong");
+
+        if (bannerText) {
+            bannerText.textContent = quoteNumber
+                ? "Editing quote."
+                : "New quote.";
+        }
+    }
+
+    function renderCustomerSelect() {
+        const select = document.getElementById("customerSelect");
+
+        const currentCustomerId = quote && quote.customer && quote.customer.id
+            ? quote.customer.id
+            : (quote && quote.customerId ? quote.customerId : null);
+
+        let optionsHtml = `
+            <option value="">
+                — Select a customer / contact —
+            </option>
+        `;
+
+        optionsHtml += customers.map(customer => {
+            const labelParts = [
+                customer.companyName,
+                customer.name
+                    ? `${customer.name}${
+                        customer.contactPosition
+                            ? ` (${customer.contactPosition})`
+                            : ""
+                    }`
+                    : ""
+            ].filter(Boolean);
+
+            const label = labelParts.length
+                ? labelParts.join(" — ")
+                : `Customer #${customer.id}`;
+
+            const isSelected = currentCustomerId != null
+                && Number(currentCustomerId) === Number(customer.id);
+
+            return `
+                <option
+                    value="${customer.id}"
+                    ${isSelected ? "selected" : ""}
+                >
+                    ${escapeHtml(label)}
+                </option>
+            `;
+        }).join("");
+
+        select.innerHTML = optionsHtml;
+
+        select.addEventListener("change", () => {
+            quote.customerId = select.value
+                ? Number(select.value)
+                : null;
+
+            quote.customer = select.value
+                ? customers.find(
+                    customer =>
+                        Number(customer.id) === Number(select.value)
+                ) || null
+                : null;
+        });
+
+        refreshSearchableSelect(select);
+    }
+
+    function renderDelivery() {
+        const select =
+            document.getElementById("deliveryMethod");
+
+        const currentValue =
+            quote.deliveryMethod || "";
+
+        let optionsHtml = DELIVERY_OPTIONS.map(option => `
+            <option
+                value="${option.value}"
+                ${currentValue === option.value ? "selected" : ""}
+            >
+                ${option.label}
+            </option>
         `).join("");
 
-        document.getElementById("quoteContainer").innerHTML = `
-            <div class="quote-header-info">
-                <div class="company-meta">
-                    <h2>URBAN PRINT SHOP</h2>
-                    <p>7993 Enterprise St, Burnaby, BC</p>
-                    <p>Phone: (604) 420-3298 | info@urbanprintshop.ca</p>
-                </div>
+        const knownDeliveryValue =
+            DELIVERY_OPTIONS.some(
+                option => option.value === currentValue
+            );
 
-                <div class="quote-meta">
-                    <h3>${escapeHtml(quote.quoteNumber || 'QUOTE')}</h3>
-                    <p><strong>Issue Date:</strong> ${escapeHtml(quote.issueDate || '-')}</p>
-                    <p><strong>Expiry Date:</strong> ${escapeHtml(quote.expiryDate || '-')}</p>
-                    <div><span class="status-badge status-${escapeHtml(quote.status || 'DRAFT')}">${escapeHtml(quote.status || 'DRAFT')}</span></div>
-                </div>
-            </div>
+        if (currentValue && !knownDeliveryValue) {
+            optionsHtml = `
+                <option value="${escapeAttr(currentValue)}" selected>
+                    ${escapeHtml(currentValue)}
+                </option>
+            ` + optionsHtml;
+        }
 
-            <div class="parties-grid">
-                <div class="party-box">
-                    <h4>Prepared For (Customer)
-                        <button onclick="toggleEditCustomer()" style="float:right;background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.78rem;font-weight:bold;">Change</button>
-                    </h4>
-                    <div id="customerViewMode">
-                        <p><strong>${escapeHtml(customerName)}</strong></p>
-                        <p>Email: ${escapeHtml(email)}</p>
-                        <p>Phone: ${escapeHtml(phone)}</p>
-                        <p>Address: ${escapeHtml(address)}</p>
-                    </div>
-                    <div id="customerEditMode" style="display:none;">
-                        <select id="customerSelect" class="edit-customer-select"></select>
-                        <button class="btn btn-primary" style="margin-top:8px;padding:6px 12px;font-size:0.8rem;" onclick="saveCustomerChange()">Save</button>
-                        <button class="btn btn-secondary" style="margin-top:8px;padding:6px 12px;font-size:0.8rem;" onclick="toggleEditCustomer()">Cancel</button>
-                    </div>
-                </div>
+        select.innerHTML = optionsHtml;
 
-                <div class="party-box">
-                    <h4>Quotation Summary</h4>
-                    <p><strong>Status:</strong> ${escapeHtml(quote.status || 'Draft')}</p>
-                    <p><strong>Taxes:</strong> GST (${gstRate.toFixed(2)}%) + PST (${pstRate.toFixed(2)}%)</p>
-                    <p><strong>Item Count:</strong> ${(quote.items || []).length} item(s)</p>
-                </div>
-            </div>
+        select.addEventListener("change", () => {
+            quote.deliveryMethod = select.value;
+            renderTotals();
+        });
+    }
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Description / Specs</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${itemsHtml || '<tr><td colspan="5" style="text-align: center; color: var(--muted);">No items.</td></tr>'}
-                </tbody>
-            </table>
+    function renderItems() {
+        const tbody = document.getElementById("itemsBody");
 
-            <div class="summary-box">
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <strong>$${Number(quote.subtotal || 0).toFixed(2)}</strong>
-                </div>
-                <div class="summary-row">
-                    <span>GST (${gstRate.toFixed(2)}%)</span>
-                    <strong>$${gstAmount.toFixed(2)}</strong>
-                </div>
-                <div class="summary-row">
-                    <span>PST (${pstRate.toFixed(2)}%)</span>
-                    <strong>$${pstAmount.toFixed(2)}</strong>
-                </div>
-                <div class="summary-total">
-                    <span>Total</span>
-                    <span>$${Number(quote.totalAmount || 0).toFixed(2)} CAD</span>
-                </div>
-            </div>
+        if (!items.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        No items yet. Use the Add Item section below.
+                    </td>
+                </tr>
+            `;
 
-            ${quote.notes ? `
-                <div class="notes-box">
-                    <strong>Terms & Notes:</strong>
-                    <span>${escapeHtml(quote.notes)}</span>
-                </div>
-            ` : ''}
+            return;
+        }
+
+        tbody.innerHTML = items.map((item, index) => `
+            <tr data-index="${index}">
+                <td>
+                    <input
+                        class="cell-input"
+                        value="${escapeAttr(item.itemDescription)}"
+                        oninput="updateItemField(
+                            ${index},
+                            'itemDescription',
+                            this.value
+                        )"
+                    >
+                </td>
+
+                <td>
+                    <input
+                        class="cell-input"
+                        value="${escapeAttr(item.printSpecsSummary)}"
+                        placeholder="Example: Size: 8.5 x 11 | 4/4"
+                        oninput="updateItemField(
+                            ${index},
+                            'printSpecsSummary',
+                            this.value
+                        )"
+                    >
+                </td>
+
+                <td class="num">
+                    <input
+                        class="cell-input num-input"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value="${item.quantity}"
+                        oninput="updateItemQuantity(
+                            ${index},
+                            this.value
+                        )"
+                    >
+                </td>
+
+                <td class="num">
+                    <input
+                        class="cell-input num-input unit-input"
+                        type="number"
+                        min="0"
+                        step="0.0001"
+                        value="${item.unitPrice}"
+                        oninput="updateItemUnitPrice(
+                            ${index},
+                            this.value
+                        )"
+                    >
+                </td>
+
+                <td class="num">
+                    <strong class="total-cell">
+                        ${formatMoney(item.totalPrice)}
+                    </strong>
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="btn-secondary btn-small"
+                        onclick="duplicateItem(${index})"
+                    >
+                        Duplicate
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-danger btn-small"
+                        onclick="removeItem(${index})"
+                    >
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    function updateItemField(index, field, value) {
+        if (!items[index]) {
+            return;
+        }
+
+        items[index][field] = value;
+    }
+
+    function updateItemQuantity(index, value) {
+        const item = items[index];
+
+        if (!item) {
+            return;
+        }
+
+        item.quantity = Number(value) || 0;
+
+        const automaticPrice = findScalePrice(item, item.quantity);
+
+        if (automaticPrice != null) {
+            item.unitPrice = automaticPrice;
+        }
+
+        item.totalPrice = roundTo(
+            item.quantity * item.unitPrice,
+            2
+        );
+
+        refreshItemRow(index);
+        renderTotals();
+    }
+
+    function updateItemUnitPrice(index, value) {
+        const item = items[index];
+
+        if (!item) {
+            return;
+        }
+
+        item.unitPrice = Number(value) || 0;
+
+        item.totalPrice = roundTo(
+            item.quantity * item.unitPrice,
+            2
+        );
+
+        refreshItemRow(index);
+        renderTotals();
+    }
+
+    function refreshItemRow(index) {
+        const row = document.querySelector(
+            `tr[data-index="${index}"]`
+        );
+
+        if (!row || !items[index]) {
+            return;
+        }
+
+        const unitInput = row.querySelector(".unit-input");
+
+        if (document.activeElement !== unitInput) {
+            unitInput.value = items[index].unitPrice;
+        }
+
+        const totalCell = row.querySelector(".total-cell");
+
+        if (totalCell) {
+            totalCell.textContent =
+                formatMoney(items[index].totalPrice);
+        }
+    }
+
+    function duplicateItem(index) {
+        const source = items[index];
+
+        if (!source) {
+            return;
+        }
+
+        const duplicate = {
+            id: null,
+            productId: source.productId,
+            itemDescription: source.itemDescription,
+            printSpecsSummary: source.printSpecsSummary,
+            quantity: source.quantity,
+            unitPrice: source.unitPrice,
+            totalPrice: source.totalPrice
+        };
+
+        items.splice(index + 1, 0, duplicate);
+
+        renderItems();
+        renderTotals();
+
+        showMessage(
+            "Line duplicated. Change the quantity and the price will update when it matches a product scale.",
+            "success"
+        );
+    }
+
+    function removeItem(index) {
+        if (!items[index]) {
+            return;
+        }
+
+        items.splice(index, 1);
+
+        renderItems();
+        renderTotals();
+
+        showMessage(
+            "Item removed. Click Save Changes to permanently save the quote.",
+            "success"
+        );
+    }
+
+    function getOptionGroups() {
+        const groups = new Map();
+
+        items.forEach(item => {
+            const description = String(
+                item.itemDescription || ""
+            ).trim().toLowerCase();
+
+            const specs = String(
+                item.printSpecsSummary || ""
+            ).trim().toLowerCase();
+
+            const key = `${description}||${specs}`;
+
+            if (!groups.has(key)) {
+                groups.set(key, []);
+            }
+
+            groups.get(key).push(item);
+        });
+
+        return Array.from(groups.values())
+            .filter(group => group.length > 1);
+    }
+
+    function renderOptionsNotice() {
+        const notice = document.getElementById("optionsNotice");
+
+        if (!notice) {
+            return;
+        }
+
+        const groups = getOptionGroups();
+
+        if (!groups.length) {
+            notice.className = "options-notice";
+            notice.textContent = "";
+            return;
+        }
+
+        const labels = groups.map(group => {
+            const firstItem = group[0];
+            const quantities = group
+                .map(item => item.quantity)
+                .join(", ");
+
+            return `${firstItem.itemDescription || "Item"} (${quantities})`;
+        }).join(" · ");
+
+        notice.className = "options-notice visible";
+
+        notice.innerHTML = `
+            <strong>Quantity options detected:</strong>
+            ${escapeHtml(labels)}.
+            These lines have the same product description and print specs.
+            They will be treated as quantity options in the customer print,
+            instead of being added together.
         `;
     }
 
-    function toggleEditCustomer() {
-        const viewMode = document.getElementById("customerViewMode");
-        const editMode = document.getElementById("customerEditMode");
-        const isHidden = editMode.style.display === "none";
+    function renderTotals() {
+        const groups = getAllGroups();
 
-        if (isHidden) {
-            loadCustomerOptions();
+        let subtotal = 0;
+
+        groups.forEach(group => {
+            if (group.length === 1) {
+                subtotal += Number(group[0].totalPrice || 0);
+            } else {
+                const selectedItem = getSelectedOption(group);
+                subtotal += Number(selectedItem.totalPrice || 0);
+            }
+        });
+
+        const gstRate = quote && quote.gstRate != null
+            ? Number(quote.gstRate)
+            : 5;
+
+        const pstRate = quote && quote.pstRate != null
+            ? Number(quote.pstRate)
+            : 7;
+
+        const deliveryMethod =
+            document.getElementById("deliveryMethod").value;
+
+        const deliveryFee =
+            getDeliveryFee(deliveryMethod);
+
+        const gstAmount = subtotal * gstRate / 100;
+        const pstAmount = subtotal * pstRate / 100;
+
+        const grandTotal =
+            subtotal
+            + gstAmount
+            + pstAmount
+            + deliveryFee;
+
+        document.getElementById("gstLabel").textContent =
+            `GST (${gstRate.toFixed(2)}%)`;
+
+        document.getElementById("pstLabel").textContent =
+            `PST (${pstRate.toFixed(2)}%)`;
+
+        document.getElementById("subtotalCell").textContent =
+            formatMoney(subtotal);
+
+        document.getElementById("gstCell").textContent =
+            formatMoney(gstAmount);
+
+        document.getElementById("pstCell").textContent =
+            formatMoney(pstAmount);
+
+        let deliveryRow =
+            document.getElementById("deliveryTotalRow");
+
+        if (!deliveryRow) {
+            deliveryRow = document.createElement("div");
+            deliveryRow.id = "deliveryTotalRow";
+            deliveryRow.className = "totals-row";
+
+            const totalsElement =
+                document.querySelector(".totals");
+
+            const totalRow =
+                document.querySelector(".totals-row.grand");
+
+            totalsElement.insertBefore(
+                deliveryRow,
+                totalRow
+            );
         }
 
-        viewMode.style.display = isHidden ? "none" : "block";
-        editMode.style.display = isHidden ? "block" : "none";
+        if (deliveryMethod === "COURIER") {
+            deliveryRow.innerHTML = `
+                <span>Courier Delivery</span>
+                <strong>To be confirmed</strong>
+            `;
+        } else {
+            deliveryRow.innerHTML = `
+                <span>Delivery</span>
+                <strong>${formatMoney(deliveryFee)}</strong>
+            `;
+        }
+
+        document.getElementById("totalCell").textContent =
+            deliveryMethod === "COURIER"
+                ? formatMoney(
+                    subtotal + gstAmount + pstAmount
+                ) + " CAD + courier"
+                : formatMoney(grandTotal) + " CAD";
+
+        renderOptionsNotice();
     }
 
-    async function loadCustomerOptions() {
-        try {
-            const res = await fetch("/api/customers");
-            if (!res.ok) throw new Error("Could not load customers.");
-            const customers = await res.json();
+    function getDeliveryFee(deliveryMethod) {
+        const fee = DELIVERY_FEES[deliveryMethod];
 
-            const select = document.getElementById("customerSelect");
-            select.innerHTML = customers.map(c => {
-                const name = c.customerName || c.companyName || c.name || `Customer #${c.id}`;
-                const selected = currentQuote?.customer?.id === c.id ? "selected" : "";
-                return `<option value="${c.id}" ${selected}>${name}</option>`;
+        return fee == null
+            ? 0
+            : Number(fee);
+    }
+
+    function getAllGroups() {
+        const groups = [];
+        const map = new Map();
+
+        items.forEach(item => {
+            const description = String(
+                item.itemDescription || ""
+            ).trim().toLowerCase();
+
+            const specs = String(
+                item.printSpecsSummary || ""
+            ).trim().toLowerCase();
+
+            const key = `${description}||${specs}`;
+
+            if (!map.has(key)) {
+                const group = [];
+
+                map.set(key, group);
+                groups.push(group);
+            }
+
+            map.get(key).push(item);
+        });
+
+        return groups;
+    }
+
+    function getSelectedOption(group) {
+        /*
+         * The first line is used as the selected/internal total.
+         * All duplicated lines remain visible as customer options.
+         */
+        return group[0];
+    }
+
+    function renderAddForm() {
+        const select = document.getElementById("addProduct");
+
+        const productOptions = products.map(product => `
+            <option value="${product.id}">
+                ${escapeHtml(
+                    product.productName || `Product #${product.id}`
+                )}
+            </option>
+        `).join("");
+
+        select.innerHTML = `
+            <option value="">
+                — Custom item (manual entry) —
+            </option>
+            ${productOptions}
+        `;
+
+        refreshSearchableSelect(select);
+    }
+
+    // ==========================================================
+    // SEARCHABLE SELECT — type to filter options
+    // ==========================================================
+
+    function refreshSearchableSelect(select) {
+        if (!select) {
+            return;
+        }
+
+        if (select.__searchable) {
+            select.__searchable.sync();
+        } else {
+            makeSelectSearchable(select);
+        }
+    }
+
+    function makeSelectSearchable(select) {
+        if (!select || select.__searchable) {
+            return;
+        }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "searchable-select";
+
+        if (select.style.width) {
+            wrapper.style.width = select.style.width;
+        }
+
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "searchable-input";
+        input.autocomplete = "off";
+        input.placeholder = "Type to search...";
+
+        const dropdown = document.createElement("div");
+        dropdown.className = "searchable-dropdown";
+
+        wrapper.insertBefore(input, select);
+        wrapper.insertBefore(dropdown, select);
+
+        select.classList.add("searchable-hidden-select");
+
+        const state = { activeIndex: -1, visibleOptions: [] };
+
+        function selectedLabel() {
+            const option = select.options[select.selectedIndex];
+            return option ? option.textContent.trim() : "";
+        }
+
+        function syncInputFromSelect() {
+            input.value = selectedLabel();
+        }
+
+        function closeDropdown() {
+            dropdown.style.display = "none";
+            state.activeIndex = -1;
+        }
+
+        function chooseOption(option) {
+            select.value = option.value;
+            select.dispatchEvent(new Event("change"));
+            syncInputFromSelect();
+            closeDropdown();
+        }
+
+        function renderList(filter) {
+            const term = String(filter || "").trim().toLowerCase();
+
+            const options = Array.from(select.options);
+
+            state.visibleOptions = options.filter(option =>
+                !term
+                || option.textContent.toLowerCase().includes(term)
+            );
+
+            if (!state.visibleOptions.length) {
+                dropdown.innerHTML =
+                    '<div class="searchable-empty">No matches found</div>';
+                dropdown.style.display = "block";
+                return;
+            }
+
+            dropdown.innerHTML = state.visibleOptions
+                .map((option, index) => `
+                    <div
+                        class="searchable-option${
+                            index === state.activeIndex ? " active" : ""
+                        }"
+                        data-index="${index}"
+                    >
+                        ${escapeHtml(option.textContent.trim())}
+                    </div>
+                `)
+                .join("");
+
+            dropdown.style.display = "block";
+        }
+
+        dropdown.addEventListener("mousedown", event => {
+            const optionDiv =
+                event.target.closest(".searchable-option");
+
+            if (!optionDiv) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const option = state.visibleOptions[
+                Number(optionDiv.dataset.index)
+            ];
+
+            if (option) {
+                chooseOption(option);
+            }
+
+            input.focus();
+        });
+
+        input.addEventListener("focus", () => {
+            input.select();
+            state.activeIndex = -1;
+            renderList("");
+        });
+
+        input.addEventListener("input", () => {
+            state.activeIndex = -1;
+            renderList(input.value);
+        });
+
+        input.addEventListener("blur", () => {
+            setTimeout(closeDropdown, 150);
+        });
+
+        input.addEventListener("keydown", event => {
+            if (dropdown.style.display !== "block") {
+                return;
+            }
+
+            if (event.key === "ArrowDown") {
+                event.preventDefault();
+                state.activeIndex = Math.min(
+                    state.activeIndex + 1,
+                    state.visibleOptions.length - 1
+                );
+                renderList(input.value);
+            } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                state.activeIndex = Math.max(
+                    state.activeIndex - 1,
+                    0
+                );
+                renderList(input.value);
+            } else if (event.key === "Enter") {
+                event.preventDefault();
+                const option =
+                    state.visibleOptions[state.activeIndex];
+                if (option) {
+                    chooseOption(option);
+                }
+            } else if (event.key === "Escape") {
+                closeDropdown();
+                syncInputFromSelect();
+            }
+        });
+
+        state.sync = syncInputFromSelect;
+
+        select.__searchable = state;
+
+        syncInputFromSelect();
+    }
+
+    function onAddProductChange() {
+        const productId =
+            document.getElementById("addProduct").value;
+
+        const sizeGroup =
+            document.getElementById("sizeGroup");
+
+        const scaleBox =
+            document.getElementById("scaleBox");
+
+        const descriptionInput =
+            document.getElementById("addDescription");
+
+        if (!productId) {
+            sizeGroup.style.display = "none";
+            scaleBox.style.display = "none";
+
+            openCustomItemForm();
+            return;
+        }
+
+        if (
+            document.getElementById("customItemCard")
+                .style.display === "block"
+        ) {
+            closeCustomItemForm();
+        }
+
+        const product = getProduct(productId);
+
+        if (!product) {
+            return;
+        }
+
+        const sizes = Array.isArray(product.sizes)
+            ? product.sizes
+            : [];
+
+        const sizeSelect =
+            document.getElementById("addSize");
+
+        if (sizes.length) {
+            sizeSelect.innerHTML = sizes.map((size, index) => `
+                <option value="${index}">
+                    ${escapeHtml(
+                        size.label || `Size ${index + 1}`
+                    )}
+                </option>
+            `).join("");
+
+            sizeGroup.style.display = "";
+        } else {
+            sizeSelect.innerHTML = `
+                <option value="">No sizes registered</option>
+            `;
+
+            sizeGroup.style.display = "none";
+        }
+
+        refreshSearchableSelect(sizeSelect);
+
+        if (!descriptionInput.value.trim()) {
+            descriptionInput.value =
+                product.productName || "";
+        }
+
+        onAddSizeChange();
+    }
+
+    // ==========================================================
+    // CUSTOM ITEM FORM — mirror of the order item form
+    // ==========================================================
+
+    const SPECS_FORMAT = "urban-print-item-specs-v1";
+
+    const ITEM_OPTIONS = {
+        departments: [
+            "Digital",
+            "Small Format",
+            "Wide Format",
+            "Bindery",
+            "Finishing",
+            "Apparel",
+            "Other"
+        ],
+        presses: [
+            { name: "Canon 700", department: "Small Format", type: "SF" },
+            { name: "HP Indigo 15000", department: "Digital", type: "SF" },
+            { name: "Konica Minolta AccurioPress", department: "Digital", type: "SF" },
+            { name: "Ricoh Pro Series", department: "Digital", type: "SF" },
+            { name: "Roland VG Series", department: "Wide Format", type: "WF" },
+            { name: "Mimaki UV Flatbed", department: "Wide Format", type: "WF" },
+            { name: "Epson DTG", department: "Apparel", type: "SF" }
+        ],
+        stocks: [
+            "14pt Coated Cover (C2S)",
+            "16pt Coated Cover (C2S)",
+            "100lb Gloss Text",
+            "100lb Gloss Cover",
+            "Bright White Bond 28lb",
+            "13oz Vinyl Banner",
+            "Adhesive Vinyl",
+            "Coroplast 4mm",
+            "Foam Board 3mm",
+            "Aluminum Composite (ACM)",
+            "Apparel - Cotton Tee",
+            "Custom Stock"
+        ],
+        commonTasks: [
+            "File Prep", "Cut", "Trim", "Rounded Corners", "Crease", "Score",
+            "Perforation", "Fold - Bi-fold", "Fold - Tri-fold", "Fold - Z-fold",
+            "Fold - Half-fold", "Fold - Gate-fold", "Lamination - Gloss",
+            "Lamination - Matte", "Lamination - Soft Touch", "Spot UV",
+            "Foil Stamping", "Embossing", "Metallic Ink",
+            "Binding - Saddle Stitch", "Binding - Spiral Coil",
+            "Binding - Wire-O", "Binding - Perfect", "Drilling (3-hole)",
+            "Padding", "Numbering", "Shrink Wrap", "Packaging",
+            "Kit Assembly", "Grommets", "Hem", "Pole Pockets", "Wind Slits",
+            "Mounting", "Weeding", "Delivery", "Installation", "Other"
+        ],
+        units: [
+            "Each", "Set", "Hour", "Sheet",
+            "Square Foot", "Linear Foot", "Carton"
+        ]
+    };
+
+    /*
+     * Canon 700 — cost per impression (click).
+     * NORMAL: P&B 0.009 / Color 0.045 (oversize uses the color rate).
+     * XL bands: stored cost per impression for the band.
+     * To change costs in the future, edit only this object.
+     */
+    const CANON_700_BANDS = {
+        NORMAL: { label: "Normal / Oversize", bw: 0.009, color: 0.045 },
+        XL3: { label: "XL3 (19.3 - 25.5 in)", bw: 0.135, color: 0.135 },
+        XL4: { label: "XL4 (25.6 - 34 in)", bw: 0.180, color: 0.180 },
+        XL5: { label: "XL5 (34.1 - 42.5 in)", bw: 0.225, color: 0.225 },
+        XL6: { label: "XL6 (42.6 - 51.2 in)", bw: 0.270, color: 0.270 }
+    };
+
+    let customItemOptionsInitialized = false;
+
+    function initCustomItemOptions() {
+        const deptSel = document.getElementById("ciDepartment");
+
+        deptSel.innerHTML =
+            '<option value="">— Select group —</option>';
+
+        ITEM_OPTIONS.departments.forEach(d =>
+            deptSel.appendChild(new Option(d, d))
+        );
+
+        populateCustomPressOptions(null);
+
+        makeSelectSearchable(deptSel);
+
+        const stockList =
+            document.getElementById("ciStockSuggestions");
+
+        stockList.innerHTML = "";
+
+        ITEM_OPTIONS.stocks.forEach(s =>
+            stockList.appendChild(new Option(s, s))
+        );
+
+        const taskList =
+            document.getElementById("ciTaskSuggestions");
+
+        taskList.innerHTML = "";
+
+        ITEM_OPTIONS.commonTasks.forEach(t =>
+            taskList.appendChild(new Option(t, t))
+        );
+
+        addCustomDeptRow();
+    }
+
+    function closeCustomItemForm() {
+        document.getElementById("customItemCard").style.display = "none";
+        resetCustomItemForm();
+    }
+
+    function initCustomItemOptions() {
+        const deptSel = document.getElementById("ciDepartment");
+
+        deptSel.innerHTML =
+            '<option value="">— Select group —</option>';
+
+        ITEM_OPTIONS.departments.forEach(d =>
+            deptSel.appendChild(new Option(d, d))
+        );
+
+        populateCustomPressOptions(null);
+
+        const stockList =
+            document.getElementById("ciStockSuggestions");
+
+        stockList.innerHTML = "";
+
+        ITEM_OPTIONS.stocks.forEach(s =>
+            stockList.appendChild(new Option(s, s))
+        );
+
+        const taskList =
+            document.getElementById("ciTaskSuggestions");
+
+        taskList.innerHTML = "";
+
+        ITEM_OPTIONS.commonTasks.forEach(t =>
+            taskList.appendChild(new Option(t, t))
+        );
+
+        addCustomDeptRow();
+    }
+
+    function populateCustomPressOptions(department) {
+        const pressSel = document.getElementById("ciPress");
+
+        const list = department
+            ? ITEM_OPTIONS.presses.filter(
+                p => p.department === department
+            )
+            : ITEM_OPTIONS.presses;
+
+        pressSel.innerHTML = "";
+        pressSel.appendChild(new Option("— Select press —", ""));
+
+        list.forEach(p =>
+            pressSel.appendChild(
+                new Option(`${p.name} (${p.type})`, p.name)
+            )
+        );
+
+        pressSel.value = "";
+
+        refreshSearchableSelect(pressSel);
+    }
+
+    function onCustomDepartmentChange() {
+        populateCustomPressOptions(
+            document.getElementById("ciDepartment").value || null
+        );
+
+        onCustomFieldChange();
+    }
+
+    function resetCustomItemForm() {
+        document.getElementById("ciDescription").value = "";
+        document.getElementById("ciSides").value = "SINGLE_SIDED";
+        document.getElementById("ciDepartment").value = "";
+
+        refreshSearchableSelect(
+            document.getElementById("ciDepartment")
+        );
+
+        populateCustomPressOptions(null);
+
+        [
+            "ciFsBlack", "ciFsColor", "ciFsMixed",
+            "ciBsBlack", "ciBsColor", "ciBsMixed"
+        ].forEach(id => {
+            document.getElementById(id).value = 0;
+        });
+
+        document.getElementById("ciStock").value = "";
+
+        [
+            "ciRunW", "ciRunH", "ciFlatW", "ciFlatH",
+            "ciFinW", "ciFinH", "ciPages"
+        ].forEach(id => {
+            document.getElementById(id).value = "";
+        });
+
+        document.getElementById("ciBlankStock").value = "No";
+        document.getElementById("ciWithBleed").value = "No";
+        document.getElementById("ciPriceByCarton").value = "No";
+        document.getElementById("ciOutsourced").value = "No";
+        document.getElementById("ciExtraSpecs").value = "";
+        document.getElementById("ciDeptRows").innerHTML = "";
+        addCustomDeptRow();
+
+        document.getElementById("ciQuantity").value = "";
+        document.getElementById("ciMarkup").value = "0";
+        document.getElementById("ciPrice").value = "";
+        document.getElementById("ciCalcBox").innerHTML =
+            "Select a press and enter the quantity to see the automatic price.";
+    }
+
+    function addCustomDeptRow(data = {}) {
+        const rows = document.getElementById("ciDeptRows");
+        const tr = document.createElement("div");
+        tr.className = "di-row";
+
+        const deptOpts = ['<option value=""></option>'].concat(
+            ITEM_OPTIONS.departments.map(d =>
+                `<option value="${escapeHtml(d)}" ${
+                    data.department === d ? "selected" : ""
+                }>${escapeHtml(d)}</option>`
+            )
+        ).join("");
+
+        const unitOpts = ['<option value=""></option>'].concat(
+            ITEM_OPTIONS.units.map(u =>
+                `<option value="${escapeHtml(u)}" ${
+                    data.unit === u ? "selected" : ""
+                }>${escapeHtml(u)}</option>`
+            )
+        ).join("");
+
+        tr.innerHTML = `
+            <div class="form-field di-dept">
+                <label>Department</label>
+                <select class="ci-di-dept">${deptOpts}</select>
+            </div>
+            <div class="form-field di-desc">
+                <label>Task</label>
+                <input
+                    type="text"
+                    class="ci-di-desc"
+                    list="ciTaskSuggestions"
+                    placeholder="e.g. Lamination - Matte"
+                    value="${escapeHtml(data.description || "")}"
+                >
+            </div>
+            <div class="form-field di-qty">
+                <label>Qty</label>
+                <input
+                    type="number"
+                    class="ci-di-qty"
+                    min="0"
+                    step="0.01"
+                    value="${data.quantity != null ? data.quantity : ""}"
+                    oninput="onCustomFieldChange()"
+                >
+            </div>
+            <div class="form-field di-unit">
+                <label>Unit</label>
+                <select class="ci-di-unit">${unitOpts}</select>
+            </div>
+            <div class="form-field di-price">
+                <label>Price</label>
+                <input
+                    type="number"
+                    class="ci-di-price"
+                    min="0"
+                    step="0.01"
+                    value="${data.price != null ? data.price : ""}"
+                    oninput="onCustomFieldChange()"
+                >
+            </div>
+            <div class="form-field di-remove">
+                <label>&nbsp;</label>
+                <button
+                    type="button"
+                    class="btn-danger btn-small"
+                    onclick="this.closest('.di-row').remove(); onCustomFieldChange();"
+                >
+                    ✕
+                </button>
+            </div>
+        `;
+
+        rows.appendChild(tr);
+    }
+
+    function readCustomFormIntoSpecs() {
+        const val = id =>
+            document.getElementById(id).value.trim();
+
+        const num = id => {
+            const n = parseFloat(val(id));
+            return isNaN(n) ? null : n;
+        };
+
+        const intOr0 = id => {
+            const n = parseInt(val(id), 10);
+            return isNaN(n) ? 0 : n;
+        };
+
+        const yn = id =>
+            document.getElementById(id).value === "Yes";
+
+        const pressName = val("ciPress") || null;
+        const pressDef = ITEM_OPTIONS.presses.find(
+            p => p.name === pressName
+        );
+
+        const specs = {
+            format: SPECS_FORMAT,
+            department: val("ciDepartment") || null,
+            press: pressName,
+            pressType: pressDef ? pressDef.type : null,
+            sides: val("ciSides") || "SINGLE_SIDED",
+            frontSheets: {
+                black: intOr0("ciFsBlack"),
+                color: intOr0("ciFsColor"),
+                mixed: intOr0("ciFsMixed")
+            },
+            backSheets: {
+                black: intOr0("ciBsBlack"),
+                color: intOr0("ciBsColor"),
+                mixed: intOr0("ciBsMixed")
+            },
+            stock: val("ciStock") || null,
+            runWidth: num("ciRunW"),
+            runHeight: num("ciRunH"),
+            flatWidth: num("ciFlatW"),
+            flatHeight: num("ciFlatH"),
+            finishedWidth: num("ciFinW"),
+            finishedHeight: num("ciFinH"),
+            pages: num("ciPages"),
+            blankStock: yn("ciBlankStock"),
+            withBleed: yn("ciWithBleed"),
+            priceByCarton: yn("ciPriceByCarton"),
+            outsourced: yn("ciOutsourced"),
+            extraSpecs: val("ciExtraSpecs") || null,
+            departmentItems: []
+        };
+
+        document
+            .querySelectorAll("#ciDeptRows .di-row")
+            .forEach(row => {
+                const dept =
+                    row.querySelector(".ci-di-dept").value;
+                const desc =
+                    row.querySelector(".ci-di-desc").value.trim();
+                const qty = parseFloat(
+                    row.querySelector(".ci-di-qty").value
+                );
+                const unit =
+                    row.querySelector(".ci-di-unit").value;
+                const price = parseFloat(
+                    row.querySelector(".ci-di-price").value
+                );
+
+                if (!dept && !desc && isNaN(qty) && isNaN(price)) {
+                    return;
+                }
+
+                specs.departmentItems.push({
+                    department: dept || null,
+                    description: desc || null,
+                    quantity: isNaN(qty) ? null : qty,
+                    unit: unit || null,
+                    price: isNaN(price) ? null : price
+                });
+            });
+
+        return specs;
+    }
+
+    function customHasMeaningfulSpecs(s) {
+        return Boolean(
+            s.department || s.press || s.stock
+            || s.pages != null || s.extraSpecs
+            || s.runWidth != null || s.runHeight != null
+            || s.flatWidth != null || s.flatHeight != null
+            || s.finishedWidth != null || s.finishedHeight != null
+            || s.blankStock || s.withBleed
+            || s.priceByCarton || s.outsourced
+            || (s.frontSheets
+                && (s.frontSheets.black
+                    || s.frontSheets.color
+                    || s.frontSheets.mixed))
+            || (s.backSheets
+                && (s.backSheets.black
+                    || s.backSheets.color
+                    || s.backSheets.mixed))
+            || (s.departmentItems && s.departmentItems.length)
+        );
+    }
+
+    function getCustomSizeBand() {
+        const w = Number(document.getElementById("ciFlatW").value)
+            || Number(document.getElementById("ciFinW").value)
+            || 0;
+
+        const h = Number(document.getElementById("ciFlatH").value)
+            || Number(document.getElementById("ciFinH").value)
+            || 0;
+
+        const maxDim = Math.max(w, h);
+
+        if (maxDim >= 42.6) return "XL6";
+        if (maxDim >= 34.1) return "XL5";
+        if (maxDim >= 25.6) return "XL4";
+        if (maxDim >= 19.3) return "XL3";
+        return "NORMAL";
+    }
+
+    function getCustomClicks() {
+        const intVal = id => {
+            const n = parseInt(
+                document.getElementById(id).value, 10
+            );
+
+            return isNaN(n) ? 0 : n;
+        };
+
+        const sides =
+            document.getElementById("ciSides").value;
+
+        let bw = intVal("ciFsBlack");
+        let color = intVal("ciFsColor") + intVal("ciFsMixed");
+
+        if (sides === "DOUBLE_SIDED") {
+            bw += intVal("ciBsBlack");
+            color += intVal("ciBsColor") + intVal("ciBsMixed");
+        }
+
+        if (bw + color === 0) {
+            color = sides === "DOUBLE_SIDED" ? 2 : 1;
+        }
+
+        return { bw: bw, color: color };
+    }
+
+    function onCustomFieldChange() {
+        const box = document.getElementById("ciCalcBox");
+        const pressName =
+            document.getElementById("ciPress").value;
+        const qty = Number(
+            document.getElementById("ciQuantity").value
+        );
+        const markup = Number(
+            document.getElementById("ciMarkup").value
+        ) || 0;
+
+        if (pressName !== "Canon 700") {
+            box.innerHTML = pressName
+                ? "No automatic cost model for this press yet. Enter the price manually."
+                : "Select a press and enter the quantity to see the automatic price.";
+
+            return;
+        }
+
+        if (!qty || qty <= 0) {
+            box.innerHTML =
+                "Enter the quantity to calculate the price automatically.";
+
+            return;
+        }
+
+        const band = CANON_700_BANDS[getCustomSizeBand()];
+        const clicks = getCustomClicks();
+
+        const bwCost = clicks.bw * band.bw * qty;
+        const colorCost = clicks.color * band.color * qty;
+
+        let deptTotal = 0;
+
+        document
+            .querySelectorAll("#ciDeptRows .di-row")
+            .forEach(row => {
+                const dQty = parseFloat(
+                    row.querySelector(".ci-di-qty").value
+                );
+                const dPrice = parseFloat(
+                    row.querySelector(".ci-di-price").value
+                );
+
+                if (isNaN(dPrice)) {
+                    return;
+                }
+
+                deptTotal += isNaN(dQty)
+                    ? dPrice
+                    : dQty * dPrice;
+            });
+
+        const printCost = roundTo(bwCost + colorCost, 2);
+
+        const totalPrice = roundTo(
+            printCost * (1 + markup / 100) + deptTotal,
+            2
+        );
+
+        const unitPrice = roundTo(totalPrice / qty, 4);
+
+        document.getElementById("ciPrice").value = unitPrice;
+
+        box.innerHTML = `
+            <div class="calc-row">
+                <span>Size band (automatic)</span>
+                <strong>${escapeHtml(band.label)}</strong>
+            </div>
+            <div class="calc-row">
+                <span>P&amp;B impressions (${clicks.bw} pass(es) × ${qty})</span>
+                <span>${formatMoney(roundTo(bwCost, 4))}</span>
+            </div>
+            <div class="calc-row">
+                <span>Color impressions (${clicks.color} pass(es) × ${qty})</span>
+                <span>${formatMoney(roundTo(colorCost, 4))}</span>
+            </div>
+            <div class="calc-row">
+                <span>Department items</span>
+                <span>${formatMoney(deptTotal)}</span>
+            </div>
+            <div class="calc-row">
+                <span>Print cost</span>
+                <span>${formatMoney(printCost)}</span>
+            </div>
+            <div class="calc-row">
+                <span>Markup (${markup}%)</span>
+                <span>${formatMoney(
+                    roundTo(totalPrice - printCost - deptTotal, 2)
+                )}</span>
+            </div>
+            <div class="calc-row total">
+                <span>Line total (auto)</span>
+                <strong>${formatMoney(totalPrice)}</strong>
+            </div>
+        `;
+    }
+
+    function saveCustomItem() {
+        const description =
+            document.getElementById("ciDescription").value.trim();
+
+        const quantity = Number(
+            document.getElementById("ciQuantity").value
+        );
+
+        const unitPrice = Number(
+            document.getElementById("ciPrice").value
+        );
+
+        if (!description) {
+            showMessage(
+                "Enter a description for the custom item.",
+                "error"
+            );
+
+            return;
+        }
+
+        if (!quantity || quantity <= 0) {
+            showMessage(
+                "Enter a quantity greater than zero.",
+                "error"
+            );
+
+            return;
+        }
+
+        if (Number.isNaN(unitPrice) || unitPrice < 0) {
+            showMessage(
+                "The price could not be calculated. Select a press with a cost model or enter a price manually.",
+                "error"
+            );
+
+            return;
+        }
+
+        const specs = readCustomFormIntoSpecs();
+
+        const newItem = normalizeItem({
+            id: null,
+            product: null,
+            itemDescription: description,
+            printSpecsSummary: customHasMeaningfulSpecs(specs)
+                ? JSON.stringify(specs)
+                : null,
+            quantity: quantity,
+            unitPrice: unitPrice,
+            totalPrice: roundTo(quantity * unitPrice, 2)
+        });
+
+        items.push(newItem);
+
+        renderItems();
+        renderTotals();
+        closeCustomItemForm();
+
+        showMessage(
+            "Custom item added with the calculated price. Click Save Changes to persist the quote.",
+            "success"
+        );
+    }
+
+    function onAddSizeChange() {
+        const size = getSelectedAddSize();
+
+        if (!size) {
+            document.getElementById("scaleBox").style.display =
+                "none";
+
+            return;
+        }
+
+        buildScalePreview(size);
+    }
+
+    function getSelectedAddSize() {
+        const productId =
+            document.getElementById("addProduct").value;
+
+        if (!productId) {
+            return null;
+        }
+
+        const product = getProduct(productId);
+
+        if (!product) {
+            return null;
+        }
+
+        const sizeIndex = Number(
+            document.getElementById("addSize").value
+        );
+
+        return Array.isArray(product.sizes)
+            ? product.sizes[sizeIndex] || null
+            : null;
+    }
+
+    function buildScalePreview(size) {
+        const scales = Array.isArray(size.priceScales)
+            ? size.priceScales
+                .filter(scale => scale.quantity != null)
+                .sort((a, b) =>
+                    Number(a.quantity) - Number(b.quantity)
+                )
+            : [];
+
+        const box =
+            document.getElementById("scaleBox");
+
+        if (!scales.length) {
+            box.style.display = "none";
+            return;
+        }
+
+        document.getElementById("scaleTitle").textContent =
+            `Quantity price options — ${
+                size.label || "Selected size"
+            } — click a row to use the price`;
+
+        document.getElementById("scaleTableBody").innerHTML =
+            scales.map(scale => {
+                const quantity =
+                    Number(scale.quantity);
+
+                const totalPrice =
+                    Number(scale.totalPrice || 0);
+
+                const unitPrice =
+                    scale.pricePerPiece != null
+                        ? Number(scale.pricePerPiece)
+                        : quantity > 0
+                            ? totalPrice / quantity
+                            : 0;
+
+                return `
+                    <tr
+                        class="scale-row"
+                        onclick="useScalePrice(
+                            ${quantity},
+                            ${unitPrice}
+                        )"
+                    >
+                        <td>${quantity} pcs</td>
+                        <td>${formatUnit(unitPrice)} /ea</td>
+                        <td>${formatMoney(totalPrice)}</td>
+                    </tr>
+                `;
             }).join("");
-        } catch (e) {
-            console.error(e);
-            alert("Error loading customer list.");
+
+        box.style.display = "";
+    }
+
+    function useScalePrice(quantity, unitPrice) {
+        document.getElementById("addQuantity").value =
+            quantity;
+
+        document.getElementById("addUnitPrice").value =
+            unitPrice;
+
+        updateAddPreview();
+    }
+
+    function onAddQuantityInput() {
+        const productId =
+            document.getElementById("addProduct").value;
+
+        const quantity =
+            Number(document.getElementById("addQuantity").value);
+
+        if (productId && quantity > 0) {
+            const sizeIndex = Number(
+                document.getElementById("addSize").value
+            );
+
+            const automaticPrice =
+                findScalePriceFor(
+                    productId,
+                    sizeIndex,
+                    quantity
+                );
+
+            if (automaticPrice != null) {
+                document.getElementById("addUnitPrice").value =
+                    automaticPrice;
+            }
+        }
+
+        updateAddPreview();
+    }
+
+    function updateAddPreview() {
+        const quantity =
+            Number(document.getElementById("addQuantity").value);
+
+        const unitPrice =
+            Number(document.getElementById("addUnitPrice").value);
+
+        const preview =
+            document.getElementById("addTotalPreview");
+
+        if (quantity > 0 && unitPrice >= 0) {
+            preview.textContent =
+                formatMoney(quantity * unitPrice);
+        } else {
+            preview.textContent = "—";
         }
     }
 
-    async function saveCustomerChange() {
-        const newCustomerId = document.getElementById("customerSelect").value;
+    function addItemFromForm() {
+        const productId =
+            document.getElementById("addProduct").value;
 
-        try {
-            const updatedQuote = { ...currentQuote, customer: { id: Number(newCustomerId) } };
+        const description =
+            document.getElementById("addDescription")
+                .value
+                .trim();
 
-            const res = await fetch(`/api/quotes/${quoteId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedQuote)
-            });
+        const quantity =
+            Number(document.getElementById("addQuantity").value);
 
-            if (!res.ok) throw new Error("Could not update customer.");
-            alert("Customer updated successfully!");
-            loadQuoteDetails();
-        } catch (e) {
-            console.error(e);
-            alert("Error updating customer.");
+        const unitPrice =
+            Number(document.getElementById("addUnitPrice").value);
+
+        if (!description) {
+            showMessage(
+                "Enter a description for the item.",
+                "error"
+            );
+
+            return;
         }
-    }
 
-    async function markAsSent() {
-        try {
-            const response = await fetch(`/api/quotes/${quoteId}`);
-            if (!response.ok) throw new Error("Could not fetch quote.");
-            const quote = await response.json();
+        if (!quantity || quantity <= 0) {
+            showMessage(
+                "Enter a quantity greater than zero.",
+                "error"
+            );
 
-            quote.status = "SENT";
-
-            const updateResponse = await fetch(`/api/quotes/${quoteId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(quote)
-            });
-
-            if (!updateResponse.ok) throw new Error("Could not update status.");
-            alert("Quote marked as SENT!");
-            loadQuoteDetails();
-        } catch (e) {
-            console.error(e);
-            alert("Error updating quote status.");
+            return;
         }
-    }
 
-    async function markAsAccepted() {
-    try {
-        const response = await fetch(`/api/quotes/${quoteId}`);
-        if (!response.ok) throw new Error("Could not fetch quote.");
-        const quote = await response.json();
+        if (Number.isNaN(unitPrice) || unitPrice < 0) {
+            showMessage(
+                "Enter a valid unit price.",
+                "error"
+            );
 
-        quote.status = "ACCEPTED";
+            return;
+        }
 
-        const updateResponse = await fetch(`/api/quotes/${quoteId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(quote)
+        let specs = "";
+        let resolvedProductId = null;
+
+        if (productId) {
+            const product = getProduct(productId);
+
+            if (product) {
+                resolvedProductId = product.id;
+
+                const size = getSelectedAddSize();
+
+                if (size) {
+                    specs = buildSpecs(size);
+                }
+            }
+        }
+
+        const newItem = normalizeItem({
+            id: null,
+            product: resolvedProductId
+                ? { id: resolvedProductId }
+                : null,
+            itemDescription: description,
+            printSpecsSummary: specs,
+            quantity: quantity,
+            unitPrice: unitPrice,
+            totalPrice: roundTo(
+                quantity * unitPrice,
+                2
+            )
         });
 
-        if (!updateResponse.ok) throw new Error("Could not update status.");
-        alert("Quote marked as ACCEPTED!");
-        loadQuoteDetails();
-    } catch (e) {
-        console.error(e);
-        alert("Error updating quote status.");
+        items.push(newItem);
+
+        renderItems();
+        renderTotals();
+
+        document.getElementById("addQuantity").value = "";
+        document.getElementById("addUnitPrice").value = "";
+
+        document.getElementById("addDescription").value =
+            productId
+                ? getProduct(productId)?.productName || ""
+                : "";
+
+        updateAddPreview();
+
+        showMessage(
+            "Item added. Click Save Changes to persist the quote.",
+            "success"
+        );
     }
-    }
 
-    async function convertToOrder() {
-    if (!confirm("Convert this quote into an order?")) {
-        return;
-    }
+    function buildSpecs(size) {
+        const parts = [];
 
-    try {
-        const response = await fetch(`/api/orders/from-quote/${quoteId}`, {
-            method: "POST"
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Could not convert quote to order.");
+        if (size.label) {
+            parts.push(`Size: ${size.label}`);
         }
 
-        alert(`Order ${data.orderNumber} created successfully!`);
-        window.location.href = `order-details.html?id=${data.id}`;
-    } catch (e) {
-        console.error(e);
-        alert(e.message || "Error converting quote to order.");
+        if (size.stock) {
+            parts.push(`Media: ${size.stock}`);
+        }
+
+        if (size.sidesInks) {
+            parts.push(size.sidesInks);
+        }
+
+        if (size.width && size.height) {
+            parts.push(
+                `${size.width}" x ${size.height}"`
+            );
+        }
+
+        return parts.join(" | ");
     }
+
+    async function saveQuote() {
+        if (!quote) {
+            showMessage(
+                "The quote could not be identified.",
+                "error"
+            );
+
+            return;
+        }
+
+        const customer = resolveCustomerForSave();
+
+        if (!customer) {
+            showMessage(
+                "Select a customer / contact before saving the quote.",
+                "error"
+            );
+
+            return;
+        }
+
+        const payload = {
+            quoteNumber: quote.quoteNumber || null,
+            customer: customer,
+            issueDate: quote.issueDate || null,
+            expiryDate: quote.expiryDate || null,
+            status: quote.status || "DRAFT",
+            notes: quote.notes || null,
+            gstRate: quote.gstRate != null
+                ? Number(quote.gstRate)
+                : 5,
+            pstRate: quote.pstRate != null
+                ? Number(quote.pstRate)
+                : 7,
+            deliveryMethod:
+                document.getElementById("deliveryMethod").value
+                || null,
+
+            items: items.map(item => ({
+                id: item.id,
+                product: item.productId
+                    ? { id: Number(item.productId) }
+                    : null,
+                itemDescription:
+                    item.itemDescription || null,
+                printSpecsSummary:
+                    item.printSpecsSummary || null,
+                quantity: Number(item.quantity || 0),
+                unitPrice: Number(item.unitPrice || 0),
+                totalPrice: Number(item.totalPrice || 0)
+            }))
+        };
+
+        const isNewQuote = !quote.id;
+
+        try {
+            const response = await fetch(
+                isNewQuote ? QUOTES_API : `${QUOTES_API}/${quote.id}`,
+                {
+                    method: isNewQuote ? "POST" : "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            if (!response.ok) {
+                const detail =
+                    await extractErrorDetail(response);
+
+                throw new Error(detail);
+            }
+
+            showMessage(
+                isNewQuote
+                    ? "Quote created successfully. Returning to the quotes list..."
+                    : "Quote saved successfully. Returning to the quotes list...",
+                "success"
+            );
+
+            setTimeout(() => {
+                window.location.href = "quote-list.html";
+            }, 900);
+
+        } catch (error) {
+            console.error("Error saving quote:", error);
+
+            showMessage(
+                "Error saving quote: " + error.message,
+                "error"
+            );
+        }
+    }
+
+    function resolveCustomerForSave() {
+        const select = document.getElementById("customerSelect");
+
+        const selectedId = select && select.value
+            ? Number(select.value)
+            : null;
+
+        if (selectedId != null) {
+            return { id: selectedId };
+        }
+
+        if (quote && quote.customer && quote.customer.id) {
+            return { id: quote.customer.id };
+        }
+
+        if (quote && quote.customerId) {
+            return { id: Number(quote.customerId) };
+        }
+
+        return null;
+    }
+
+    function getProduct(id) {
+        return products.find(
+            product => Number(product.id) === Number(id)
+        ) || null;
+    }
+
+    function findScalePrice(item, quantity) {
+        const product = getProduct(item.productId);
+
+        if (!product) {
+            return null;
+        }
+
+        const size = getSizeForItem(item, product);
+
+        if (!size) {
+            return null;
+        }
+
+        return scalePriceFor(size, quantity);
+    }
+
+    function findScalePriceFor(
+        productId,
+        sizeIndex,
+        quantity
+    ) {
+        const product = getProduct(productId);
+
+        if (!product || !Array.isArray(product.sizes)) {
+            return null;
+        }
+
+        const size = product.sizes[sizeIndex];
+
+        if (!size) {
+            return null;
+        }
+
+        return scalePriceFor(size, quantity);
+    }
+
+    function scalePriceFor(size, quantity) {
+        if (!Array.isArray(size.priceScales)) {
+            return null;
+        }
+
+        const scale = size.priceScales.find(
+            entry => Number(entry.quantity) === Number(quantity)
+        );
+
+        if (!scale) {
+            return null;
+        }
+
+        if (scale.pricePerPiece != null) {
+            return Number(scale.pricePerPiece);
+        }
+
+        const totalPrice = Number(scale.totalPrice || 0);
+        const scaleQuantity = Number(scale.quantity || 0);
+
+        if (scaleQuantity <= 0) {
+            return null;
+        }
+
+        return roundTo(
+            totalPrice / scaleQuantity,
+            4
+        );
+    }
+
+    function getSizeForItem(item, product) {
+        const sizes = Array.isArray(product.sizes)
+            ? product.sizes
+            : [];
+
+        if (!sizes.length) {
+            return null;
+        }
+
+        const specs = String(
+            item.printSpecsSummary || ""
+        ).toLowerCase();
+
+        const labelMatches = sizes
+            .filter(size =>
+                size.label
+                && specs.includes(
+                    String(size.label).toLowerCase()
+                )
+            )
+            .sort((a, b) =>
+                String(b.label || "").length
+                - String(a.label || "").length
+            );
+
+        if (labelMatches.length) {
+            return labelMatches[0];
+        }
+
+        if (sizes.length === 1) {
+            return sizes[0];
+        }
+
+        const priceMatches = sizes.filter(size =>
+            Array.isArray(size.priceScales)
+            && size.priceScales.some(scale =>
+                Number(scale.quantity)
+                === Number(item.quantity)
+            )
+        );
+
+        return priceMatches.length === 1
+            ? priceMatches[0]
+            : null;
+    }
+
+    async function extractErrorDetail(response) {
+        let detail =
+            "HTTP "
+            + response.status
+            + " "
+            + response.statusText;
+
+        try {
+            const text = await response.text();
+
+            if (text) {
+                try {
+                    const data = JSON.parse(text);
+
+                    if (data.message) {
+                        detail += " - " + data.message;
+                    } else if (data.error) {
+                        detail += " - " + data.error;
+                    } else {
+                        detail += " - " + text;
+                    }
+
+                } catch (parseError) {
+                    detail += " - " + text;
+                }
+            }
+
+        } catch (readError) {
+            console.error(
+                "Unable to read error response body:",
+                readError
+            );
+        }
+
+        if (detail.length > 800) {
+            detail =
+                detail.substring(0, 800)
+                + "...";
+        }
+
+        return detail;
+    }
+
+    function showMessage(text, type) {
+        const message =
+            document.getElementById("message");
+
+        message.textContent = text;
+        message.className = "message " + type;
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        if (type === "success") {
+            setTimeout(() => {
+                message.className = "message";
+            }, 6000);
+        }
+    }
+
+    function formatMoney(value) {
+        return "$" + Number(value || 0).toFixed(2);
+    }
+
+    function formatUnit(value) {
+        const number = Number(value || 0);
+
+        return "$" + number.toFixed(4);
+    }
+
+    function roundTo(value, decimals) {
+        return Number(
+            Number(value).toFixed(decimals)
+        );
     }
 
     function escapeHtml(value) {
-        const div = document.createElement("div");
-        div.textContent = value == null ? "" : String(value);
-        return div.innerHTML;
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<​", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+        return escapeHtml(value);
     }
 </script>
 

@@ -2,6 +2,7 @@ package com.urbanprint.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,13 @@ public class Product {
     private String description;
 
     // 2. Pricing Method (DocketManager Style)
-    // "QUANTITY_SCALE" (Business cards, flyers), "PER_SQFT" (Banners, vinyl), "PER_UNIT" (T-shirts, signs), "HOURLY"
+    // "QUANTITY_SCALE" (Business cards, flyers), "PER_SQFT" (Banners, vinyl),
+    // "PER_UNIT" (T-shirts, signs), "HOURLY" (services)
     private String pricingMethod = "QUANTITY_SCALE";
 
-    private String unit = "Each"; // Unit of measurement
+    private String unit = "Each";
 
-    // Fallback/Base pricing for Per SqFt or Per Unit products
+    // Base pricing for Per SqFt / Per Unit products
     @Column(precision = 10, scale = 2)
     private BigDecimal baseCost;
 
@@ -40,45 +42,42 @@ public class Product {
     @Column(precision = 10, scale = 2)
     private BigDecimal minimumOrderFee;
 
-    // 3. Print Specs
-    @Column(precision = 8, scale = 2)
-    private BigDecimal defaultWidth;
-
-    @Column(precision = 8, scale = 2)
-    private BigDecimal defaultHeight;
-
-    private String defaultStock; // e.g. 14pt Coated Cover, 13oz Vinyl
-
+    // 3. Print Specs (defaults for the product; each size can override)
+    private String defaultStock;
     private String sidesInks; // e.g. 4/0, 4/4, 1/0, 1/1
 
     // 4. Production Workflow
-    private String productionDepartment; // Digital Press, Wide Format, Bindery
-
-    private Integer turnaroundDays; // Business days
+    private String productionDepartment; // Digital Press, Wide Format, Bindery...
+    private Integer turnaroundDays;      // Business days
 
     private boolean active = true;
 
-    // Relationship to Pricing Scales (Tiers)
+    // 5. Sizes / Variations (each size has its own price scales)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<ProductPriceScale> priceScales = new ArrayList<>();
+    private List<ProductSize> sizes = new ArrayList<>();
 
     public Product() {
     }
 
-    public void addPriceScale(ProductPriceScale scale) {
-        priceScales.add(scale);
-        scale.setProduct(this);
+    public void addSize(ProductSize size) {
+        sizes.add(size);
+        size.setProduct(this);
     }
 
-    public void removePriceScale(ProductPriceScale scale) {
-        priceScales.remove(scale);
-        scale.setProduct(null);
+    public void removeSize(ProductSize size) {
+        sizes.remove(size);
+        size.setProduct(null);
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getProductName() {
@@ -153,22 +152,6 @@ public class Product {
         this.minimumOrderFee = minimumOrderFee;
     }
 
-    public BigDecimal getDefaultWidth() {
-        return defaultWidth;
-    }
-
-    public void setDefaultWidth(BigDecimal defaultWidth) {
-        this.defaultWidth = defaultWidth;
-    }
-
-    public BigDecimal getDefaultHeight() {
-        return defaultHeight;
-    }
-
-    public void setDefaultHeight(BigDecimal defaultHeight) {
-        this.defaultHeight = defaultHeight;
-    }
-
     public String getDefaultStock() {
         return defaultStock;
     }
@@ -209,15 +192,15 @@ public class Product {
         this.active = active;
     }
 
-    public List<ProductPriceScale> getPriceScales() {
-        return priceScales;
+    public List<ProductSize> getSizes() {
+        return sizes;
     }
 
-    public void setPriceScales(List<ProductPriceScale> priceScales) {
-        this.priceScales = priceScales;
-        if (priceScales != null) {
-            for (ProductPriceScale scale : priceScales) {
-                scale.setProduct(this);
+    public void setSizes(List<ProductSize> sizes) {
+        this.sizes = sizes;
+        if (sizes != null) {
+            for (ProductSize size : sizes) {
+                size.setProduct(this);
             }
         }
     }

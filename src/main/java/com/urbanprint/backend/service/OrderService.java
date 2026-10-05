@@ -7,11 +7,13 @@ import com.urbanprint.backend.model.Quote;
 import com.urbanprint.backend.model.QuoteItem;
 import com.urbanprint.backend.model.Product;
 import com.urbanprint.backend.model.ProductPriceScale;
+import com.urbanprint.backend.model.ProductSize;
 import com.urbanprint.backend.repository.OrderRepository;
 import com.urbanprint.backend.repository.OrderItemRepository;
 import com.urbanprint.backend.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -320,11 +322,22 @@ public class OrderService {
     }
 
     private BigDecimal findCurrentUnitPrice(Product product, Integer quantity) {
-        if (product == null || product.getPriceScales() == null || product.getPriceScales().isEmpty()) {
+        if (product == null || product.getSizes() == null || product.getSizes().isEmpty()) {
             return BigDecimal.ZERO;
         }
 
-        Optional<ProductPriceScale> exact = product.getPriceScales().stream()
+        List<ProductPriceScale> allScales = new ArrayList<>();
+        for (ProductSize size : product.getSizes()) {
+            if (size.isActive() && size.getPriceScales() != null) {
+                allScales.addAll(size.getPriceScales());
+            }
+        }
+
+        if (allScales.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        Optional<ProductPriceScale> exact = allScales.stream()
                 .filter(scale -> scale.getQuantity().equals(quantity))
                 .findFirst();
 
@@ -332,7 +345,7 @@ public class OrderService {
             return exact.get().getPricePerPiece();
         }
 
-        ProductPriceScale closest = product.getPriceScales().stream()
+        ProductPriceScale closest = allScales.stream()
                 .min(Comparator.comparingInt(scale -> Math.abs(scale.getQuantity() - quantity)))
                 .orElse(null);
 
@@ -340,10 +353,14 @@ public class OrderService {
     }
 
     private void calculateQuoteTotals(Quote quote) {
-        BigDecimal subtotal = quote.getItems().stream()
-                .map(QuoteItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+        BigDecimal subtotal = BigDecimal.ZERO;
+        if (quote.getItems() != null) {
+            for (QuoteItem item : quote.getItems()) {
+                if (item.getTotalPrice() != null) {
+                    subtotal = subtotal.add(item.getTotalPrice());
+                }
+            }
+        }
         quote.setSubtotal(subtotal);
 
         BigDecimal gstAmount = subtotal.multiply(quote.getGstRate())

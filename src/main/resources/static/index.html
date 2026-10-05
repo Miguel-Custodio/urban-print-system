@@ -169,6 +169,7 @@
         .actions {
             display: flex;
             justify-content: flex-end;
+            gap: 10px;
         }
 
         button {
@@ -190,6 +191,17 @@
             background-color: var(--accent-hover);
         }
 
+        .btn-edit {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn-edit:hover {
+            background-color: #bfdbfe;
+        }
+
         .btn-danger {
             background-color: var(--danger);
             color: #ffffff;
@@ -199,6 +211,15 @@
 
         .btn-danger:hover {
             background-color: var(--danger-hover);
+        }
+
+        .btn-cancel {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-cancel:hover {
+            background-color: #cbd5e1;
         }
 
         /* Table */
@@ -225,6 +246,20 @@
 
         tbody tr:hover {
             background-color: #f8fafc;
+        }
+
+        td a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        .company-website {
+            font-size: 0.78rem;
+            color: var(--text-muted);
         }
 
         .badge-active {
@@ -283,18 +318,26 @@
         </header>
 
         <div class="content">
-            <!-- Add Customer Card -->
+            <!-- Add / Edit Customer Card -->
             <div class="card">
-                <h2>Add New Customer</h2>
+                <h2 id="formTitle">Add New Customer</h2>
                 <form id="customerForm">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="name">Contact Name *</label>
-                            <input type="text" id="name" placeholder="e.g. John Doe" required>
+                            <label for="companyName">Company Name</label>
+                            <input type="text" id="companyName" placeholder="e.g. Stonz">
                         </div>
                         <div class="form-group">
-                            <label for="companyName">Company Name</label>
-                            <input type="text" id="companyName" placeholder="e.g. Acme Studio">
+                            <label for="website">Company Website</label>
+                            <input type="text" id="website" placeholder="e.g. https://stonz.ca">
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Contact Name *</label>
+                            <input type="text" id="name" placeholder="e.g. Tatiana" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactPosition">Contact Position</label>
+                            <input type="text" id="contactPosition" placeholder="e.g. Owner, Director, Marketing">
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
@@ -318,7 +361,10 @@
                         </div>
                     </div>
                     <div class="actions">
-                        <button type="submit" class="btn-primary">Save Customer</button>
+                        <button type="button" id="cancelEditBtn" class="btn-cancel" style="display: none;" onclick="cancelEdit()">
+                            Cancel Edit
+                        </button>
+                        <button type="submit" id="saveBtn" class="btn-primary">Save Customer</button>
                     </div>
                 </form>
             </div>
@@ -330,8 +376,9 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Contact Name</th>
                             <th>Company</th>
+                            <th>Contact Name</th>
+                            <th>Position</th>
                             <th>Email & Phone</th>
                             <th>Address / City</th>
                             <th>Status</th>
@@ -340,7 +387,7 @@
                     </thead>
                     <tbody id="customersTableBody">
                         <tr>
-                            <td colspan="7" class="empty-state">Loading customers...</td>
+                            <td colspan="8" class="empty-state">Loading customers...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -351,34 +398,47 @@
     <script>
         const API_URL = '/api/customers';
 
+        let customersCache = [];
+        let editingCustomerId = null;
+
         document.addEventListener('DOMContentLoaded', loadCustomers);
 
         document.getElementById('customerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const newCustomer = {
-                name: document.getElementById('name').value.trim(),
+            const isEditing = editingCustomerId !== null;
+            const existing = isEditing
+                ? customersCache.find(c => c.id === editingCustomerId)
+                : null;
+
+            const customerData = {
                 companyName: document.getElementById('companyName').value.trim(),
+                website: document.getElementById('website').value.trim(),
+                name: document.getElementById('name').value.trim(),
+                contactPosition: document.getElementById('contactPosition').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
                 address: document.getElementById('address').value.trim(),
                 city: document.getElementById('city').value.trim(),
                 postalCode: document.getElementById('postalCode').value.trim(),
-                active: true
+                active: existing ? existing.active : true
             };
 
+            const url = isEditing ? `${API_URL}/${editingCustomerId}` : API_URL;
+            const method = isEditing ? 'PUT' : 'POST';
+
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
+                const response = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newCustomer)
+                    body: JSON.stringify(customerData)
                 });
 
                 if (response.ok) {
-                    document.getElementById('customerForm').reset();
+                    resetCustomerForm();
                     loadCustomers();
                 } else {
-                    alert('Error creating customer.');
+                    alert(isEditing ? 'Error updating customer.' : 'Error creating customer.');
                 }
             } catch (err) {
                 console.error('Error:', err);
@@ -391,22 +451,31 @@
 
             try {
                 const response = await fetch(API_URL);
-                const customers = await response.json();
+                customersCache = await response.json();
 
-                if (!customers || customers.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">No customers registered yet.</td></tr>`;
+                if (!customersCache || customersCache.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="8" class="empty-state">No customers registered yet.</td></tr>`;
                     return;
                 }
 
-                tableBody.innerHTML = customers.map(c => {
+                tableBody.innerHTML = customersCache.map(c => {
                     const contactDetails = [c.email, c.phone].filter(Boolean).join('<br>') || '-';
                     const locationDetails = [c.address, c.city, c.postalCode].filter(Boolean).join(', ') || '-';
+
+                    let companyHtml = `<strong>${escapeHtml(c.companyName || '-')}</strong>`;
+                    if (c.website) {
+                        const websiteUrl = c.website.startsWith('http')
+                            ? c.website
+                            : `https://${c.website}`;
+                        companyHtml += `<br><small class="company-website"><a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a></small>`;
+                    }
 
                     return `
                         <tr>
                             <td><strong>#${c.id}</strong></td>
-                            <td><strong>${escapeHtml(c.name || '')}</strong></td>
-                            <td>${escapeHtml(c.companyName || '-')}</td>
+                            <td>${companyHtml}</td>
+                            <td>${escapeHtml(c.name || '-')}</td>
+                            <td>${escapeHtml(c.contactPosition || '-')}</td>
                             <td>${contactDetails}</td>
                             <td>${escapeHtml(locationDetails)}</td>
                             <td>
@@ -414,16 +483,63 @@
                                     ${c.active ? 'Active' : 'Inactive'}
                                 </span>
                             </td>
-                            <td style="text-align: right;">
-                                <button class="btn-danger" onclick="deleteCustomer(${c.id})">Delete</button>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button class="btn-edit" onclick="editCustomer(${c.id})">
+                                    Edit
+                                </button>
+
+                                <button class="btn-danger" onclick="deleteCustomer(${c.id})">
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     `;
                 }).join('');
             } catch (err) {
                 console.error('Error fetching customers:', err);
-                tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">Failed to load customer list.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="8" class="empty-state">Failed to load customer list.</td></tr>`;
             }
+        }
+
+        function editCustomer(id) {
+            const customer = customersCache.find(c => c.id === id);
+
+            if (!customer) {
+                return;
+            }
+
+            editingCustomerId = id;
+
+            document.getElementById('companyName').value = customer.companyName || '';
+            document.getElementById('website').value = customer.website || '';
+            document.getElementById('name').value = customer.name || '';
+            document.getElementById('contactPosition').value = customer.contactPosition || '';
+            document.getElementById('email').value = customer.email || '';
+            document.getElementById('phone').value = customer.phone || '';
+            document.getElementById('address').value = customer.address || '';
+            document.getElementById('city').value = customer.city || '';
+            document.getElementById('postalCode').value = customer.postalCode || '';
+
+            document.getElementById('formTitle').textContent = `Edit Customer — #${customer.id}`;
+            document.getElementById('saveBtn').textContent = 'Update Customer';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function cancelEdit() {
+            resetCustomerForm();
+        }
+
+        function resetCustomerForm() {
+            editingCustomerId = null;
+            document.getElementById('customerForm').reset();
+            document.getElementById('formTitle').textContent = 'Add New Customer';
+            document.getElementById('saveBtn').textContent = 'Save Customer';
+            document.getElementById('cancelEditBtn').style.display = 'none';
         }
 
         async function deleteCustomer(id) {
@@ -437,6 +553,9 @@
                 });
 
                 if (response.ok) {
+                    if (editingCustomerId === id) {
+                        resetCustomerForm();
+                    }
                     loadCustomers();
                 } else {
                     alert('Could not delete customer.');

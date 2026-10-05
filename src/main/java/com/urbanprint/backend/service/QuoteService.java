@@ -6,6 +6,7 @@ import com.urbanprint.backend.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -59,28 +60,63 @@ public class QuoteService {
     }
 
     @Transactional
-    public Quote updateQuote(Long id, Quote updatedQuote) {
-        return quoteRepository.findById(id).map(existing -> {
-            existing.setCustomer(updatedQuote.getCustomer());
-            existing.setIssueDate(updatedQuote.getIssueDate());
-            existing.setExpiryDate(updatedQuote.getExpiryDate());
-            existing.setStatus(updatedQuote.getStatus());
-            existing.setNotes(updatedQuote.getNotes());
-            existing.setGstRate(updatedQuote.getGstRate() != null ? updatedQuote.getGstRate() : new BigDecimal("5.00"));
-            existing.setPstRate(updatedQuote.getPstRate() != null ? updatedQuote.getPstRate() : new BigDecimal("7.00"));
+public Quote updateQuote(Long id, Quote updatedQuote) {
+    return quoteRepository.findById(id).map(existing -> {
 
-            existing.getItems().clear();
-            if (updatedQuote.getItems() != null) {
-                for (QuoteItem item : updatedQuote.getItems()) {
-                    item.setQuote(existing);
-                    existing.getItems().add(item);
-                }
+        existing.setCustomer(updatedQuote.getCustomer());
+        existing.setIssueDate(updatedQuote.getIssueDate());
+        existing.setExpiryDate(updatedQuote.getExpiryDate());
+        existing.setStatus(updatedQuote.getStatus());
+        existing.setNotes(updatedQuote.getNotes());
+        existing.setGstRate(updatedQuote.getGstRate());
+        existing.setPstRate(updatedQuote.getPstRate());
+        existing.setDeliveryMethod(updatedQuote.getDeliveryMethod());
+
+        if (updatedQuote.getItems() == null) {
+            updatedQuote.setItems(new java.util.ArrayList<>());
+        }
+
+        // 1. Remove items that were deleted on the edit screen
+        java.util.Set<Long> keptIds = new java.util.HashSet<>();
+
+        for (QuoteItem item : updatedQuote.getItems()) {
+            if (item.getId() != null) {
+                keptIds.add(item.getId());
             }
+        }
 
-            calculateTotals(existing);
-            return quoteRepository.save(existing);
-        }).orElseThrow(() -> new RuntimeException("Quote not found with id " + id));
-    }
+        existing.getItems().removeIf(item ->
+            item.getId() != null && !keptIds.contains(item.getId())
+        );
+
+        // 2. Update existing items and insert new ones
+        for (QuoteItem newItem : updatedQuote.getItems()) {
+            QuoteItem matched = newItem.getId() == null
+                ? null
+                : existing.getItems().stream()
+                    .filter(oldItem -> oldItem.getId().equals(newItem.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (matched != null) {
+                matched.setProduct(newItem.getProduct());
+                matched.setItemDescription(newItem.getItemDescription());
+                matched.setPrintSpecsSummary(newItem.getPrintSpecsSummary());
+                matched.setQuantity(newItem.getQuantity());
+                matched.setUnitPrice(newItem.getUnitPrice());
+                matched.setTotalPrice(newItem.getTotalPrice());
+            } else {
+                newItem.setQuote(existing);
+                existing.getItems().add(newItem);
+            }
+        }
+
+        calculateTotals(existing);
+
+        return quoteRepository.save(existing);
+
+    }).orElseThrow(() -> new RuntimeException("Quote not found with id " + id));
+}
 
     public void deleteQuote(Long id) {
         quoteRepository.deleteById(id);
@@ -118,7 +154,24 @@ public class QuoteService {
     }
 
     private String generateQuoteNumber() {
-        long count = quoteRepository.count();
-        return String.format("QU-%04d", count + 1001);
+        long maxSeq = 1000;
+
+        for (Quote q : quoteRepository.findAll()) {
+            String num = q.getQuoteNumber();
+
+            if (num != null && num.startsWith("QU-")) {
+                try {
+                    long seq = Long.parseLong(num.substring(3));
+
+                    if (seq > maxSeq) {
+                        maxSeq = seq;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // ignora quote numbers fora do padrão QU-XXXX
+                }
+            }
+        }
+
+        return String.format("QU-%04d", maxSeq + 1);
     }
 }

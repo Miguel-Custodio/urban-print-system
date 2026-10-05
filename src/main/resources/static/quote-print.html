@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Quote — Urban Print Shop</title>
+
+    <style>
+        :root {
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #1d4ed8;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        .toolbar {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.88rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back {
+            background: #e2e8f0;
+            color: var(--text);
+        }
+
+        .btn-print {
+            background: var(--accent);
+            color: white;
+        }
+
+        .print-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 9px 14px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .print-option input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .customer-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 28px 24px;
+            margin-bottom: 28px;
+        }
+
+        .customer-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 24px;
+            align-items: start;
+            line-height: 1.8;
+            font-size: 0.92rem;
+        }
+
+        .company-name {
+            font-size: 1.05rem;
+        }
+
+        .attn-label {
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-position {
+            color: var(--muted);
+        }
+
+        .customer-website {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .customer-website:hover {
+            text-decoration: underline;
+        }
+
+        .sheet {
+            max-width: 900px;
+            margin: 24px auto;
+            background: white;
+            border: 1px solid var(--border);
+            padding: 44px 48px;
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .logo {
+            max-height: 76px;
+            max-width: 240px;
+            object-fit: contain;
+        }
+
+        .company-line {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .doc-title {
+            text-align: right;
+        }
+
+        .quote-number {
+            color: var(--accent);
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .doc-meta {
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 8px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        .info-box {
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 14px 16px;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .info-title {
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .change-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+
+        .items-table th {
+            background: #f1f5f9;
+            text-align: left;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            padding: 9px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .items-table td {
+            border-bottom: 1px solid var(--border);
+            padding: 12px 8px;
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+
+        .num {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .specs {
+            color: var(--muted);
+            font-size: 0.78rem;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        .options-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .options-table th {
+            background: transparent;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.66rem;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            text-transform: uppercase;
+        }
+
+        .options-table td {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 6px 8px;
+            font-size: 0.86rem;
+        }
+
+        .totals {
+            margin-left: auto;
+            width: 320px;
+            margin-top: 20px;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .totals-row strong {
+            color: var(--text);
+        }
+
+        .totals-row.grand {
+            border-top: 2px solid #1e293b;
+            margin-top: 6px;
+            padding-top: 12px;
+            font-size: 1.05rem;
+        }
+
+        .totals-row.grand strong {
+            font-size: 1.05rem;
+        }
+
+        .taxes-note {
+            margin-left: auto;
+            width: 320px;
+            margin-top: 20px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .options-note {
+            margin-top: 18px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .notes-block {
+            margin-top: 18px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .doc-footer {
+            margin-top: 36px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .doc-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .toolbar,
+            .no-print {
+                display: none !important;
+            }
+
+            .sheet {
+                border: 0;
+                margin: 0;
+                max-width: none;
+                padding: 0;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="toolbar">
+    <a class="btn btn-back" id="backLink" href="quote-list.html">Back</a>
+
+    <label class="print-option no-print">
+        <input type="checkbox"
+               id="multipleQuantityMode"
+               onchange="toggleMultipleQuantityMode()">
+
+        Multiple quantity options
+    </label>
+
+    <button class="btn btn-print" onclick="window.print()">Print</button>
+</div>
+
+<div class="sheet" id="sheet">
+    Loading quote...
+</div>
+
+<script>
+    const QUOTES_API = "/api/quotes";
+
+    const DELIVERY_FEES = {
+        PICKUP: 0,
+        ZONE_A: 10,
+        ZONE_B: 15,
+        ZONE_C: 20,
+        ZONE_F: 0,
+        COURIER: null
+    };
+
+    const DELIVERY_LABELS = {
+        PICKUP: "Pick-up",
+        ZONE_A: "Delivery Zone A",
+        ZONE_B: "Delivery Zone B",
+        ZONE_C: "Delivery Zone C",
+        ZONE_F: "Delivery Zone F",
+        COURIER: "Courier"
+    };
+
+    let quote = null;
+    let multipleQuantityMode = false;
+
+    document.addEventListener("DOMContentLoaded", init);
+
+    async function init() {
+        const id = new URLSearchParams(window.location.search).get("id");
+
+        if (!id) {
+            document.getElementById("sheet").innerHTML =
+                "<p>No quote id was provided in the URL.</p>";
+            return;
+        }
+
+        document.getElementById("backLink").href = "quote-details.html?id=" + id;
+
+        try {
+            quote = await fetchQuote(id);
+            render();
+        } catch (error) {
+            console.error(error);
+            document.getElementById("sheet").innerHTML =
+                "<p>Could not load this quote. Check if the backend is running.</p>";
+        }
+    }
+
+    async function fetchQuote(id) {
+        try {
+            const response = await fetch(`${QUOTES_API}/${id}`);
+
+            if (response.ok) {
+                return response.json();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
+        const listResponse = await fetch(QUOTES_API);
+        const list = await listResponse.json();
+
+        const found = (Array.isArray(list) ? list : [])
+            .find(item => item.id === Number(id));
+
+        if (!found) {
+            throw new Error("Quote not found");
+        }
+
+        return found;
+    }
+
+    function toggleMultipleQuantityMode() {
+        multipleQuantityMode =
+            document.getElementById("multipleQuantityMode").checked;
+
+        render();
+    }
+
+    function render() {
+        const gstRate = quote.gstRate != null ? Number(quote.gstRate) : 5;
+        const pstRate = quote.pstRate != null ? Number(quote.pstRate) : 7;
+
+        const groups = groupItems();
+        const singleItems = groups
+            .filter(group => group.items.length === 1)
+            .map(group => group.items[0]);
+
+        const hasOptions = groups.some(group => group.items.length > 1);
+
+        const subtotal = singleItems.reduce(
+            (sum, item) => sum + Number(item.totalPrice || 0), 0);
+        const gstAmount = subtotal * gstRate / 100;
+        const pstAmount = subtotal * pstRate / 100;
+        const grandTotal = subtotal + gstAmount + pstAmount;
+
+        document.getElementById("sheet").innerHTML = `
+            ${renderHeader()}
+            ${renderCustomerBox(gstRate, pstRate)}
+            ${renderItemsTable(groups)}
+            ${multipleQuantityMode
+                ? renderMultipleModeNote(hasOptions)
+                : renderTotals(singleItems, subtotal, gstRate, gstAmount, pstRate, pstAmount, grandTotal, hasOptions)}
+            ${renderNotes()}
+            ${renderFooter()}
+        `;
+    }
+
+    function getDeliveryFee(deliveryMethod) {
+        const fee = DELIVERY_FEES[deliveryMethod];
+
+        return fee == null
+            ? 0
+            : Number(fee);
+    }
+
+    function isCourierDelivery() {
+        return quote.deliveryMethod === "COURIER";
+    }
+
+    function renderHeader() {
+        return `
+            <div class="doc-header">
+                <div>
+                    <img class="logo"
+                         src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+                         alt="Urban Print Shop">
+                    <div class="company-line">
+                        <strong style="color: var(--text); font-size: 1rem;">URBAN PRINT SHOP</strong><br>
+                        7993 Enterprise St, Burnaby, BC<br>
+                        Phone: (604) 420-3298 | info@urbanprintshop.ca
+                    </div>
+                </div>
+
+                <div class="doc-title">
+                    <div class="quote-number">${escapeHtml(quote.quoteNumber || `Quote #${quote.id}`)}</div>
+
+                    <div class="doc-meta">
+                        <strong>Issue Date:</strong> ${escapeHtml(quote.issueDate || "-")}<br>
+                        <strong>Expiry Date:</strong> ${escapeHtml(quote.expiryDate || "-")}<br>
+                        <strong>Delivery:</strong> ${escapeHtml(DELIVERY_LABELS[quote.deliveryMethod] || quote.deliveryMethod || "-")}
+                    </div>
+
+                    ${quote.status ? `<span class="badge no-print">${escapeHtml(quote.status)}</span>` : ""}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderCustomerBox(gstRate, pstRate) {
+    const customer = quote.customer || {};
+
+    const addressLines = [
+        customer.address,
+        customer.city,
+        customer.postalCode
+    ].filter(Boolean).join(", ");
+
+    const companyName = customer.companyName || "";
+    const contactName = customer.name || "";
+    const contactPosition = customer.contactPosition || "";
+    const website = customer.website || "";
+
+    // Coluna esquerda — contato (Attn)
+    let contactHtml = `<span class="attn-label">Attn:</span><br>`;
+
+    if (contactName) {
+        contactHtml += `<strong>${escapeHtml(contactName)}</strong>`;
+
+        if (contactPosition) {
+            contactHtml += `
+                <span class="contact-position">
+                    — ${escapeHtml(contactPosition)}
+                </span>
+            `;
+        }
+
+        contactHtml += `<br>`;
+    }
+
+    if (customer.email) {
+        contactHtml += `${escapeHtml(customer.email)}<br>`;
+    }
+
+    if (customer.phone) {
+        contactHtml += `${escapeHtml(customer.phone)}`;
+    }
+
+    // Coluna direita — empresa
+    let companyHtml = "";
+
+    if (companyName) {
+        companyHtml += `
+            <strong class="company-name">
+                ${escapeHtml(companyName)}
+            </strong><br>
+        `;
+    }
+
+    if (addressLines) {
+        companyHtml += `${escapeHtml(addressLines)}<br>`;
+    }
+
+    if (website) {
+        const websiteUrl = website.startsWith("http")
+            ? website
+            : `https://${website}`;
+
+        companyHtml += `
+            <a
+                href="${escapeHtml(websiteUrl)}"
+                target="_blank"
+                class="customer-website"
+            >
+                ${escapeHtml(website)}
+            </a>
+        `;
+    }
+
+    return `
+        <div class="customer-box">
+            <div class="info-title">
+                <span>Prepared for</span>
+                <a
+                    class="change-link no-print"
+                    href="quote-details.html?id=${quote.id}"
+                >
+                    Change
+                </a>
+            </div>
+
+            <div class="customer-columns">
+                <div class="customer-col">
+                    ${contactHtml}
+                </div>
+                <div class="customer-col">
+                    ${companyHtml || "&nbsp;"}
+                </div>
+            </div>
+        </div>
+
+        <div class="info-grid no-print">
+            <div class="info-box">
+                <div class="info-title">
+                    <span>Quotation Summary</span>
+                </div>
+
+                <strong>Status:</strong>
+                ${escapeHtml(quote.status || "-")}<br>
+
+                <strong>Taxes:</strong>
+                GST (${gstRate.toFixed(2)}%) +
+                PST (${pstRate.toFixed(2)}%)<br>
+
+                <strong>Item Count:</strong>
+                ${(quote.items || []).length} item(s)
+            </div>
+        </div>
+    `;
+}
+
+    function renderItemsTable(groups) {
+        if (!groups.length) {
+            return `<p>No items on this quote.</p>`;
+        }
+
+        const totalHeader = multipleQuantityMode
+            ? '<th class="num">Total (incl. taxes)</th>'
+            : '<th class="num">Total</th>';
+
+        const rows = groups.map(group => {
+            const first = group.items[0];
+
+            const specsHtml = first.printSpecsSummary
+                ? `<div class="specs">${escapeHtml(first.printSpecsSummary)}</div>`
+                : '<span style="color: #94a3b8;">-</span>';
+
+            const itemTotalHtml = multipleQuantityMode
+                ? `<td class="num"><strong>${formatMoney(optionTotalWithTaxes(first))}</strong></td>`
+                : `<td class="num"><strong>${formatMoney(first.totalPrice)}</strong></td>`;
+
+            if (group.items.length === 1) {
+                return `
+                    <tr>
+                        <td>
+                            <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
+                        </td>
+                        <td>
+                            ${specsHtml}
+                        </td>
+                        <td class="num">${first.quantity}</td>
+                        <td class="num">${formatMoney(first.unitPrice)}</td>
+                        ${itemTotalHtml}
+                    </tr>
+                `;
+            }
+
+            const sortedItems = [...group.items]
+                .sort((a, b) => Number(a.quantity) - Number(b.quantity));
+
+            const optionsRows = sortedItems.map(item => {
+                const subtotalCell = multipleQuantityMode
+                    ? ""
+                    : `<td class="num">${formatMoney(item.totalPrice)}</td>`;
+
+                return `
+                    <tr>
+                        <td class="num">${item.quantity} pcs</td>
+                        <td class="num">${formatMoney(item.unitPrice)} /ea</td>
+                        ${subtotalCell}
+                        <td class="num"><strong>${formatMoney(optionTotalWithTaxes(item))}</strong></td>
+                    </tr>
+                `;
+            }).join("");
+
+            const optionsHead = multipleQuantityMode
+                ? `
+                    <th class="num">Quantity</th>
+                    <th class="num">Unit Price</th>
+                    <th class="num">Total (incl. taxes)</th>
+                `
+                : `
+                    <th class="num">Quantity</th>
+                    <th class="num">Unit Price</th>
+                    <th class="num">Subtotal</th>
+                    <th class="num">Total (incl. taxes)</th>
+                `;
+
+            return `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
+                    </td>
+                    <td>
+                        ${specsHtml}
+                    </td>
+                    <td colspan="3" style="padding: 8px 0;">
+                        <table class="options-table">
+                            <thead>
+                                <tr>${optionsHead}</tr>
+                            </thead>
+                            <tbody>${optionsRows}</tbody>
+                        </table>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+
+        return `
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description / Specs</th>
+                        <th class="num">Quantity</th>
+                        <th class="num">Unit Price</th>
+                        ${totalHeader}
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        `;
+    }
+
+    function renderTotals(
+        singleItems,
+        subtotal,
+        gstRate,
+        gstAmount,
+        pstRate,
+        pstAmount,
+        grandTotal,
+        hasOptions
+    ) {
+        const deliveryMethod =
+            quote.deliveryMethod || "PICKUP";
+
+        const deliveryFee =
+            getDeliveryFee(deliveryMethod);
+
+        const totalBeforeDelivery =
+            subtotal + gstAmount + pstAmount;
+
+        const finalTotal =
+            totalBeforeDelivery + deliveryFee;
+
+        let html = "";
+
+        if (singleItems.length > 0) {
+            html += `
+                <div class="totals">
+                    <div class="totals-row">
+                        <span>Subtotal</span>
+                        <strong>${formatMoney(subtotal)}</strong>
+                    </div>
+
+                    <div class="totals-row">
+                        <span>GST (${gstRate.toFixed(2)}%)</span>
+                        <strong>${formatMoney(gstAmount)}</strong>
+                    </div>
+
+                    <div class="totals-row">
+                        <span>PST (${pstRate.toFixed(2)}%)</span>
+                        <strong>${formatMoney(pstAmount)}</strong>
+                    </div>
+
+                    <div class="totals-row">
+                        <span>Delivery</span>
+                        <strong>
+                            ${isCourierDelivery()
+                                ? "To be confirmed"
+                                : formatMoney(deliveryFee)}
+                        </strong>
+                    </div>
+
+                    <div class="totals-row grand">
+                        <span>Total</span>
+                        <strong>
+                            ${formatMoney(finalTotal)}
+                            ${isCourierDelivery()
+                                ? " CAD + courier"
+                                : " CAD"}
+                        </strong>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (hasOptions) {
+            html += `
+                <div class="options-note">
+                    <strong>Quantity options:</strong>
+                    please choose the quantity that suits you best.
+                    Each option total includes GST and PST.
+                    Delivery is added once to the selected quantity.
+                    ${isCourierDelivery()
+                        ? "Courier delivery will be confirmed separately."
+                        : `Delivery fee: ${formatMoney(deliveryFee)}.`}
+                </div>
+            `;
+        }
+
+        return html;
+    }
+
+    function renderMultipleModeNote(hasOptions) {
+        const deliveryMethod =
+            quote.deliveryMethod || "PICKUP";
+
+        const deliveryFee =
+            getDeliveryFee(deliveryMethod);
+
+        const deliveryText =
+            deliveryMethod === "COURIER"
+                ? "Courier delivery will be confirmed separately."
+                : deliveryFee > 0
+                    ? `Delivery fee: ${formatMoney(deliveryFee)}.`
+                    : "Pick-up or free delivery.";
+
+        return `
+            <div class="taxes-note">
+                ${hasOptions
+                    ? "<strong>Quantity options:</strong> Please choose the quantity that suits you best.<br>"
+                    : ""}
+                The prices above include taxes.<br>
+                ${deliveryText}
+            </div>
+        `;
+    }
+
+    function renderNotes() {
+        if (!quote.notes) {
+            return "";
+        }
+
+        return `<div class="notes-block"><strong>Notes:</strong> ${escapeHtml(quote.notes)}</div>`;
+    }
+
+    function renderFooter() {
+        return `
+            <div class="doc-footer">
+                <a href="https://urbanprintshop.ca/">urbanprintshop.ca</a>
+            </div>
+        `;
+    }
+
+    function groupItems() {
+        const groups = [];
+        const map = new Map();
+
+        (Array.isArray(quote.items) ? quote.items : []).forEach(item => {
+            const key = keyOf(item);
+
+            if (!map.has(key)) {
+                const group = { key: key, items: [] };
+                map.set(key, group);
+                groups.push(group);
+            }
+
+            map.get(key).items.push(item);
+        });
+
+        return groups;
+    }
+
+    function keyOf(item) {
+        return `${String(item.itemDescription || "").trim().toLowerCase()}`
+            + `||${String(item.printSpecsSummary || "").trim().toLowerCase()}`;
+    }
+
+    function optionTotalWithTaxes(item) {
+        const gstRate = quote.gstRate != null ? Number(quote.gstRate) : 5;
+        const pstRate = quote.pstRate != null ? Number(quote.pstRate) : 7;
+
+        return Number(item.totalPrice || 0) * (1 + (gstRate + pstRate) / 100);
+    }
+
+    function formatMoney(value) {
+        return "$" + Number(value || 0).toFixed(2);
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<​", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+</script>
+
+</body>
+</html>
