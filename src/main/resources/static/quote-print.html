@@ -231,6 +231,12 @@
             vertical-align: top;
         }
 
+        .items-table tfoot td {
+            background: #f8fafc;
+            border-top: 2px solid #1e293b;
+            font-weight: bold;
+        }
+
         .num {
             text-align: right;
             white-space: nowrap;
@@ -322,6 +328,23 @@
             line-height: 1.6;
         }
 
+        .doc-policies {
+            margin-top: 28px;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .doc-policies .custom-notice {
+            margin-top: 10px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-style: italic;
+            color: #475569;
+        }
+
         .doc-footer {
             margin-top: 36px;
             padding-top: 14px;
@@ -385,6 +408,10 @@
 <script>
     const QUOTES_API = "/api/quotes";
 
+    const RUSH_FEE = 20;
+
+    const WIDE_LINE_FORMAT = "urban-print-wide-line-v1";
+
     const DELIVERY_FEES = {
         PICKUP: 0,
         ZONE_A: 10,
@@ -401,6 +428,13 @@
         ZONE_C: "Delivery Zone C",
         ZONE_F: "Delivery Zone F",
         COURIER: "Courier"
+    };
+
+    const TURNAROUND_LABELS = {
+        "3-5": "3–5 Business Days",
+        "5-7": "5–7 Business Days",
+        "7-10": "7–10 Business Days",
+        "RUSH": "Rush"
     };
 
     let quote = null;
@@ -460,6 +494,27 @@
         render();
     }
 
+    // ====
+    // WIDE FORMAT DETAILED LINES (printing + installation itemized)
+    // ====
+
+    function parseWideLine(item) {
+        const raw = String(item && item.printSpecsSummary || "").trim();
+
+        if (!raw.startsWith("{")) return null;
+
+        try {
+            const specs = JSON.parse(raw);
+            return specs && specs.format === WIDE_LINE_FORMAT ? specs : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function trimNumber(value) {
+        return String(Number(value));
+    }
+
     function render() {
         const gstRate = quote.gstRate != null ? Number(quote.gstRate) : 5;
         const pstRate = quote.pstRate != null ? Number(quote.pstRate) : 7;
@@ -473,9 +528,13 @@
 
         const subtotal = singleItems.reduce(
             (sum, item) => sum + Number(item.totalPrice || 0), 0);
-        const gstAmount = subtotal * gstRate / 100;
-        const pstAmount = subtotal * pstRate / 100;
-        const grandTotal = subtotal + gstAmount + pstAmount;
+
+        const rushFee = getRushFee();
+        const taxable = subtotal + rushFee;
+
+        const gstAmount = taxable * gstRate / 100;
+        const pstAmount = taxable * pstRate / 100;
+        const grandTotal = taxable + gstAmount + pstAmount;
 
         document.getElementById("sheet").innerHTML = `
             ${renderHeader()}
@@ -485,6 +544,7 @@
                 ? renderMultipleModeNote(hasOptions)
                 : renderTotals(singleItems, subtotal, gstRate, gstAmount, pstRate, pstAmount, grandTotal, hasOptions)}
             ${renderNotes()}
+            ${renderPolicies()}
             ${renderFooter()}
         `;
     }
@@ -501,17 +561,33 @@
         return quote.deliveryMethod === "COURIER";
     }
 
+    function getTurnaroundLabel() {
+        const value = String(quote.turnaroundOption || "").trim();
+
+        return TURNAROUND_LABELS[value] || value;
+    }
+
+    function getRushFee() {
+        if (String(quote.turnaroundOption || "").toUpperCase() === "RUSH") {
+            return quote.rushFee != null && Number(quote.rushFee) > 0
+                ? Number(quote.rushFee)
+                : RUSH_FEE;
+        }
+
+        return 0;
+    }
+
     function renderHeader() {
         return `
             <div class="doc-header">
                 <div>
                     <img class="logo"
-                         src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
-                         alt="Urban Print Shop">
+                    src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+                    alt="Urban Print Shop">
                     <div class="company-line">
-                        <strong style="color: var(--text); font-size: 1rem;">URBAN PRINT SHOP</strong><br>
-                        7993 Enterprise St, Burnaby, BC<br>
-                        Phone: (604) 420-3298 | info@urbanprintshop.ca
+                    <strong style="color: var(--text); font-size: 1rem;">URBAN PRINT SHOP</strong><br>
+                    7993 Enterprise St, Burnaby, BC<br>
+                    Phone: (604) 420-3298 | info@urbanprintshop.ca
                     </div>
                 </div>
 
@@ -519,9 +595,10 @@
                     <div class="quote-number">${escapeHtml(quote.quoteNumber || `Quote #${quote.id}`)}</div>
 
                     <div class="doc-meta">
-                        <strong>Issue Date:</strong> ${escapeHtml(quote.issueDate || "-")}<br>
-                        <strong>Expiry Date:</strong> ${escapeHtml(quote.expiryDate || "-")}<br>
-                        <strong>Delivery:</strong> ${escapeHtml(DELIVERY_LABELS[quote.deliveryMethod] || quote.deliveryMethod || "-")}
+                    <strong>Issue Date:</strong> ${escapeHtml(quote.issueDate || "-")}<br>
+                    <strong>Expiry Date:</strong> ${escapeHtml(quote.expiryDate || "-")}<br>
+                    <strong>Delivery:</strong> ${escapeHtml(DELIVERY_LABELS[quote.deliveryMethod] || quote.deliveryMethod || "-")}<br>
+                    <strong>Production Time:</strong> ${escapeHtml(getTurnaroundLabel() || "-")}
                     </div>
 
                     ${quote.status ? `<span class="badge no-print">${escapeHtml(quote.status)}</span>` : ""}
@@ -543,6 +620,11 @@
     const contactName = customer.name || "";
     const contactPosition = customer.contactPosition || "";
     const website = customer.website || "";
+
+    const taxesSummary = [
+        gstRate > 0 ? `GST (${gstRate.toFixed(2)}%)` : null,
+        pstRate > 0 ? `PST (${pstRate.toFixed(2)}%)` : null
+    ].filter(Boolean).join(" + ") || "Not charged";
 
     // Coluna esquerda — contato (Attn)
     let contactHtml = `<span class="attn-label">Attn:</span><br>`;
@@ -632,8 +714,7 @@
                 ${escapeHtml(quote.status || "-")}<br>
 
                 <strong>Taxes:</strong>
-                GST (${gstRate.toFixed(2)}%) +
-                PST (${pstRate.toFixed(2)}%)<br>
+                ${escapeHtml(taxesSummary)}<br>
 
                 <strong>Item Count:</strong>
                 ${(quote.items || []).length} item(s)
@@ -647,8 +728,15 @@
             return `<p>No items on this quote.</p>`;
         }
 
+        const hasWideLines = groups.some(group =>
+            group.items.some(item => parseWideLine(item)));
+
+        if (hasWideLines) {
+            return renderWideItemsTable(groups);
+        }
+
         const totalHeader = multipleQuantityMode
-            ? '<th class="num">Total (incl. taxes)</th>'
+            ? `<th class="num">Total${taxHeaderSuffix()}</th>`
             : '<th class="num">Total</th>';
 
         const rows = groups.map(group => {
@@ -665,15 +753,15 @@
             if (group.items.length === 1) {
                 return `
                     <tr>
-                        <td>
-                            <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
-                        </td>
-                        <td>
-                            ${specsHtml}
-                        </td>
-                        <td class="num">${first.quantity}</td>
-                        <td class="num">${formatMoney(first.unitPrice)}</td>
-                        ${itemTotalHtml}
+                    <td>
+                    <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
+                    </td>
+                    <td>
+                    ${specsHtml}
+                    </td>
+                    <td class="num">${first.quantity}</td>
+                    <td class="num">${formatMoney(first.unitPrice)}</td>
+                    ${itemTotalHtml}
                     </tr>
                 `;
             }
@@ -688,10 +776,10 @@
 
                 return `
                     <tr>
-                        <td class="num">${item.quantity} pcs</td>
-                        <td class="num">${formatMoney(item.unitPrice)} /ea</td>
-                        ${subtotalCell}
-                        <td class="num"><strong>${formatMoney(optionTotalWithTaxes(item))}</strong></td>
+                    <td class="num">${item.quantity} pcs</td>
+                    <td class="num">${formatMoney(item.unitPrice)} /ea</td>
+                    ${subtotalCell}
+                    <td class="num"><strong>${formatMoney(optionTotalWithTaxes(item))}</strong></td>
                     </tr>
                 `;
             }).join("");
@@ -700,30 +788,30 @@
                 ? `
                     <th class="num">Quantity</th>
                     <th class="num">Unit Price</th>
-                    <th class="num">Total (incl. taxes)</th>
+                    <th class="num">Total${taxHeaderSuffix()}</th>
                 `
                 : `
                     <th class="num">Quantity</th>
                     <th class="num">Unit Price</th>
                     <th class="num">Subtotal</th>
-                    <th class="num">Total (incl. taxes)</th>
+                    <th class="num">Total${taxHeaderSuffix()}</th>
                 `;
 
             return `
                 <tr>
                     <td>
-                        <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
+                    <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
                     </td>
                     <td>
-                        ${specsHtml}
+                    ${specsHtml}
                     </td>
                     <td colspan="3" style="padding: 8px 0;">
-                        <table class="options-table">
-                            <thead>
-                                <tr>${optionsHead}</tr>
-                            </thead>
-                            <tbody>${optionsRows}</tbody>
-                        </table>
+                    <table class="options-table">
+                    <thead>
+                    <tr>${optionsHead}</tr>
+                    </thead>
+                    <tbody>${optionsRows}</tbody>
+                    </table>
                     </td>
                 </tr>
             `;
@@ -733,14 +821,134 @@
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Description / Specs</th>
-                        <th class="num">Quantity</th>
-                        <th class="num">Unit Price</th>
-                        ${totalHeader}
+                    <th>Product</th>
+                    <th>Description / Specs</th>
+                    <th class="num">Quantity</th>
+                    <th class="num">Unit Price</th>
+                    ${totalHeader}
                     </tr>
                 </thead>
                 <tbody>${rows}</tbody>
+            </table>
+        `;
+    }
+
+    // Itemized wide format table:
+    // Item | Quantity × size (in.) | Printing | Installation | Total
+    function renderWideItemsTable(groups) {
+        let printingSum = 0;
+        let installSum = 0;
+        let displayTotalSum = 0;
+
+        const rows = groups.map(group => {
+            const first = group.items[0];
+            const wide = parseWideLine(first);
+
+            if (wide) {
+                const printing = Number(wide.printingAmount || 0);
+                const installation = Number(wide.installationAmount || 0);
+                const showInstall = wide.installationIncluded && installation > 0;
+
+                printingSum += printing;
+                installSum += showInstall ? installation : 0;
+                displayTotalSum += Number(first.totalPrice || 0);
+
+                return `
+                    <tr>
+                    <td>
+                    <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
+                    ${wide.mediaLabel ? `<div class="specs">${escapeHtml(wide.mediaLabel)}</div>` : ""}
+                    </td>
+                    <td class="num">${trimNumber(wide.quantity)} × ${trimNumber(wide.widthIn)} × ${trimNumber(wide.heightIn)}</td>
+                    <td class="num">${formatMoney(printing)}</td>
+                    <td class="num">${showInstall
+                    ? formatMoney(installation)
+                    : '<span style="color: #94a3b8;">—</span>'}</td>
+                    <td class="num"><strong>${formatMoney(first.totalPrice)}</strong></td>
+                    </tr>
+                `;
+            }
+
+            const lineTotal = Number(first.totalPrice || 0);
+
+            if (group.items.length === 1) {
+                printingSum += lineTotal;
+                displayTotalSum += lineTotal;
+
+                const specsHtml = first.printSpecsSummary
+                    ? `<div class="specs">${escapeHtml(first.printSpecsSummary)}</div>`
+                    : "";
+
+                return `
+                    <tr>
+                    <td>
+                    <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
+                    ${specsHtml}
+                    </td>
+                    <td class="num">${first.quantity}</td>
+                    <td class="num">${formatMoney(lineTotal)}</td>
+                    <td class="num"><span style="color: #94a3b8;">—</span></td>
+                    <td class="num"><strong>${formatMoney(lineTotal)}</strong></td>
+                    </tr>
+                `;
+            }
+
+            // Quantity options group (regular products) inside the wide table
+            displayTotalSum += lineTotal;
+
+            const sortedItems = [...group.items]
+                .sort((a, b) => Number(a.quantity) - Number(b.quantity));
+
+            const optionsRows = sortedItems.map(item => `
+                <tr>
+                <td class="num">${item.quantity} pcs</td>
+                <td class="num">${formatMoney(item.unitPrice)} /ea</td>
+                <td class="num"><strong>${formatMoney(optionTotalWithTaxes(item))}</strong></td>
+                </tr>
+            `).join("");
+
+            return `
+                <tr>
+                <td>
+                <strong>${escapeHtml(first.itemDescription || "Item")}</strong>
+                </td>
+                <td colspan="3" style="padding: 8px 0;">
+                <table class="options-table">
+                <thead>
+                <tr>
+                <th class="num">Quantity</th>
+                <th class="num">Unit Price</th>
+                <th class="num">Total${taxHeaderSuffix()}</th>
+                </tr>
+                </thead>
+                <tbody>${optionsRows}</tbody>
+                </table>
+                </td>
+                <td class="num"><strong>${formatMoney(lineTotal)}</strong></td>
+                </tr>
+            `;
+        }).join("");
+
+        return `
+            <table class="items-table">
+                <thead>
+                    <tr>
+                    <th>Item</th>
+                    <th class="num">Quantity × size (in.)</th>
+                    <th class="num">Printing</th>
+                    <th class="num">Installation</th>
+                    <th class="num">Total</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+                <tfoot>
+                    <tr>
+                    <td colspan="2">Total</td>
+                    <td class="num">${formatMoney(printingSum)}</td>
+                    <td class="num">${formatMoney(installSum)}</td>
+                    <td class="num"><strong>${formatMoney(displayTotalSum)}</strong></td>
+                    </tr>
+                </tfoot>
             </table>
         `;
     }
@@ -761,8 +969,10 @@
         const deliveryFee =
             getDeliveryFee(deliveryMethod);
 
+        const rushFee = getRushFee();
+
         const totalBeforeDelivery =
-            subtotal + gstAmount + pstAmount;
+            subtotal + rushFee + gstAmount + pstAmount;
 
         const finalTotal =
             totalBeforeDelivery + deliveryFee;
@@ -773,37 +983,48 @@
             html += `
                 <div class="totals">
                     <div class="totals-row">
-                        <span>Subtotal</span>
-                        <strong>${formatMoney(subtotal)}</strong>
+                    <span>Subtotal</span>
+                    <strong>${formatMoney(subtotal)}</strong>
                     </div>
 
+                    ${gstRate > 0 ? `
                     <div class="totals-row">
-                        <span>GST (${gstRate.toFixed(2)}%)</span>
-                        <strong>${formatMoney(gstAmount)}</strong>
+                    <span>GST (${gstRate.toFixed(2)}%)</span>
+                    <strong>${formatMoney(gstAmount)}</strong>
                     </div>
+                    ` : ""}
+
+                    ${pstRate > 0 ? `
+                    <div class="totals-row">
+                    <span>PST (${pstRate.toFixed(2)}%)</span>
+                    <strong>${formatMoney(pstAmount)}</strong>
+                    </div>
+                    ` : ""}
+
+                    ${rushFee > 0 ? `
+                    <div class="totals-row">
+                    <span>Rush fee</span>
+                    <strong>${formatMoney(rushFee)}</strong>
+                    </div>
+                    ` : ""}
 
                     <div class="totals-row">
-                        <span>PST (${pstRate.toFixed(2)}%)</span>
-                        <strong>${formatMoney(pstAmount)}</strong>
-                    </div>
-
-                    <div class="totals-row">
-                        <span>Delivery</span>
-                        <strong>
-                            ${isCourierDelivery()
-                                ? "To be confirmed"
-                                : formatMoney(deliveryFee)}
-                        </strong>
+                    <span>Delivery</span>
+                    <strong>
+                    ${isCourierDelivery()
+                    ? "To be confirmed"
+                    : formatMoney(deliveryFee)}
+                    </strong>
                     </div>
 
                     <div class="totals-row grand">
-                        <span>Total</span>
-                        <strong>
-                            ${formatMoney(finalTotal)}
-                            ${isCourierDelivery()
-                                ? " CAD + courier"
-                                : " CAD"}
-                        </strong>
+                    <span>Total</span>
+                    <strong>
+                    ${formatMoney(finalTotal)}
+                    ${isCourierDelivery()
+                    ? " CAD + courier"
+                    : " CAD"}
+                    </strong>
                     </div>
                 </div>
             `;
@@ -814,11 +1035,13 @@
                 <div class="options-note">
                     <strong>Quantity options:</strong>
                     please choose the quantity that suits you best.
-                    Each option total includes GST and PST.
+                    ${taxesApply()
+                    ? `Each option total includes ${taxesLabel()}.`
+                    : "No taxes are charged on this quote."}
                     Delivery is added once to the selected quantity.
                     ${isCourierDelivery()
-                        ? "Courier delivery will be confirmed separately."
-                        : `Delivery fee: ${formatMoney(deliveryFee)}.`}
+                    ? "Courier delivery will be confirmed separately."
+                    : `Delivery fee: ${formatMoney(deliveryFee)}.`}
                 </div>
             `;
         }
@@ -840,12 +1063,19 @@
                     ? `Delivery fee: ${formatMoney(deliveryFee)}.`
                     : "Pick-up or free delivery.";
 
+        const rushText = getRushFee() > 0
+            ? `A one-time rush fee of ${formatMoney(getRushFee())} is included in each option total.`
+            : "";
+
         return `
             <div class="taxes-note">
                 ${hasOptions
                     ? "<strong>Quantity options:</strong> Please choose the quantity that suits you best.<br>"
                     : ""}
-                The prices above include taxes.<br>
+                ${taxesApply()
+                    ? "The prices above include taxes.<br>"
+                    : "No taxes are charged on this quote.<br>"}
+                ${rushText ? rushText + "<​br>" : ""}
                 ${deliveryText}
             </div>
         `;
@@ -857,6 +1087,25 @@
         }
 
         return `<div class="notes-block"><strong>Notes:</strong> ${escapeHtml(quote.notes)}</div>`;
+    }
+
+    function renderPolicies() {
+        return `
+            <div class="doc-policies">
+                <div class="policy-line">
+                    <strong>Production time:</strong>
+                    starts when we receive your print-ready PDF artwork,
+                    or upon design approval if the artwork is produced by our graphic department.
+                </div>
+
+                <div class="custom-notice">
+                    Custom items are made especially for you. Once your artwork has been
+                    approved for printing, we are unable to offer a refund, as production
+                    begins right away. Please review all details carefully before approval —
+                    we are always happy to help if you have any questions.
+                </div>
+            </div>
+        `;
     }
 
     function renderFooter() {
@@ -871,8 +1120,11 @@
         const groups = [];
         const map = new Map();
 
-        (Array.isArray(quote.items) ? quote.items : []).forEach(item => {
-            const key = keyOf(item);
+        (Array.isArray(quote.items) ? quote.items : []).forEach((item, index) => {
+            /* Wide format detailed lines are never grouped as quantity options. */
+            const key = parseWideLine(item)
+                ? `__wide_line_${index}`
+                : keyOf(item);
 
             if (!map.has(key)) {
                 const group = { key: key, items: [] };
@@ -895,7 +1147,33 @@
         const gstRate = quote.gstRate != null ? Number(quote.gstRate) : 5;
         const pstRate = quote.pstRate != null ? Number(quote.pstRate) : 7;
 
-        return Number(item.totalPrice || 0) * (1 + (gstRate + pstRate) / 100);
+        const base = Number(item.totalPrice || 0) + getRushFee();
+
+        return base * (1 + (gstRate + pstRate) / 100);
+    }
+
+    // ====
+    // GST / PST display helpers (rate 0 = tax not charged)
+    // ====
+
+    function taxesApply() {
+        const gstRate = quote.gstRate != null ? Number(quote.gstRate) : 5;
+        const pstRate = quote.pstRate != null ? Number(quote.pstRate) : 7;
+
+        return gstRate > 0 || pstRate > 0;
+    }
+
+    function taxesLabel() {
+        const labels = [
+            quote.gstRate != null && Number(quote.gstRate) > 0 ? "GST" : null,
+            quote.pstRate != null && Number(quote.pstRate) > 0 ? "PST" : null
+        ].filter(Boolean);
+
+        return labels.join(" and ");
+    }
+
+    function taxHeaderSuffix() {
+        return taxesApply() ? " (incl. taxes)" : "";
     }
 
     function formatMoney(value) {

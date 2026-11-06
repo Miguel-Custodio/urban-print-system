@@ -122,41 +122,65 @@
   }
 
   .queue-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 16px;
   }
 
-  .queue-card {
+  /* ===== ORDER GROUP ===== */
+  .order-group {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     border-left: 5px solid var(--accent);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
   }
 
-  .queue-card.overdue { border-left-color: var(--danger); }
-  .queue-card.due-today { border-left-color: var(--warning); }
+  .order-group.overdue { border-left-color: var(--danger); }
+  .order-group.due-today { border-left-color: var(--warning); }
 
-  .queue-card .top-row {
+  .og-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
   }
 
-  .queue-card .order-num {
+  .og-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .og-order-num {
     font-weight: bold;
     color: var(--accent);
     text-decoration: none;
     font-size: 15px;
   }
 
-  .queue-card .order-num:hover { text-decoration: underline; }
+  .og-order-num:hover { text-decoration: underline; }
+
+  .og-count {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--muted);
+    background: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .og-customer {
+    font-weight: bold;
+    font-size: 14px;
+    color: #1e293b;
+  }
 
   .due-tag {
     font-size: 11px;
@@ -170,19 +194,45 @@
   .due-tag.due-today { background: #fef3c7; color: var(--warning); }
   .due-tag.normal { background: #f1f5f9; color: var(--muted); }
 
-  .queue-card .customer {
-    margin-top: 8px;
-    font-weight: bold;
-    font-size: 14px;
+  .og-items {
+    display: flex;
+    flex-direction: column;
   }
 
-  .queue-card .item-desc {
-    margin-top: 4px;
+  .og-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .og-item:last-child { border-bottom: none; }
+
+  .og-item-main {
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .og-item-desc {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
     font-size: 13px;
     color: #475569;
   }
 
-  .queue-card .specs-preview {
+  .og-item-price {
+    font-weight: bold;
+    color: #1e293b;
+    white-space: nowrap;
+  }
+
+  .specs-preview {
     margin-top: 6px;
     font-size: 12px;
     color: var(--muted);
@@ -196,7 +246,7 @@
     text-overflow: ellipsis;
   }
 
-  .queue-card .notes-badge {
+  .notes-badge {
     margin-top: 6px;
     display: inline-block;
     font-size: 11px;
@@ -207,47 +257,14 @@
     font-weight: bold;
   }
 
-  .queue-card .due-date {
-    margin-top: 6px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .queue-card .status-row {
-    margin-top: 14px;
+  .og-item-actions {
     display: flex;
     align-items: center;
     gap: 8px;
-    position: relative;
+    flex-shrink: 0;
   }
 
-  .queue-card select.status-select {
-    flex: 1;
-    padding: 7px 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 13px;
-  }
-
-  .queue-card select.status-select.hidden {
-    display: none;
-  }
-
-  .queue-card .move-btn {
-    padding: 7px 14px;
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .queue-card .move-btn:hover { background: #101c27; }
-
-  .queue-card .specs-btn {
+  .og-item .specs-btn {
     padding: 7px 10px;
     background: #f1f5f9;
     color: #334155;
@@ -259,10 +276,53 @@
     white-space: nowrap;
   }
 
-  .queue-card .specs-btn:hover { background: #e2e8f0; }
+  .og-item .specs-btn:hover { background: #e2e8f0; }
+
+  .og-item select.status-select {
+    padding: 7px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  .og-item select.status-select.hidden { display: none; }
+
+  .og-item .move-btn {
+    padding: 7px 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .og-item .move-btn:hover { background: #101c27; }
+
+  .og-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    background: #f8fafc;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: #475569;
+  }
+
+  .og-footer strong {
+    color: #1e293b;
+  }
+
+  .og-total strong {
+    color: var(--accent);
+    font-size: 14px;
+  }
 
   .empty-state {
-    grid-column: 1 / -1;
     text-align: center;
     padding: 40px;
     color: var(--muted);
@@ -520,7 +580,18 @@ function renderQueue() {
     });
   }
 
-  filtered.sort((a, b) => {
+  // Agrupar os itens por pedido
+  const groups = new Map();
+  filtered.forEach(({ order, item }) => {
+    if (!groups.has(order.id)) {
+      groups.set(order.id, { order, items: [] });
+    }
+    groups.get(order.id).items.push(item);
+  });
+
+  const groupList = Array.from(groups.values());
+
+  groupList.sort((a, b) => {
     const da = a.order.dueDate || "9999-12-31";
     const db = b.order.dueDate || "9999-12-31";
     return da.localeCompare(db);
@@ -528,20 +599,18 @@ function renderQueue() {
 
   grid.innerHTML = "";
 
-  if (filtered.length === 0) {
+  if (groupList.length === 0) {
     grid.innerHTML = `<div class="empty-state">No items found in this queue.</div>`;
     return;
   }
 
-  filtered.forEach(({ order, item }) => {
-    grid.appendChild(buildCard(order, item));
+  groupList.forEach(group => {
+    grid.appendChild(buildOrderGroup(group.order, group.items));
   });
 }
 
-function buildCard(order, item) {
-  const status = item.productionStatus || "PENDING_FILE";
+function buildOrderGroup(order, items) {
   const custName = getCustomerName(order);
-  const itemName = getItemName(item);
 
   let dueClass = "normal";
   let dueLabel = order.dueDate || "No due date";
@@ -550,34 +619,64 @@ function buildCard(order, item) {
     else if (order.dueDate === today) { dueClass = "due-today"; dueLabel = "DUE TODAY"; }
   }
 
-  const card = document.createElement("div");
-  card.className = "queue-card " + (dueClass !== "normal" ? dueClass : "");
+  const itemsSubtotal = items.reduce((sum, item) => sum + getLineTotal(item), 0);
+  const orderTotal = getOrderTotal(order);
+
+  const wrap = document.createElement("div");
+  wrap.className = "order-group" + (dueClass !== "normal" ? " " + dueClass : "");
+
+  wrap.innerHTML = `
+    <div class="og-header">
+      <div class="og-header-left">
+        <a href="order-details.html?id=${order.id}" class="og-order-num">${escapeHtml(order.orderNumber || "")}</a>
+        <span class="og-count">${items.length} item${items.length === 1 ? "" : "s"}</span>
+        <span class="due-tag ${dueClass}">${escapeHtml(dueLabel)}</span>
+      </div>
+      <div class="og-customer">${escapeHtml(custName)}</div>
+    </div>
+    <div class="og-items"></div>
+    <div class="og-footer">
+      <span>Items subtotal (${items.length}): <strong>${formatMoney(itemsSubtotal)}</strong></span>
+      <span class="og-total">Order total: <strong>${formatMoney(orderTotal)}</strong></span>
+    </div>
+  `;
+
+  const itemsWrap = wrap.querySelector(".og-items");
+  items.forEach(item => {
+    itemsWrap.appendChild(buildItemRow(order, item));
+  });
+
+  return wrap;
+}
+
+function buildItemRow(order, item) {
+  const status = item.productionStatus || "PENDING_FILE";
+
+  const row = document.createElement("div");
+  row.className = "og-item";
 
   const optionsHtml = STAGE_ORDER.map(key =>
     `<option value="${key}" ${key === status ? "selected" : ""}>${STAGES[key]}</option>`
   ).join("");
 
-  card.innerHTML = `
-    <div>
-      <div class="top-row">
-        <a href="order-details.html?id=${order.id}" class="order-num">${escapeHtml(order.orderNumber || "")}</a>
-        <span class="due-tag ${dueClass}">${escapeHtml(dueLabel)}</span>
+  row.innerHTML = `
+    <div class="og-item-main">
+      <div class="og-item-desc">
+        <span><strong>Qty: ${item.quantity || 1}</strong> — ${escapeHtml(getItemName(item))}</span>
+        <span class="og-item-price">${formatMoney(getLineTotal(item))}</span>
       </div>
-      <div class="customer">${escapeHtml(custName)}</div>
-      <div class="item-desc"><strong>Qty: ${item.quantity || 1}</strong> — ${escapeHtml(itemName)}</div>
-      ${item.printSpecsSummary ? `<div class="specs-preview">${escapeHtml(item.printSpecsSummary)}</div>` : ''}
+      ${item.printSpecsSummary ? `<div class="specs-preview">${escapeHtml(specsAsText(item.printSpecsSummary, " | "))}</div>` : ''}
       ${item.productionNotes ? `<span class="notes-badge">📝 Notes attached</span>` : ''}
     </div>
-
-    <div class="status-row">
+    <div class="og-item-actions">
       <button class="specs-btn" onclick="openModal(${item.id})">Specs / Notes</button>
       <select class="status-select hidden" data-item-id="${item.id}">${optionsHtml}</select>
       <button class="move-btn" data-item-id="${item.id}">Move ▾</button>
     </div>
   `;
 
-  const select = card.querySelector(".status-select");
-  const moveBtn = card.querySelector(".move-btn");
+  const select = row.querySelector(".status-select");
+  const moveBtn = row.querySelector(".move-btn");
 
   moveBtn.addEventListener("click", () => {
     select.classList.remove("hidden");
@@ -600,7 +699,7 @@ function buildCard(order, item) {
     moveBtn.style.display = "inline-block";
   });
 
-  return card;
+  return row;
 }
 
 async function updateItemStatus(itemId, newStatus) {
@@ -631,7 +730,7 @@ function openModal(itemId) {
 
   activeItemId = itemId;
   document.getElementById("modalTitle").textContent = `${entry.order.orderNumber} — ${getItemName(entry.item)}`;
-  document.getElementById("modalSpecs").textContent = entry.item.printSpecsSummary || "No print specifications provided for this item.";
+  document.getElementById("modalSpecs").textContent = specsAsText(entry.item.printSpecsSummary) || "No print specifications provided for this item.";
   document.getElementById("modalNotes").value = entry.item.productionNotes || "";
   document.getElementById("specsModal").style.display = "flex";
 }
@@ -664,6 +763,73 @@ async function saveModalNotes() {
   }
 }
 
+const SPECS_FORMAT = "urban-print-item-specs-v1";
+
+function specsAsText(summary, separator) {
+  if (!summary) return "";
+
+  let s;
+  try {
+    s = JSON.parse(summary);
+  } catch (e) {
+    return summary; // texto simples antigo
+  }
+  if (!s || s.format !== SPECS_FORMAT) return summary;
+
+  const size = (w, h) => `${w != null ? w : "—"} × ${h != null ? h : "—"}`;
+  const lines = [];
+
+  const head = [];
+  if (s.department) head.push(s.department);
+  if (s.press) head.push(s.press + (s.pressType ? ` (${s.pressType})` : ""));
+  if (s.sides) head.push(s.sides === "DOUBLE_SIDED" ? "Double Sided" : "Single Sided");
+  if (head.length) lines.push(head.join(" • "));
+
+  const fs = s.frontSheets || {};
+  const bs = s.backSheets || {};
+  const front = [], back = [];
+  if (fs.black) front.push(`${fs.black} Black`);
+  if (fs.color) front.push(`${fs.color} Color`);
+  if (fs.mixed) front.push(`${fs.mixed} Mixed`);
+  if (bs.black) back.push(`${bs.black} Black`);
+  if (bs.color) back.push(`${bs.color} Color`);
+  if (bs.mixed) back.push(`${bs.mixed} Mixed`);
+  const sheets = [];
+  if (front.length) sheets.push(`Front: ${front.join(", ")}`);
+  if (back.length) sheets.push(`Back: ${back.join(", ")}`);
+  if (sheets.length) lines.push("Sheets — " + sheets.join(" | "));
+
+  const stock = [];
+  if (s.stock) stock.push(`Stock: ${s.stock}`);
+  if (s.pages) stock.push(`Pages: ${s.pages}`);
+  if (stock.length) lines.push(stock.join(" • "));
+
+  const sizes = [];
+  if (s.runWidth != null || s.runHeight != null) sizes.push(`Run ${size(s.runWidth, s.runHeight)}`);
+  if (s.flatWidth != null || s.flatHeight != null) sizes.push(`Flat ${size(s.flatWidth, s.flatHeight)}`);
+  if (s.finishedWidth != null || s.finishedHeight != null) sizes.push(`Finished ${size(s.finishedWidth, s.finishedHeight)}`);
+  if (sizes.length) lines.push(sizes.join(" • "));
+
+  const flags = [];
+  if (s.blankStock) flags.push("Blank Stock");
+  if (s.withBleed) flags.push("With Bleed");
+  if (s.priceByCarton) flags.push("Price By Carton");
+  if (s.outsourced) flags.push("Outsourced");
+  if (flags.length) lines.push(flags.join(", "));
+
+  if (Array.isArray(s.departmentItems) && s.departmentItems.length) {
+    const tasks = s.departmentItems.map(t => {
+      const qty = t.quantity != null ? ` ×${t.quantity}${t.unit ? " " + t.unit : ""}` : "";
+      return `${t.description || t.department || "Task"}${qty}`;
+    });
+    lines.push("Department Items: " + tasks.join(" • "));
+  }
+
+  if (s.extraSpecs) lines.push(s.extraSpecs);
+
+  return lines.join(separator || "\n");
+}
+
 function getCustomerName(order) {
   const c = order.customer || {};
   return c.customerName || c.name || c.contactName || "N/A";
@@ -671,6 +837,30 @@ function getCustomerName(order) {
 
 function getItemName(item) {
   return (item.product && item.product.productName) || item.itemDescription || "Custom Item";
+}
+
+function getLineTotal(item) {
+  if (!item) return 0;
+  if (item.lineTotal != null && item.lineTotal !== "") {
+    return Number(item.lineTotal) || 0;
+  }
+  const unit = item.unitPrice != null ? Number(item.unitPrice) : (item.price != null ? Number(item.price) : 0);
+  const qty = Number(item.quantity) || 1;
+  return unit * qty;
+}
+
+function getOrderTotal(order) {
+  if (order.totalAmount != null && order.totalAmount !== "") {
+    return Number(order.totalAmount) || 0;
+  }
+  if (order.total != null && order.total !== "") {
+    return Number(order.total) || 0;
+  }
+  return (order.items || []).reduce((sum, item) => sum + getLineTotal(item), 0);
+}
+
+function formatMoney(value) {
+  return (Number(value) || 0).toLocaleString("en-CA", { style: "currency", currency: "CAD" });
 }
 
 function escapeHtml(val) {

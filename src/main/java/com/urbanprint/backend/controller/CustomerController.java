@@ -2,10 +2,13 @@ package com.urbanprint.backend.controller;
 
 import com.urbanprint.backend.model.Customer;
 import com.urbanprint.backend.service.CustomerService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -30,44 +33,71 @@ public class CustomerController {
     }
 
     @PostMapping
-    public Customer create(@RequestBody Customer customer) {
-        return customerService.save(customer);
+    public ResponseEntity<Object> create(@RequestBody Customer customer) {
+        try {
+            return ResponseEntity.ok(customerService.save(customer));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> update(
+    public ResponseEntity<Object> update(
             @PathVariable Long id,
             @RequestBody Customer customer
     ) {
-        return customerService.findById(id)
-                .map(existingCustomer -> {
-                    existingCustomer.setName(customer.getName());
-                    existingCustomer.setCompanyName(customer.getCompanyName());
-                    existingCustomer.setContactPosition(
-                            customer.getContactPosition()
-                    );
-                    existingCustomer.setWebsite(customer.getWebsite());
-                    existingCustomer.setEmail(customer.getEmail());
-                    existingCustomer.setPhone(customer.getPhone());
-                    existingCustomer.setAddress(customer.getAddress());
-                    existingCustomer.setCity(customer.getCity());
-                    existingCustomer.setPostalCode(customer.getPostalCode());
-                    existingCustomer.setActive(customer.isActive());
+        Optional<Customer> existingOpt = customerService.findById(id);
 
-                    return ResponseEntity.ok(
-                            customerService.save(existingCustomer)
-                    );
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if (existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Customer existingCustomer = existingOpt.get();
+
+        existingCustomer.setName(customer.getName());
+        existingCustomer.setCompanyName(customer.getCompanyName());
+        existingCustomer.setContactPosition(customer.getContactPosition());
+        existingCustomer.setWebsite(customer.getWebsite());
+        existingCustomer.setEmail(customer.getEmail());
+        existingCustomer.setPhone(customer.getPhone());
+        existingCustomer.setAddress(customer.getAddress());
+        existingCustomer.setCity(customer.getCity());
+        existingCustomer.setPostalCode(customer.getPostalCode());
+        existingCustomer.setGstApplicable(customer.isGstApplicable());
+        existingCustomer.setPstApplicable(customer.isPstApplicable());
+        existingCustomer.setActive(customer.isActive());
+
+        try {
+            return ResponseEntity.ok(customerService.save(existingCustomer));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return customerService.findById(id)
-                .map(customer -> {
-                    customerService.deleteById(id);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        if (customerService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            customerService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/duplicates")
+    public List<Map<String, Object>> findDuplicates() {
+        return customerService.findDuplicateGroups();
+    }
+
+    @PostMapping("/merge-duplicates")
+    public ResponseEntity<List<Map<String, Object>>> mergeDuplicates() {
+        return ResponseEntity.ok(customerService.mergeDuplicates());
     }
 }

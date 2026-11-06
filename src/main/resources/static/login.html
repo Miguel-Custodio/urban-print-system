@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Print Shop — Sign In</title>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+            padding: 36px 32px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .logo {
+            display: block;
+            width: 190px;
+            height: auto;
+            margin: 0 auto 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 26px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        button:disabled {
+            background: #93c5fd;
+            cursor: default;
+        }
+
+        .error-box {
+            display: none;
+            margin-bottom: 16px;
+            padding: 11px 13px;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <img
+            src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
+            alt="Urban Print Shop"
+            class="logo"
+        >
+        <p class="subtitle">Sign in to the operations system</p>
+
+        <div id="errorBox" class="error-box"></div>
+
+        <form id="loginForm">
+            <label for="username">Username</label>
+            <input type="text" id="username" autocomplete="username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="current-password" required>
+
+            <button type="submit" id="signInBtn">Sign In</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const errorBox = document.getElementById("errorBox");
+            const signInBtn = document.getElementById("signInBtn");
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+
+            errorBox.style.display = "none";
+            signInBtn.disabled = true;
+            signInBtn.textContent = "Signing in...";
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: username, password: password })
+                });
+
+                if (response.ok) {
+                    window.location.href = "dashboard.html";
+                    return;
+                }
+
+                let message = "Invalid username or password.";
+                try {
+                    const data = await response.json();
+                    if (data && data.error) {
+                        message = data.error;
+                    }
+                } catch (parseError) {
+                    // keep the default message
+                }
+
+                errorBox.textContent = message;
+                errorBox.style.display = "block";
+            } catch (err) {
+                console.error("Login error:", err);
+                errorBox.textContent = "Could not connect to the server. Is the application running?";
+                errorBox.style.display = "block";
+            } finally {
+                signInBtn.disabled = false;
+                signInBtn.textContent = "Sign In";
+            }
+        });
+    </script>
+</body>
+</html>

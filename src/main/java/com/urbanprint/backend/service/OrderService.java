@@ -67,6 +67,10 @@ public class OrderService {
             order.setPstRate(new BigDecimal("7.00"));
         }
 
+        if (order.getRushFee() == null) {
+            order.setRushFee(BigDecimal.ZERO);
+        }
+
         calculateTotals(order);
 
         if (order.getItems() != null) {
@@ -89,6 +93,16 @@ public class OrderService {
             existing.setNotes(updatedOrder.getNotes());
             existing.setGstRate(updatedOrder.getGstRate() != null ? updatedOrder.getGstRate() : new BigDecimal("5.00"));
             existing.setPstRate(updatedOrder.getPstRate() != null ? updatedOrder.getPstRate() : new BigDecimal("7.00"));
+
+            // Turnaround/rush: atualiza apenas se o front enviou o campo.
+            // Preserva o valor herdado da quote quando a tela de pedido
+            // salva sem esses campos (evita apagar o rush em todo save).
+            if (updatedOrder.getTurnaroundOption() != null) {
+                existing.setTurnaroundOption(updatedOrder.getTurnaroundOption());
+            }
+            if (updatedOrder.getRushFee() != null) {
+                existing.setRushFee(updatedOrder.getRushFee());
+            }
 
             existing.getItems().clear();
             if (updatedOrder.getItems() != null) {
@@ -190,6 +204,8 @@ public class OrderService {
         newOrder.setStatus(OrderStatus.PENDING_PAYMENT);
         newOrder.setGstRate(original.getGstRate());
         newOrder.setPstRate(original.getPstRate());
+        newOrder.setTurnaroundOption(original.getTurnaroundOption());
+        newOrder.setRushFee(original.getRushFee() != null ? original.getRushFee() : BigDecimal.ZERO);
         newOrder.setNotes("Re-order of " + original.getOrderNumber());
         newOrder.setOrderNumber(generateOrderNumber());
 
@@ -290,9 +306,17 @@ public class OrderService {
         quote.setCustomer(order.getCustomer());
         quote.setIssueDate(LocalDate.now());
         quote.setExpiryDate(LocalDate.now().plusDays(30));
-        quote.setStatus("DRAFT");
+
+        // Sem DRAFT: a quote nasce aberta (status nulo)
+        quote.setStatus(null);
+
         quote.setGstRate(order.getGstRate());
         quote.setPstRate(order.getPstRate());
+
+        // Herda o turnaround e o rush fee do pedido de origem
+        quote.setTurnaroundOption(order.getTurnaroundOption());
+        quote.setRushFee(order.getRushFee() != null ? order.getRushFee() : BigDecimal.ZERO);
+
         quote.setNotes("Converted from order " + order.getOrderNumber() + " with updated pricing.");
         quote.setQuoteNumber(generateQuoteNumberForConversion());
 
@@ -363,20 +387,45 @@ public class OrderService {
         }
         quote.setSubtotal(subtotal);
 
-        BigDecimal gstAmount = subtotal.multiply(quote.getGstRate())
+        // Rush fee entra na base taxavel, igual ao calculo da QuoteService
+        BigDecimal rush = quote.getRushFee() != null ? quote.getRushFee() : BigDecimal.ZERO;
+        quote.setRushFee(rush);
+
+        BigDecimal taxable = subtotal.add(rush);
+
+        BigDecimal gstAmount = taxable.multiply(quote.getGstRate())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         quote.setGstAmount(gstAmount);
 
-        BigDecimal pstAmount = subtotal.multiply(quote.getPstRate())
+        BigDecimal pstAmount = taxable.multiply(quote.getPstRate())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         quote.setPstAmount(pstAmount);
 
-        quote.setTotalAmount(subtotal.add(gstAmount).add(pstAmount));
+        quote.setTotalAmount(taxable.add(gstAmount).add(pstAmount));
     }
 
     private String generateQuoteNumberForConversion() {
-        long count = quoteRepository.count();
-        return String.format("QU-%04d", count + 1001);
+        // Maior numero existente + 1 (nao usa count(), que duplicava
+        // numeros depois de apagar quotes — mesmo bug do QU-1003)
+        long maxSeq = 1000;
+
+        for (Quote q : quoteRepository.findAll()) {
+            String num = q.getQuoteNumber();
+
+            if (num != null && num.startsWith("QU-")) {
+                try {
+                    long seq = Long.parseLong(num.substring(3));
+
+                    if (seq > maxSeq) {
+                        maxSeq = seq;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // ignora quote numbers fora do padrao QU-XXXX
+                }
+            }
+        }
+
+        return String.format("QU-%04d", maxSeq + 1);
     }
 
     @Transactional
@@ -393,16 +442,31 @@ public class OrderService {
         order.setOrderNumber(generateOrderNumber());
         order.setOrderDate(LocalDate.now());
         order.setStatus(OrderStatus.PENDING_PAYMENT);
-        order.setGstRate(quote.getGstRate());
-        order.setPstRate(quote.getPstRate());
-        order.setNotes(quote.getNotes());
+        order.setGstRate(quote.getGstRate() != null ? quote.getGstRate() : new BigDecimal("5.00"));
+        order.setPstRate(quote.getPstRate() != null ? quote.getPstRate() : new BigDecimal("7.00"));
+
+        // Herda o turnaround e o rush fee da quote
+        order.setTurnaroundOption(quote.getTurnaroundOption());
+        order.setRushFee(quote.getRushFee() != null ? quote.getRushFee() : BigDecimal.ZERO);
+
+        String notes = "Converted from quote " + quote.getQuoteNumber();
+        if (quote.getNotes() != null && !quote.getNotes().trim().isEmpty()) {
+            notes += "\n" + quote.getNotes();
+        }
+        order.setNotes(notes);
 
         if (quote.getItems() != null) {
             for (QuoteItem qi : quote.getItems()) {
                 OrderItem item = new OrderItem();
 
                 item.setProduct(qi.getProduct());
-                item.setItemDescription(qi.getItemDescription());
+
+                String description = qi.getItemDescription();
+                if (description == null || description.trim().isEmpty()) {
+                    description = "Custom item";
+                }
+
+                item.setItemDescription(description);
                 item.setQuantity(qi.getQuantity());
                 item.setUnitPrice(qi.getUnitPrice());
                 item.setPrintSpecsSummary(qi.getPrintSpecsSummary());
@@ -439,22 +503,47 @@ public class OrderService {
 
         order.setSubtotal(subtotal);
 
-        // GST (5%)
-        BigDecimal gstAmount = subtotal.multiply(order.getGstRate())
+        // Rush fee herdado da quote entra na base taxavel, igual a QuoteService
+        BigDecimal rushFee = order.getRushFee() != null ? order.getRushFee() : BigDecimal.ZERO;
+        order.setRushFee(rushFee);
+
+        BigDecimal taxable = subtotal.add(rushFee);
+
+        // GST
+        BigDecimal gstAmount = taxable.multiply(order.getGstRate())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         order.setGstAmount(gstAmount);
 
-        // PST (7%)
-        BigDecimal pstAmount = subtotal.multiply(order.getPstRate())
+        // PST
+        BigDecimal pstAmount = taxable.multiply(order.getPstRate())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         order.setPstAmount(pstAmount);
 
-        // Total = Subtotal + GST + PST
-        order.setTotalAmount(subtotal.add(gstAmount).add(pstAmount));
+        // Total = Subtotal + Rush fee + GST + PST
+        order.setTotalAmount(taxable.add(gstAmount).add(pstAmount));
     }
 
     private String generateOrderNumber() {
-        long count = orderRepository.count();
-        return String.format("OR-%04d", count + 1001);
+        // Maior numero existente + 1 (nao usa count(), que duplicaria
+        // numeros depois de apagar pedidos — mesmo bug do QU-1003)
+        long maxSeq = 1000;
+
+        for (Order o : orderRepository.findAll()) {
+            String num = o.getOrderNumber();
+
+            if (num != null && num.startsWith("OR-")) {
+                try {
+                    long seq = Long.parseLong(num.substring(3));
+
+                    if (seq > maxSeq) {
+                        maxSeq = seq;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // ignora order numbers fora do padrao OR-XXXX
+                }
+            }
+        }
+
+        return String.format("OR-%04d", maxSeq + 1);
     }
 }

@@ -34,6 +34,13 @@ public class Customer {
 
     private String postalCode;
 
+    // Taxes charged on quotes for this customer (defaults; can be changed per quote)
+    @Column(nullable = false)
+    private boolean gstApplicable = true;
+
+    @Column(nullable = false)
+    private boolean pstApplicable = true;
+
     private boolean active = true;
 
     public Customer() {
@@ -59,6 +66,8 @@ public class Customer {
         this.address = address;
         this.city = city;
         this.postalCode = postalCode;
+        this.gstApplicable = true;
+        this.pstApplicable = true;
         this.active = true;
     }
 
@@ -136,6 +145,22 @@ public class Customer {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public boolean isGstApplicable() {
+        return gstApplicable;
+    }
+
+    public void setGstApplicable(boolean gstApplicable) {
+        this.gstApplicable = gstApplicable;
+    }
+
+    public boolean isPstApplicable() {
+        return pstApplicable;
+    }
+
+    public void setPstApplicable(boolean pstApplicable) {
+        this.pstApplicable = pstApplicable;
     }
 
     public boolean isActive() {

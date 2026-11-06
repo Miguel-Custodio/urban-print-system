@@ -53,16 +53,22 @@ public class OrderController {
 
     @PostMapping("/from-quote/{quoteId}")
     public ResponseEntity<?> createOrderFromQuote(@PathVariable Long quoteId) {
-        Quote quote = quoteRepository.findById(quoteId)
-                .orElseThrow(() -> new RuntimeException("Quote not found with id " + quoteId));
-
         try {
+            Quote quote = quoteRepository.findById(quoteId)
+                    .orElseThrow(() -> new RuntimeException("Quote not found with id " + quoteId));
+
             Order order = orderService.createOrderFromQuote(quote);
             return ResponseEntity.ok(order);
         } catch (IllegalStateException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", message));
         }
     }
 

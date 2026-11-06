@@ -6,7 +6,6 @@ import com.urbanprint.backend.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -48,75 +47,76 @@ public class QuoteService {
             quote.setPstRate(new BigDecimal("7.00"));
         }
 
-        calculateTotals(quote);
-
         if (quote.getItems() != null) {
             for (QuoteItem item : quote.getItems()) {
                 item.setQuote(quote);
             }
         }
 
+        calculateTotals(quote);
+
         return quoteRepository.save(quote);
     }
 
     @Transactional
-public Quote updateQuote(Long id, Quote updatedQuote) {
-    return quoteRepository.findById(id).map(existing -> {
+    public Quote updateQuote(Long id, Quote updatedQuote) {
+        return quoteRepository.findById(id).map(existing -> {
 
-        existing.setCustomer(updatedQuote.getCustomer());
-        existing.setIssueDate(updatedQuote.getIssueDate());
-        existing.setExpiryDate(updatedQuote.getExpiryDate());
-        existing.setStatus(updatedQuote.getStatus());
-        existing.setNotes(updatedQuote.getNotes());
-        existing.setGstRate(updatedQuote.getGstRate());
-        existing.setPstRate(updatedQuote.getPstRate());
-        existing.setDeliveryMethod(updatedQuote.getDeliveryMethod());
+            existing.setCustomer(updatedQuote.getCustomer());
+            existing.setIssueDate(updatedQuote.getIssueDate());
+            existing.setExpiryDate(updatedQuote.getExpiryDate());
+            existing.setStatus(updatedQuote.getStatus());
+            existing.setTurnaroundOption(updatedQuote.getTurnaroundOption());
+            existing.setNotes(updatedQuote.getNotes());
+            existing.setGstRate(updatedQuote.getGstRate());
+            existing.setPstRate(updatedQuote.getPstRate());
+            existing.setDeliveryMethod(updatedQuote.getDeliveryMethod());
 
-        if (updatedQuote.getItems() == null) {
-            updatedQuote.setItems(new java.util.ArrayList<>());
-        }
-
-        // 1. Remove items that were deleted on the edit screen
-        java.util.Set<Long> keptIds = new java.util.HashSet<>();
-
-        for (QuoteItem item : updatedQuote.getItems()) {
-            if (item.getId() != null) {
-                keptIds.add(item.getId());
+            if (updatedQuote.getItems() == null) {
+                updatedQuote.setItems(new java.util.ArrayList<>());
             }
-        }
 
-        existing.getItems().removeIf(item ->
-            item.getId() != null && !keptIds.contains(item.getId())
-        );
+            // 1. Remove items that were deleted on the edit screen
+            java.util.Set<Long> keptIds = new java.util.HashSet<>();
 
-        // 2. Update existing items and insert new ones
-        for (QuoteItem newItem : updatedQuote.getItems()) {
-            QuoteItem matched = newItem.getId() == null
-                ? null
-                : existing.getItems().stream()
-                    .filter(oldItem -> oldItem.getId().equals(newItem.getId()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (matched != null) {
-                matched.setProduct(newItem.getProduct());
-                matched.setItemDescription(newItem.getItemDescription());
-                matched.setPrintSpecsSummary(newItem.getPrintSpecsSummary());
-                matched.setQuantity(newItem.getQuantity());
-                matched.setUnitPrice(newItem.getUnitPrice());
-                matched.setTotalPrice(newItem.getTotalPrice());
-            } else {
-                newItem.setQuote(existing);
-                existing.getItems().add(newItem);
+            for (QuoteItem item : updatedQuote.getItems()) {
+                if (item.getId() != null) {
+                    keptIds.add(item.getId());
+                }
             }
-        }
 
-        calculateTotals(existing);
+            existing.getItems().removeIf(item ->
+                item.getId() != null && !keptIds.contains(item.getId())
+            );
 
-        return quoteRepository.save(existing);
+            // 2. Update existing items and insert new ones
+            for (QuoteItem newItem : updatedQuote.getItems()) {
+                QuoteItem matched = newItem.getId() == null
+                    ? null
+                    : existing.getItems().stream()
+                        .filter(oldItem -> oldItem.getId().equals(newItem.getId()))
+                        .findFirst()
+                        .orElse(null);
 
-    }).orElseThrow(() -> new RuntimeException("Quote not found with id " + id));
-}
+                if (matched != null) {
+                    matched.setProduct(newItem.getProduct());
+                    matched.setItemDescription(newItem.getItemDescription());
+                    matched.setPrintSpecsSummary(newItem.getPrintSpecsSummary());
+                    matched.setQuantity(newItem.getQuantity());
+                    matched.setUnitPrice(newItem.getUnitPrice());
+                    matched.setTotalPrice(newItem.getTotalPrice());
+                } else {
+                    newItem.setQuote(existing);
+                    existing.getItems().add(newItem);
+                }
+            }
+
+            calculateTotals(existing);
+
+            return quoteRepository.save(existing);
+
+        }).orElseThrow(() -> new RuntimeException("Quote not found with id " + id));
+    }
 
     public void deleteQuote(Long id) {
         quoteRepository.deleteById(id);
@@ -129,8 +129,8 @@ public Quote updateQuote(Long id, Quote updatedQuote) {
             for (QuoteItem item : quote.getItems()) {
                 if (item.getQuantity() != null && item.getUnitPrice() != null) {
                     BigDecimal itemTotal = item.getUnitPrice()
-                            .multiply(BigDecimal.valueOf(item.getQuantity()))
-                            .setScale(2, RoundingMode.HALF_UP);
+                        .multiply(BigDecimal.valueOf(item.getQuantity()))
+                        .setScale(2, RoundingMode.HALF_UP);
                     item.setTotalPrice(itemTotal);
                     subtotal = subtotal.add(itemTotal);
                 }
@@ -139,18 +139,28 @@ public Quote updateQuote(Long id, Quote updatedQuote) {
 
         quote.setSubtotal(subtotal);
 
-        // GST (5%)
-        BigDecimal gstAmount = subtotal.multiply(quote.getGstRate())
+        // Rush fee: $20 quando a opcao e RUSH (decidido pelo backend,
+        // o front nao manda o valor). Vale na criacao E na edicao.
+        BigDecimal rush = "RUSH".equals(quote.getTurnaroundOption())
+                ? new BigDecimal("20.00")
+                : BigDecimal.ZERO;
+        quote.setRushFee(rush);
+
+        // Base taxavel = subtotal + rush fee
+        BigDecimal taxable = subtotal.add(rush);
+
+        // GST
+        BigDecimal gstAmount = taxable.multiply(quote.getGstRate())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         quote.setGstAmount(gstAmount);
 
-        // PST (7%)
-        BigDecimal pstAmount = subtotal.multiply(quote.getPstRate())
+        // PST
+        BigDecimal pstAmount = taxable.multiply(quote.getPstRate())
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         quote.setPstAmount(pstAmount);
 
-        // Total = Subtotal + GST + PST
-        quote.setTotalAmount(subtotal.add(gstAmount).add(pstAmount));
+        // Total = subtotal + rush + GST + PST
+        quote.setTotalAmount(taxable.add(gstAmount).add(pstAmount));
     }
 
     private String generateQuoteNumber() {
@@ -167,7 +177,7 @@ public Quote updateQuote(Long id, Quote updatedQuote) {
                         maxSeq = seq;
                     }
                 } catch (NumberFormatException ignored) {
-                    // ignora quote numbers fora do padrão QU-XXXX
+                    // ignora quote numbers fora do padrao QU-XXXX
                 }
             }
         }

@@ -123,6 +123,28 @@
             background: var(--primary-light);
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logout-button {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .logout-button:hover {
+            background: #fee2e2;
+            border-color: #fecaca;
+        }
+
         .content {
             max-width: 1700px;
             padding: 28px 32px;
@@ -177,6 +199,80 @@
         .summary-card.financial-card .value {
             font-size: 1.65rem;
             white-space: nowrap;
+        }
+
+        .summary-card.sales-card,
+        .summary-card.goal-card {
+            border-left: 5px solid #0f766e;
+        }
+
+        .summary-card.sales-card .value,
+        .summary-card.goal-card .value {
+            font-size: 1.55rem;
+            white-space: nowrap;
+        }
+
+        .summary-card .subvalue {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .sales-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.55);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sales-modal-overlay.open { display: flex; }
+
+        .sales-modal {
+            width: min(900px, 100%);
+            max-height: 85vh;
+            overflow: auto;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .sales-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sales-modal-header h3 { margin: 0; font-size: 1.05rem; }
+
+        .sales-modal-close {
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            background: white;
+            font-size: 1.35rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+        }
+
+        .sales-modal-summary {
+            padding: 14px 20px;
+            font-weight: bold;
+        }
+
+        .sales-modal-table { min-width: 620px; }
+        .sales-chart-bar { cursor: pointer; }
+        .sales-chart-bar:focus { outline: none; stroke: #0f172a; stroke-width: 2; }
+
+        @media (max-width: 620px) {
+            .sales-modal-overlay { padding: 10px; }
+            .summary-card.sales-card .value,
+            .summary-card.goal-card .value { font-size: 1.25rem; }
         }
 
         .panel {
@@ -704,7 +800,10 @@
                 <p>Live overview of sales, orders and production workload.</p>
             </div>
 
-            <button class="refresh-button" onclick="loadDashboard()">↻ Refresh</button>
+            <div class="header-actions">
+                <button class="refresh-button" onclick="loadDashboard()">↻ Refresh</button>
+                <button class="logout-button" onclick="logout()">Log Out</button>
+            </div>
         </header>
 
         <div class="content">
@@ -765,6 +864,27 @@
                     <div class="label">Completed Orders Value</div>
                     <div id="completedOrdersValue" class="value">—</div>
                 </a>
+
+                <div class="summary-card sales-card">
+                    <div class="label">Sales Today</div>
+                    <div id="salesTodayValue" class="value">—</div>
+                </div>
+
+                <div class="summary-card sales-card">
+                    <div class="label">Sales This Week</div>
+                    <div id="salesWeekValue" class="value">—</div>
+                </div>
+
+                <div class="summary-card sales-card">
+                    <div class="label">Sales This Month</div>
+                    <div id="salesMonthValue" class="value">—</div>
+                </div>
+
+                <div class="summary-card goal-card">
+                    <div class="label">Remaining to Monthly Goal</div>
+                    <div id="salesGoalRemaining" class="value">—</div>
+                    <div id="salesGoalProgress" class="subvalue">Goal: $25,000.00</div>
+                </div>
             </section>
 
             <section class="panel" style="margin-bottom: 22px;">
@@ -783,51 +903,51 @@
             <section class="charts-row">
                 <div class="panel">
                     <div class="panel-header">
-                        <h2>Orders</h2>
-                        <a href="orders.html" class="panel-link">View all →</a>
+                    <h2>Orders</h2>
+                    <a href="orders.html" class="panel-link">View all →</a>
                     </div>
 
                     <div class="donut-body">
-                        <div class="donut-wrap">
-                            <svg id="ordersDonut" viewBox="0 0 160 160" role="img"></svg>
-                            <div class="donut-center">
-                                <div class="dc-value" id="ordersDonutTotal">$0.00</div>
-                                <div class="dc-label">Total</div>
-                            </div>
-                        </div>
-                        <div class="donut-legend" id="ordersDonutLegend"></div>
+                    <div class="donut-wrap">
+                    <svg id="ordersDonut" viewBox="0 0 160 160" role="img"></svg>
+                    <div class="donut-center">
+                    <div class="dc-value" id="ordersDonutTotal">$0.00</div>
+                    <div class="dc-label">Total</div>
+                    </div>
+                    </div>
+                    <div class="donut-legend" id="ordersDonutLegend"></div>
                     </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
-                        <h2>Quotes</h2>
-                        <a href="quote-list.html" class="panel-link">View all →</a>
+                    <h2>Quotes</h2>
+                    <a href="quote-list.html" class="panel-link">View all →</a>
                     </div>
 
                     <div class="donut-body" id="quotesCardBody">
-                        <div class="donut-wrap">
-                            <svg id="quotesDonut" viewBox="0 0 160 160" role="img"></svg>
-                            <div class="donut-center">
-                                <div class="dc-value" id="quotesDonutTotal">$0.00</div>
-                                <div class="dc-label">Total</div>
-                            </div>
-                        </div>
-                        <div class="donut-legend" id="quotesDonutLegend"></div>
+                    <div class="donut-wrap">
+                    <svg id="quotesDonut" viewBox="0 0 160 160" role="img"></svg>
+                    <div class="donut-center">
+                    <div class="dc-value" id="quotesDonutTotal">$0.00</div>
+                    <div class="dc-label">Total</div>
+                    </div>
+                    </div>
+                    <div class="donut-legend" id="quotesDonutLegend"></div>
                     </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
-                        <h2>Sales — Last 12 Months</h2>
-                        <span class="panel-total" id="salesTotal">—</span>
+                    <h2>Sales — Last 12 Months</h2>
+                    <span class="panel-total" id="salesTotal">—</span>
                     </div>
 
                     <div class="sales-chart-body">
-                        <svg id="salesChartSvg" viewBox="0 0 620 225" role="img"></svg>
-                        <div id="salesEmpty" class="empty-state" style="display: none;">
-                            No sales data with order dates found yet.
-                        </div>
+                    <svg id="salesChartSvg" viewBox="0 0 620 225" role="img"></svg>
+                    <div id="salesEmpty" class="empty-state" style="display: none;">
+                    No sales data with order dates found yet.
+                    </div>
                     </div>
                 </div>
             </section>
@@ -835,31 +955,31 @@
             <section class="dashboard-grid">
                 <div class="panel">
                     <div class="panel-header">
-                        <h2>Upcoming Production Items</h2>
-                        <div class="view-toggle">
-                            <button id="tableViewBtn" class="active" onclick="setView('table')">Table</button>
-                            <button id="kanbanViewBtn" onclick="setView('kanban')">Kanban</button>
-                        </div>
+                    <h2>Upcoming Production Items</h2>
+                    <div class="view-toggle">
+                    <button id="tableViewBtn" class="active" onclick="setView('table')">Table</button>
+                    <button id="kanbanViewBtn" onclick="setView('kanban')">Kanban</button>
+                    </div>
                     </div>
 
                     <div id="tableView" class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Order</th>
-                                    <th>Customer</th>
-                                    <th>Item</th>
-                                    <th>Order Value</th>
-                                    <th>Due Date</th>
-                                    <th>Stage</th>
-                                </tr>
-                            </thead>
-                            <tbody id="upcomingItemsBody"></tbody>
-                        </table>
+                    <table>
+                    <thead>
+                    <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Item</th>
+                    <th>Order Value</th>
+                    <th>Due Date</th>
+                    <th>Stage</th>
+                    </tr>
+                    </thead>
+                    <tbody id="upcomingItemsBody"></tbody>
+                    </table>
                     </div>
 
                     <div id="upcomingEmptyState" class="empty-state" style="display: none;">
-                        No active production items found.
+                    No active production items found.
                     </div>
 
                     <div id="kanbanView" class="kanban-board" style="display: none;"></div>
@@ -867,8 +987,8 @@
 
                 <div class="panel">
                     <div class="panel-header">
-                        <h2>Bottleneck by Stage</h2>
-                        <a href="production-queue.html" class="panel-link">View all →</a>
+                    <h2>Bottleneck by Stage</h2>
+                    <a href="production-queue.html" class="panel-link">View all →</a>
                     </div>
 
                     <div id="stageList" class="stage-list"></div>
@@ -876,6 +996,23 @@
             </section>
         </div>
     </main>
+
+    <div id="salesModalOverlay" class="sales-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="salesModalTitle" onclick="closeSalesModal(event)">
+        <div class="sales-modal" onclick="event.stopPropagation()">
+            <div class="sales-modal-header">
+                <h3 id="salesModalTitle">Monthly Sales</h3>
+                <button class="sales-modal-close" aria-label="Close" onclick="closeSalesModal()">&times;</button>
+            </div>
+            <div id="salesModalSummary" class="sales-modal-summary"></div>
+            <div class="table-wrapper">
+                <table class="sales-modal-table">
+                    <thead><tr><th>Order</th><th>Customer</th><th>Order Date</th><th>Amount</th></tr></thead>
+                    <tbody id="salesModalBody"></tbody>
+                </table>
+            </div>
+            <div id="salesModalEmpty" class="empty-state" style="display:none;">No orders for this month.</div>
+        </div>
+    </div>
 
     <script>
         const STAGES = {
@@ -921,8 +1058,11 @@
         };
 
         const FALLBACK_PALETTE = ["#2563eb", "#7c3aed", "#0891b2", "#16a34a", "#db2777", "#ca8a04", "#0f766e", "#4f46e5"];
+        const MONTHLY_SALES_GOAL = 25000;
 
         let currentView = "table";
+        let dashboardOrders = [];
+        let monthlySalesOrders = {};
         let lastAllItems = [];
         let lastToday = "";
 
@@ -942,18 +1082,28 @@
                 try {
                     const qRes = await fetch("/api/quotes");
                     if (qRes.ok) {
-                        quotes = await qRes.json();
+                    quotes = await qRes.json();
                     }
                 } catch (qErr) {
                     console.warn("Quotes could not be loaded:", qErr);
                 }
 
-                renderAll(orders, quotes);
+                dashboardOrders = Array.isArray(orders) ? orders : [];
+                renderAll(dashboardOrders, quotes);
             } catch (err) {
                 console.error("Dashboard error:", err);
                 errBox.textContent = "Error loading data: " + err.message;
                 errBox.style.display = "block";
             }
+        }
+
+        async function logout() {
+            try {
+                await fetch("/api/auth/logout", { method: "POST" });
+            } catch (err) {
+                console.warn("Logout request failed:", err);
+            }
+            window.location.href = "/login.html";
         }
 
         function setView(view) {
@@ -995,7 +1145,30 @@
             document.getElementById("pendingPaymentValue").textContent = formatCurrency(pendingPaymentValue);
             document.getElementById("completedOrdersValue").textContent = formatCurrency(completedOrdersValue);
 
-            const today = new Date().toISOString().split("T")[0];
+            const now = new Date();
+            const today = toLocalDateKey(now);
+            const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const dayOfWeek = (weekStart.getDay() + 6) % 7;
+            weekStart.setDate(weekStart.getDate() - dayOfWeek);
+            const weekStartKey = toLocalDateKey(weekStart);
+            const monthKey = today.slice(0, 7);
+            const saleOrders = orders.filter(order => order.status !== "CANCELLED");
+            const salesToday = saleOrders.filter(order => getOrderDateKey(order) === today)
+                .reduce((sum, order) => sum + getOrderTotal(order), 0);
+            const salesWeek = saleOrders.filter(order => {
+                const dateKey = getOrderDateKey(order);
+                return dateKey >= weekStartKey && dateKey <= today;
+            }).reduce((sum, order) => sum + getOrderTotal(order), 0);
+            const salesMonth = saleOrders.filter(order => getOrderDateKey(order).slice(0, 7) === monthKey)
+                .reduce((sum, order) => sum + getOrderTotal(order), 0);
+
+            document.getElementById("salesTodayValue").textContent = formatCurrency(salesToday);
+            document.getElementById("salesWeekValue").textContent = formatCurrency(salesWeek);
+            document.getElementById("salesMonthValue").textContent = formatCurrency(salesMonth);
+            document.getElementById("salesGoalRemaining").textContent = formatCurrency(Math.max(0, MONTHLY_SALES_GOAL - salesMonth));
+            document.getElementById("salesGoalProgress").textContent =
+                formatCurrency(salesMonth) + " of " + formatCurrency(MONTHLY_SALES_GOAL) + " goal" +
+                (salesMonth >= MONTHLY_SALES_GOAL ? " · Goal reached" : "");
             const overdue = allItems.filter(x => {
                 const s = x.item.productionStatus || "PENDING_FILE";
                 return s !== "COMPLETED" && s !== "CANCELLED" && x.order.dueDate && x.order.dueDate < today;
@@ -1178,7 +1351,11 @@
             }
 
             const buckets = {};
-            keys.forEach(k => { buckets[k] = { value: 0, count: 0 }; });
+            monthlySalesOrders = {};
+            keys.forEach(k => {
+                buckets[k] = { value: 0, count: 0 };
+                monthlySalesOrders[k] = [];
+            });
 
             orders.forEach(o => {
                 if (o.status === "CANCELLED") return;
@@ -1187,6 +1364,7 @@
                 if (buckets[k]) {
                     buckets[k].value += getOrderTotal(o);
                     buckets[k].count++;
+                    monthlySalesOrders[k].push(o);
                 }
             });
 
@@ -1213,29 +1391,77 @@
             const barW = slot * 0.58;
             const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const nowKey = keys[11];
+            const scaleMax = Math.max(max, MONTHLY_SALES_GOAL);
 
             let bars = "";
 
             keys.forEach((k, i) => {
                 const v = buckets[k].value;
-                const h = v > 0 ? Math.max(3, (v / max) * plotH) : 0;
+                const h = v > 0 ? Math.max(3, (v / scaleMax) * plotH) : 0;
                 const x = padL + slot * i + (slot - barW) / 2;
                 const y = padT + plotH - h;
                 const color = k === nowKey ? "#2563eb" : "#93c5fd";
                 const label = MONTHS[parseInt(k.slice(5, 7), 10) - 1];
-                const title = label + " " + k.slice(0, 4) + ": " + formatCurrency(v) + " (" + buckets[k].count + " orders)";
+                const title = label + " " + k.slice(0, 4) + ": " + formatCurrency(v) + " (" + buckets[k].count + " orders) — click for details";
 
                 bars += `
-                    <g>
-                        <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="2"><title>${escapeHtml(title)}</title></rect>
-                        <text x="${x + barW / 2}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#64748b">${label}</text>
+                    <g class="sales-chart-bar" tabindex="0" role="button" onclick="openSalesModal('${k}')"
+                       onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSalesModal('${k}'); }">
+                    <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="2"><title>${escapeHtml(title)}</title></rect>
+                    <text x="${x + barW / 2}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#64748b">${label}</text>
                     </g>
                 `;
             });
 
+            const goalY = padT + plotH - (MONTHLY_SALES_GOAL / scaleMax) * plotH;
+            const goalLabelY = goalY - 5 >= padT + 2 ? goalY - 5 : goalY + 12;
+            const goalLine =
+                `<line x1="${padL}" y1="${goalY}" x2="${W - padR}" y2="${goalY}" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="6 4"><title>Monthly goal: ${formatCurrency(MONTHLY_SALES_GOAL)}</title></line>` +
+                `<text x="${W - padR}" y="${goalLabelY}" text-anchor="end" font-size="9" font-weight="bold" fill="#0f766e">Goal ${formatCurrency(MONTHLY_SALES_GOAL)}</text>`;
+
             svgEl.innerHTML =
                 `<line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="#e2e8f0" stroke-width="1"></line>` +
-                bars;
+                bars +
+                goalLine;
+        }
+
+        /* ---- Sales modal ---- */
+        function openSalesModal(monthKey) {
+            const list = monthlySalesOrders[monthKey] || [];
+            const total = list.reduce((sum, o) => sum + getOrderTotal(o), 0);
+            const parts = monthKey.split("-");
+            const monthLabel = new Date(Number(parts[0]), Number(parts[1]) - 1, 1)
+                .toLocaleString("en-US", { month: "long", year: "numeric" });
+            const pct = MONTHLY_SALES_GOAL > 0 ? Math.round((total / MONTHLY_SALES_GOAL) * 100) : 0;
+
+            document.getElementById("salesModalTitle").textContent = "Sales — " + monthLabel;
+            document.getElementById("salesModalSummary").textContent =
+                list.length + " orders · " + formatCurrency(total) + " · " + pct + "% of the " + formatCurrency(MONTHLY_SALES_GOAL) + " goal";
+
+            const tbody = document.getElementById("salesModalBody");
+            tbody.innerHTML = list
+                .slice()
+                .sort((a, b) => (b.orderDate || "").localeCompare(a.orderDate || ""))
+                .map(o => {
+                    const cust = o.customer || {};
+                    const custName = cust.customerName || cust.name || cust.contactName || "N/A";
+                    return `
+                        <tr>
+                        <td><a href="order-details.html?id=${o.id}" class="order-link">${escapeHtml(o.orderNumber)}</a></td>
+                        <td>${escapeHtml(custName)}</td>
+                        <td>${escapeHtml((o.orderDate || "").slice(0, 10))}</td>
+                        <td>${formatCurrency(getOrderTotal(o))}</td>
+                        </tr>
+                    `;
+                })
+                .join("");
+
+            document.getElementById("salesModalEmpty").style.display = list.length === 0 ? "block" : "none";
+            document.getElementById("salesModalOverlay").classList.add("open");
+        }
+
+        function closeSalesModal() {
+            document.getElementById("salesModalOverlay").classList.remove("open");
         }
 
         function renderTable(allItems, today) {
@@ -1301,13 +1527,13 @@
                 link.href = "orders.html?status=" + key;
                 link.innerHTML = `
                     <div class="bar-row">
-                        <div class="bar-label">
-                            <span>${escapeHtml(label)}</span>
-                            <span class="count">${count}</span>
-                        </div>
-                        <div class="bar-track">
-                            <div class="bar-fill" style="width: ${pct}%; background: ${color};"></div>
-                        </div>
+                    <div class="bar-label">
+                    <span>${escapeHtml(label)}</span>
+                    <span class="count">${count}</span>
+                    </div>
+                    <div class="bar-track">
+                    <div class="bar-fill" style="width: ${pct}%; background: ${color};"></div>
+                    </div>
                     </div>
                 `;
                 container.appendChild(link);
@@ -1337,34 +1563,34 @@
                     cardsHtml = `<div class="kanban-empty">No items</div>`;
                 } else {
                     items.forEach(({ order, item }) => {
-                        const cust = order.customer || {};
-                        const custName = cust.customerName || cust.name || cust.contactName || "N/A";
-                        const itemName = (item.product && item.product.productName) || item.itemDescription || "Custom Item";
+                    const cust = order.customer || {};
+                    const custName = cust.customerName || cust.name || cust.contactName || "N/A";
+                    const itemName = (item.product && item.product.productName) || item.itemDescription || "Custom Item";
 
-                        let dueClass = "";
-                        if (order.dueDate) {
-                            if (order.dueDate < today) dueClass = "overdue";
-                            else if (order.dueDate === today) dueClass = "due-today";
-                        }
+                    let dueClass = "";
+                    if (order.dueDate) {
+                    if (order.dueDate < today) dueClass = "overdue";
+                    else if (order.dueDate === today) dueClass = "due-today";
+                    }
 
-                        cardsHtml += `
-                            <div class="kanban-card">
-                                <a href="order-details.html?id=${order.id}" class="card-order">${escapeHtml(order.orderNumber)}</a>
-                                <div class="card-customer">${escapeHtml(custName)}</div>
-                                <div class="card-item">${escapeHtml(itemName)}</div>
-                                <div class="card-footer">
-                                    <span class="${dueClass}">${escapeHtml(order.dueDate || "No due date")}</span>
-                                    <span>${formatCurrency(getOrderTotal(order))}</span>
-                                </div>
-                            </div>
-                        `;
+                    cardsHtml += `
+                    <div class="kanban-card">
+                    <a href="order-details.html?id=${order.id}" class="card-order">${escapeHtml(order.orderNumber)}</a>
+                    <div class="card-customer">${escapeHtml(custName)}</div>
+                    <div class="card-item">${escapeHtml(itemName)}</div>
+                    <div class="card-footer">
+                    <span class="${dueClass}">${escapeHtml(order.dueDate || "No due date")}</span>
+                    <span>${formatCurrency(getOrderTotal(order))}</span>
+                    </div>
+                    </div>
+                    `;
                     });
                 }
 
                 column.innerHTML = `
                     <a href="orders.html?status=${key}" class="kanban-column-header" style="border-bottom-color: ${color};">
-                        <span class="title">${escapeHtml(label)}</span>
-                        <span class="count-pill" style="background: ${color};">${items.length}</span>
+                    <span class="title">${escapeHtml(label)}</span>
+                    <span class="count-pill" style="background: ${color};">${items.length}</span>
                     </a>
                     <div class="kanban-cards">${cardsHtml}</div>
                 `;
@@ -1386,7 +1612,7 @@
         }
 
         function formatCurrency(amount) {
-            return "$" + Number(amount || 0).toFixed(2);
+            return "$" + Number(amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
         function escapeHtml(val) {
@@ -1394,6 +1620,19 @@
             d.textContent = val == null ? "" : String(val);
             return d.innerHTML;
         }
+
+        function toLocalDateKey(d) {
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        }
+
+        function getOrderDateKey(order) {
+            const d = order && order.orderDate ? String(order.orderDate) : "";
+            return d.slice(0, 10);
+        }
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") closeSalesModal();
+        });
 
         window.addEventListener("DOMContentLoaded", loadDashboard);
     </script>

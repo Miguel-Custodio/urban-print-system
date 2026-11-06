@@ -102,6 +102,11 @@
   .CANCELLED { background: #d9534f; }
   .notes-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #555; font-style: italic; }
   .empty { text-align: center; color: var(--muted); padding: 28px; }
+  .bulk-bar { display: none; align-items: center; gap: 12px; flex-wrap: wrap; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; font-size: 14px; }
+  .bulk-bar.visible { display: flex; }
+  .bulk-bar button { border: none; border-radius: 4px; padding: 8px 12px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .check-col { width: 36px; text-align: center; }
+  .check-col input { width: 16px; height: 16px; padding: 0; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -133,6 +138,10 @@
     <div class="toolbar">
       <a href="new-order.html" style="background: #2563eb; color: white; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; font-size: 14px;">+ New Order</a>
       <div>
+        <input type="search" id="searchInput"
+             placeholder="Search order #, quote #, customer, description, product..."
+             style="width: 380px;"
+             oninput="applySearch()">
         <label>Filter by status: </label>
         <select id="filterStatus" onchange="onStatusChange()">
           <option value="">All</option>
@@ -153,9 +162,34 @@
       <div id="activeFilterTagWrapper"></div>
     </div>
 
+    <div id="bulkBar" class="bulk-bar">
+      <strong id="bulkCount">0 selected</strong>
+      <select id="bulkStatus">
+        <option value="">Move to...</option>
+        <option value="PENDING_PAYMENT">Pending Payment</option>
+        <option value="PENDING_FILE">Pending File</option>
+        <option value="GRAPHICS">Graphics</option>
+        <option value="SF_QUEUE">Small Format Queue</option>
+        <option value="SF_PRINTING">SF Printing</option>
+        <option value="WF_QUEUE">Wide Format Queue</option>
+        <option value="WF_PRINTING">WF Printing</option>
+        <option value="FINISHING">Finishing</option>
+        <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
+        <option value="SHIPPING">Shipping</option>
+        <option value="COMPLETED">Completed</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+      <button style="background:#2563eb;color:#fff;" onclick="bulkMove()">Move selected</button>
+      <button style="background:#fee2e2;color:#991b1b;" onclick="bulkDelete()">Delete selected</button>
+      <button style="background:#e2e8f0;color:#334155;" onclick="clearSelection()">Clear selection</button>
+    </div>
+
     <table>
       <thead>
         <tr>
+          <th class="check-col" onclick="event.stopPropagation()">
+            <input type="checkbox" id="selectAll" onchange="toggleAll(this.checked)">
+          </th>
           <th>Order #</th>
           <th>Customer</th>
           <th>Order Date</th>
@@ -176,6 +210,8 @@
 
 <script>
 const API_URL = '/api/orders';
+let currentOrders = [];
+const selectedIds = new Set();
 
 // Special "virtual" filters that don't map to a single backend status
 const VIRTUAL_FILTERS = {
@@ -272,6 +308,8 @@ async function loadOrders() {
     if (filter && VIRTUAL_FILTERS[filter]) {
       orders = orders.filter(VIRTUAL_FILTERS[filter].test);
     }
+    currentOrders = orders;
+    updateBulkBar();
 
     tbody.innerHTML = '';
 
@@ -285,6 +323,9 @@ async function loadOrders() {
 
     orders.forEach(order => {
       const tr = document.createElement('tr');
+
+      tr.dataset.id = order.id;
+      tr.dataset.search = buildSearchText(order);
 
       tr.onclick = () => {
         window.location.href = `order-details.html?id=${order.id}`;
@@ -303,6 +344,11 @@ async function loadOrders() {
         : '0.00';
 
       tr.innerHTML = `
+        <td class="check-col" onclick="event.stopPropagation()">
+          <input type="checkbox"
+                 ${selectedIds.has(order.id) ? 'checked' : ''}
+                 onchange="toggleRow(${order.id}, this.checked)">
+        </td>
         <td>${order.orderNumber || ''}</td>
         <td>${customerName}</td>
         <td>${order.orderDate || ''}</td>
@@ -329,6 +375,8 @@ async function loadOrders() {
 
       tbody.appendChild(tr);
     });
+
+    applySearch();
 
   } catch (error) {
     console.error('Error loading orders:', error);
@@ -363,6 +411,117 @@ async function reorderClick(event, orderId) {
     console.error('Error reordering:', error);
     alert('Error creating re-order. Check the backend terminal.');
   }
+}
+
+function buildSearchText(order) {
+  const parts = [
+    order.orderNumber,
+    order.notes,
+    order.customer && (order.customer.customerName || order.customer.name || order.customer.contactName),
+    order.customer && order.customer.companyName,
+    order.quote && order.quote.quoteNumber
+  ];
+
+  (order.items || []).forEach(item => {
+    parts.push(item.itemDescription, item.printSpecsSummary);
+    if (item.product) {
+      Object.values(item.product).forEach(v => {
+        if (typeof v === 'string') parts.push(v);
+      });
+    }
+  });
+
+  return parts.filter(Boolean).join(' ').toLowerCase();
+}
+
+function applySearch() {
+  const term = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  const words = term ? term.split(/\s+/) : [];
+  let visible = 0;
+
+  document.querySelectorAll('#ordersBody tr').forEach(tr => {
+    const text = tr.dataset.search || '';
+    const match = words.every(w => text.includes(w));
+    tr.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+
+  const emptyMsg = document.getElementById('emptyMsg');
+  if (visible === 0 && document.querySelectorAll('#ordersBody tr').length > 0) {
+    emptyMsg.textContent = 'No orders match your search.';
+    emptyMsg.style.display = 'block';
+  } else if (visible > 0) {
+    emptyMsg.style.display = 'none';
+  }
+}
+
+function toggleRow(id, checked) {
+  if (checked) selectedIds.add(id); else selectedIds.delete(id);
+  updateBulkBar();
+}
+
+function toggleAll(checked) {
+  document.querySelectorAll('#ordersBody tr').forEach(tr => {
+    if (tr.style.display === 'none') return;
+    const id = Number(tr.dataset.id);
+    if (checked) selectedIds.add(id); else selectedIds.delete(id);
+  });
+  loadOrders();
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  loadOrders();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  const count = document.getElementById('bulkCount');
+  const selectAll = document.getElementById('selectAll');
+  if (!bar || !count || !selectAll) return;
+
+  count.textContent = `${selectedIds.size} selected`;
+  bar.classList.toggle('visible', selectedIds.size > 0);
+
+  const visibleSelected = currentOrders.filter(o => selectedIds.has(o.id)).length;
+  selectAll.checked = currentOrders.length > 0 && visibleSelected === currentOrders.length;
+  selectAll.indeterminate = visibleSelected > 0 && visibleSelected < currentOrders.length;
+}
+
+async function bulkMove() {
+  const status = document.getElementById('bulkStatus').value;
+  const ids = Array.from(selectedIds);
+  if (ids.length === 0) return;
+  if (!status) { alert('Choose a status in "Move to..." first.'); return; }
+
+  if (!confirm(`Move ${ids.length} order(s) to ${status.replaceAll('_', ' ')}?`)) return;
+
+  const results = await Promise.allSettled(
+    ids.map(id => fetch(`${API_URL}/${id}/status?status=${status}`, { method: 'PATCH' })
+      .then(r => { if (!r.ok) throw new Error(); }))
+  );
+
+  const failed = results.filter(r => r.status === 'rejected').length;
+  selectedIds.clear();
+  await loadOrders();
+  if (failed > 0) alert(`${failed} of ${ids.length} order(s) could not be moved.`);
+}
+
+async function bulkDelete() {
+  const ids = Array.from(selectedIds);
+  if (ids.length === 0) return;
+
+  if (!confirm(`Delete ${ids.length} selected order(s)? This cannot be undone.`)) return;
+
+  const results = await Promise.allSettled(
+    ids.map(id => fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+      .then(r => { if (!r.ok) throw new Error(); }))
+  );
+
+  const failed = results.filter(r => r.status === 'rejected').length;
+  selectedIds.clear();
+  await loadOrders();
+  if (failed > 0) alert(`${failed} of ${ids.length} order(s) could not be deleted.`);
 }
 
 initFromUrl();

@@ -12,7 +12,7 @@
             --success: #16a34a;
             --danger: #dc2626;
             --bg: #f8fafc;
-            --card: #ffffff;
+            --card: #ffff;
             --border: #e2e8f0;
             --text: #0f172a;
             --muted: #64748b;
@@ -111,7 +111,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 24px;
-            box-shadow: 0 1px 3px #0000000d;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .toolbar {
@@ -171,6 +171,20 @@
             color: #334155;
         }
 
+        .btn-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-success:hover {
+            background: #bbf7d0;
+        }
+
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .table-responsive {
             overflow-x: auto;
         }
@@ -212,11 +226,6 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: bold;
-        }
-
-        .status-DRAFT {
-            background: #fef3c7;
-            color: #92400e;
         }
 
         .status-SENT {
@@ -315,13 +324,16 @@
                     <label for="statusFilter">Filter by status:</label>
 
                     <select id="statusFilter" onchange="loadQuotes()">
-                        <option value="">All Statuses</option>
-                        <option value="DRAFT">Draft</option>
-                        <option value="SENT">Sent</option>
-                        <option value="ACCEPTED">Accepted</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="CONVERTED">Converted</option>
+                    <option value="">All Statuses</option>
+                    <option value="SENT">Sent</option>
+                    <option value="ACCEPTED">Accepted</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="CONVERTED">Converted</option>
                     </select>
+                    <input type="search" id="searchInput"
+                    placeholder="Search quote #, customer, description, product..."
+                    style="width: 340px;"
+                    oninput="applyFilters()">
                 </div>
 
                 <a href="/quote-details.html" class="button-link btn-primary">
@@ -333,23 +345,23 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>Quote Number</th>
-                        <th>Customer</th>
-                        <th>Issue Date</th>
-                        <th>Expiry Date</th>
-                        <th>Status</th>
-                        <th>Subtotal</th>
-                        <th>Tax</th>
-                        <th>Total</th>
-                        <th>Actions</th>
+                    <th>Quote Number</th>
+                    <th>Customer</th>
+                    <th>Issue Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Subtotal</th>
+                    <th>Tax</th>
+                    <th>Total</th>
+                    <th>Actions</th>
                     </tr>
                     </thead>
 
                     <tbody id="quotesTableBody">
                     <tr>
-                        <td colspan="9" class="loading">
-                            Loading quotes...
-                        </td>
+                    <td colspan="9" class="loading">
+                    Loading quotes...
+                    </td>
                     </tr>
                     </tbody>
                 </table>
@@ -379,18 +391,14 @@
 
             allQuotes = await response.json();
 
-            const filteredQuotes = filter
-                ? allQuotes.filter(quote => quote.status === filter)
-                : allQuotes;
-
-            renderQuotes(filteredQuotes);
+            applyFilters();
         } catch (error) {
             console.error(error);
 
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="9" class="empty">
-                        Failed to load quotes.
+                    Failed to load quotes.
                     </td>
                 </tr>
             `;
@@ -408,7 +416,7 @@
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="9" class="empty">
-                        No quotes found.
+                    No quotes found.
                     </td>
                 </tr>
             `;
@@ -417,16 +425,22 @@
 
         tableBody.innerHTML = quotes.map(quote => {
             const customerName = getCustomerName(quote.customer);
-            const status = quote.status || "DRAFT";
+            const status = quote.status || "";
+
+            const statusCell = status
+                ? `<span class="status status-${escapeHtml(status)}">${escapeHtml(status)}</span>`
+                : `<span style="color:#94a3b8">—</span>`;
+
+            const taxTotal = Number(quote.gstAmount || 0) + Number(quote.pstAmount || 0);
 
             return `
                 <tr>
                     <td>
-                        <a href="/quote-print.html?id=${quote.id}"
-                           class="quote-link"
-                           title="View quote">
-                            ${escapeHtml(quote.quoteNumber || "-")}
-                        </a>
+                    <a href="/quote-print.html?id=${quote.id}"
+                    class="quote-link"
+                    title="View quote">
+                    ${escapeHtml(quote.quoteNumber || "-")}
+                    </a>
                     </td>
 
                     <td>${escapeHtml(customerName)}</td>
@@ -435,34 +449,73 @@
 
                     <td>${escapeHtml(quote.expiryDate || "-")}</td>
 
-                    <td>
-                        <span class="status status-${escapeHtml(status)}">
-                            ${escapeHtml(status)}
-                        </span>
-                    </td>
+                    <td>${statusCell}</td>
 
                     <td>${formatCurrency(quote.subtotal)}</td>
 
-                    <td>${formatCurrency(quote.taxAmount)}</td>
+                    <td>${formatCurrency(taxTotal)}</td>
 
                     <td>
-                        <strong>${formatCurrency(quote.totalAmount)}</strong>
+                    <strong>${formatCurrency(quote.totalAmount)}</strong>
                     </td>
 
                     <td>
-                        <button class="btn-secondary"
-                                onclick="editQuote(${quote.id})">
-                            Edit
-                        </button>
+                    <button class="btn-secondary"
+                    onclick="editQuote(${quote.id})">
+                    Edit
+                    </button>
 
-                        <button class="btn-danger"
-                                onclick="deleteQuote(${quote.id})">
-                            Delete
-                        </button>
+                    <button class="btn-success"
+                    onclick="convertQuote(${quote.id})"
+                    ${status === "CONVERTED" ? "disabled title='Already converted'" : ""}>
+                    Convert to Order
+                    </button>
+
+                    <button class="btn-danger"
+                    onclick="deleteQuote(${quote.id})">
+                    Delete
+                    </button>
                     </td>
                 </tr>
             `;
         }).join("");
+    }
+
+    function buildSearchText(quote) {
+        const parts = [
+            quote.quoteNumber,
+            quote.notes,
+            getCustomerName(quote.customer),
+            quote.customer && quote.customer.email
+        ];
+
+        (quote.items || []).forEach(item => {
+            parts.push(item.itemDescription, item.printSpecsSummary);
+            if (item.product) {
+                Object.values(item.product).forEach(v => {
+                    if (typeof v === "string") parts.push(v);
+                });
+            }
+        });
+
+        return parts.filter(Boolean).join(" ").toLowerCase();
+    }
+
+    function applyFilters() {
+        const status = document.getElementById("statusFilter").value;
+        const term = (document.getElementById("searchInput").value || "")
+            .trim().toLowerCase();
+
+        const words = term ? term.split(/\s+/) : [];
+
+        const result = allQuotes.filter(quote => {
+            if (status && quote.status !== status) return false;
+            if (words.length === 0) return true;
+            const text = buildSearchText(quote);
+            return words.every(w => text.includes(w));
+        });
+
+        renderQuotes(result);
     }
 
     function getCustomerName(customer) {
@@ -491,6 +544,37 @@
 
     function editQuote(id) {
         window.location.href = `/quote-details.html?id=${id}`;
+    }
+
+    async function convertQuote(id) {
+        const confirmed = confirm(
+            "Convert this quote into an order?\n\n" +
+            "All quote lines will be copied as they were sent. " +
+            "You can remove the unapproved lines in the order afterwards."
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        hideError();
+
+        try {
+            const response = await fetch(`/api/orders/from-quote/${id}`, {
+                method: "POST"
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.error || "Could not convert the quote.");
+            }
+
+            window.location.href = `/order-details.html?id=${data.id}`;
+        } catch (error) {
+            console.error(error);
+            showError("Could not convert the quote: " + error.message);
+        }
     }
 
     async function deleteQuote(id) {

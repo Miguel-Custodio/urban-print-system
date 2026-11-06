@@ -13,7 +13,7 @@
             --danger: #dc2626;
             --danger-hover: #b91c1c;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
+            --card-bg: #ffff;
             --border: #e2e8f0;
             --text-main: #0f172a;
             --text-muted: #64748b;
@@ -83,7 +83,7 @@
 
         nav a:hover, nav a.active {
             background-color: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
+            color: #ffff;
         }
 
         /* Main Workspace */
@@ -184,7 +184,7 @@
 
         .btn-primary {
             background-color: var(--accent);
-            color: #ffffff;
+            color: #ffff;
         }
 
         .btn-primary:hover {
@@ -204,7 +204,7 @@
 
         .btn-danger {
             background-color: var(--danger);
-            color: #ffffff;
+            color: #ffff;
             padding: 6px 12px;
             font-size: 0.8rem;
         }
@@ -287,6 +287,107 @@
             padding: 32px;
             color: var(--text-muted);
         }
+
+        /* Search + duplicates toolbar */
+        .toolbar-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-row input[type="text"] {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        /* Tax checkboxes */
+        .checkbox-row {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            padding-top: 4px;
+        }
+
+        .checkbox-inline {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .checkbox-inline input {
+            width: auto;
+        }
+
+        /* Duplicates modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 24px;
+            width: min(620px, 100%);
+            max-height: 82vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            font-size: 1.05rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .modal .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .dup-group {
+            margin-bottom: 14px;
+        }
+
+        .dup-group-email {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+
+        .dup-row {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+        }
+
+        .dup-row small {
+            display: block;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .dup-keeper {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
     </style>
 </head>
 <body>
@@ -323,48 +424,59 @@
                 <h2 id="formTitle">Add New Customer</h2>
                 <form id="customerForm">
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="companyName">Company Name</label>
-                            <input type="text" id="companyName" placeholder="e.g. Stonz">
-                        </div>
-                        <div class="form-group">
-                            <label for="website">Company Website</label>
-                            <input type="text" id="website" placeholder="e.g. https://stonz.ca">
-                        </div>
-                        <div class="form-group">
-                            <label for="name">Contact Name *</label>
-                            <input type="text" id="name" placeholder="e.g. Tatiana" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contactPosition">Contact Position</label>
-                            <input type="text" id="contactPosition" placeholder="e.g. Owner, Director, Marketing">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" placeholder="john@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="text" id="phone" placeholder="e.g. 604-555-0123">
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Street Address</label>
-                            <input type="text" id="address" placeholder="e.g. 7993 Enterprise St">
-                        </div>
-                        <div class="form-group">
-                            <label for="city">City</label>
-                            <input type="text" id="city" placeholder="e.g. Burnaby">
-                        </div>
-                        <div class="form-group">
-                            <label for="postalCode">Postal Code</label>
-                            <input type="text" id="postalCode" placeholder="e.g. V5A 1V9">
-                        </div>
+                    <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" placeholder="e.g. Stonz">
+                    </div>
+                    <div class="form-group">
+                    <label for="website">Company Website</label>
+                    <input type="text" id="website" placeholder="e.g. https://stonz.ca">
+                    </div>
+                    <div class="form-group">
+                    <label for="name">Contact Name *</label>
+                    <input type="text" id="name" placeholder="e.g. Tatiana" required>
+                    </div>
+                    <div class="form-group">
+                    <label for="contactPosition">Contact Position</label>
+                    <input type="text" id="contactPosition" placeholder="e.g. Owner, Director, Marketing">
+                    </div>
+                    <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" id="phone" placeholder="e.g. 604-555-0123">
+                    </div>
+                    <div class="form-group">
+                    <label for="address">Street Address</label>
+                    <input type="text" id="address" placeholder="e.g. 7993 Enterprise St">
+                    </div>
+                    <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" placeholder="e.g. Burnaby">
+                    </div>
+                    <div class="form-group">
+                    <label for="postalCode">Postal Code</label>
+                    <input type="text" id="postalCode" placeholder="e.g. V5A 1V9">
+                    </div>
+                    <div class="form-group">
+                    <label>Taxes charged on quotes</label>
+                    <div class="checkbox-row">
+                    <label class="checkbox-inline">
+                    <input type="checkbox" id="gstApplicable" checked> Charge GST (5%)
+                    </label>
+                    <label class="checkbox-inline">
+                    <input type="checkbox" id="pstApplicable" checked> Charge PST (7%)
+                    </label>
+                    </div>
+                    </div>
                     </div>
                     <div class="actions">
-                        <button type="button" id="cancelEditBtn" class="btn-cancel" style="display: none;" onclick="cancelEdit()">
-                            Cancel Edit
-                        </button>
-                        <button type="submit" id="saveBtn" class="btn-primary">Save Customer</button>
+                    <button type="button" id="cancelEditBtn" class="btn-cancel" style="display: none;" onclick="cancelEdit()">
+                    Cancel Edit
+                    </button>
+                    <button type="submit" id="saveBtn" class="btn-primary">Save Customer</button>
                     </div>
                 </form>
             </div>
@@ -372,28 +484,51 @@
             <!-- Customer List Card -->
             <div class="card">
                 <h2>Customer Directory</h2>
+
+                <div class="toolbar-row">
+                    <input type="text" id="customerSearch" placeholder="Search by company, contact, email, phone or city..." oninput="renderCustomers()">
+                    <button type="button" class="btn-edit" onclick="openDuplicatesModal()">
+                    Clean duplicate contacts
+                    </button>
+                </div>
+
                 <table>
                     <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Company</th>
-                            <th>Contact Name</th>
-                            <th>Position</th>
-                            <th>Email & Phone</th>
-                            <th>Address / City</th>
-                            <th>Status</th>
-                            <th style="text-align: right;">Actions</th>
-                        </tr>
+                    <tr>
+                    <th>ID</th>
+                    <th>Company</th>
+                    <th>Contact Name</th>
+                    <th>Position</th>
+                    <th>Email & Phone</th>
+                    <th>Address / City</th>
+                    <th>Taxes</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Actions</th>
+                    </tr>
                     </thead>
                     <tbody id="customersTableBody">
-                        <tr>
-                            <td colspan="8" class="empty-state">Loading customers...</td>
-                        </tr>
+                    <tr>
+                    <td colspan="9" class="empty-state">Loading customers...</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
+
+    <!-- Duplicates Modal -->
+    <div id="duplicatesModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <h3>Duplicate contacts</h3>
+            <div id="duplicatesContent"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeDuplicatesModal()">Cancel</button>
+                <button type="button" id="mergeDuplicatesBtn" class="btn-primary" onclick="mergeDuplicates()">
+                Merge and delete duplicates
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const API_URL = '/api/customers';
@@ -421,6 +556,8 @@
                 address: document.getElementById('address').value.trim(),
                 city: document.getElementById('city').value.trim(),
                 postalCode: document.getElementById('postalCode').value.trim(),
+                gstApplicable: document.getElementById('gstApplicable').checked,
+                pstApplicable: document.getElementById('pstApplicable').checked,
                 active: existing ? existing.active : true
             };
 
@@ -438,7 +575,10 @@
                     resetCustomerForm();
                     loadCustomers();
                 } else {
-                    alert(isEditing ? 'Error updating customer.' : 'Error creating customer.');
+                    const message = await readErrorMessage(response);
+                    alert(isEditing
+                        ? 'Error updating customer: ' + message
+                        : 'Error creating customer: ' + message);
                 }
             } catch (err) {
                 console.error('Error:', err);
@@ -447,58 +587,101 @@
         });
 
         async function loadCustomers() {
-            const tableBody = document.getElementById('customersTableBody');
-
             try {
                 const response = await fetch(API_URL);
                 customersCache = await response.json();
-
-                if (!customersCache || customersCache.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="8" class="empty-state">No customers registered yet.</td></tr>`;
-                    return;
-                }
-
-                tableBody.innerHTML = customersCache.map(c => {
-                    const contactDetails = [c.email, c.phone].filter(Boolean).join('<br>') || '-';
-                    const locationDetails = [c.address, c.city, c.postalCode].filter(Boolean).join(', ') || '-';
-
-                    let companyHtml = `<strong>${escapeHtml(c.companyName || '-')}</strong>`;
-                    if (c.website) {
-                        const websiteUrl = c.website.startsWith('http')
-                            ? c.website
-                            : `https://${c.website}`;
-                        companyHtml += `<br><small class="company-website"><a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a></small>`;
-                    }
-
-                    return `
-                        <tr>
-                            <td><strong>#${c.id}</strong></td>
-                            <td>${companyHtml}</td>
-                            <td>${escapeHtml(c.name || '-')}</td>
-                            <td>${escapeHtml(c.contactPosition || '-')}</td>
-                            <td>${contactDetails}</td>
-                            <td>${escapeHtml(locationDetails)}</td>
-                            <td>
-                                <span class="${c.active ? 'badge-active' : 'badge-inactive'}">
-                                    ${c.active ? 'Active' : 'Inactive'}
-                                </span>
-                            </td>
-                            <td style="text-align: right; white-space: nowrap;">
-                                <button class="btn-edit" onclick="editCustomer(${c.id})">
-                                    Edit
-                                </button>
-
-                                <button class="btn-danger" onclick="deleteCustomer(${c.id})">
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+                renderCustomers();
             } catch (err) {
                 console.error('Error fetching customers:', err);
-                tableBody.innerHTML = `<tr><td colspan="8" class="empty-state">Failed to load customer list.</td></tr>`;
+                document.getElementById('customersTableBody').innerHTML =
+                    `<tr><td colspan="9" class="empty-state">Failed to load customer list.</td></tr>`;
             }
+        }
+
+        function getFilteredCustomers() {
+            const term = document.getElementById('customerSearch').value.trim().toLowerCase();
+            const terms = term.split(/\s+/).filter(Boolean);
+
+            if (!terms.length) {
+                return customersCache;
+            }
+
+            return customersCache.filter(c => {
+                const haystack = [
+                    c.name,
+                    c.companyName,
+                    c.email,
+                    c.phone,
+                    c.city,
+                    c.contactPosition
+                ].filter(Boolean).join(' ').toLowerCase();
+
+                return terms.every(t => haystack.includes(t));
+            });
+        }
+
+        function taxesLabel(c) {
+            const gst = c.gstApplicable !== false;
+            const pst = c.pstApplicable !== false;
+
+            if (gst && pst) return 'GST + PST';
+            if (gst) return 'GST only';
+            if (pst) return 'PST only';
+            return 'No tax';
+        }
+
+        function renderCustomers() {
+            const tableBody = document.getElementById('customersTableBody');
+            const customers = getFilteredCustomers();
+
+            if (!customersCache || customersCache.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="empty-state">No customers registered yet.</td></tr>`;
+                return;
+            }
+
+            if (!customers.length) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="empty-state">No customers match your search.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = customers.map(c => {
+                const contactDetails = [c.email, c.phone].filter(Boolean).join('<br>') || '-';
+                const locationDetails = [c.address, c.city, c.postalCode].filter(Boolean).join(', ') || '-';
+
+                let companyHtml = `<strong>${escapeHtml(c.companyName || '-')}</strong>`;
+                if (c.website) {
+                const websiteUrl = c.website.startsWith('http')
+                ? c.website
+                : `https://${c.website}`;
+                companyHtml += `<br><small class="company-website"><a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener">${escapeHtml(c.website)}</a></small>`;
+                }
+
+                return `
+                <tr>
+                <td><strong>#${c.id}</strong></td>
+                <td>${companyHtml}</td>
+                <td>${escapeHtml(c.name || '-')}</td>
+                <td>${escapeHtml(c.contactPosition || '-')}</td>
+                <td>${contactDetails}</td>
+                <td>${escapeHtml(locationDetails)}</td>
+                <td>${taxesLabel(c)}</td>
+                <td>
+                <span class="${c.active ? 'badge-active' : 'badge-inactive'}">
+                ${c.active ? 'Active' : 'Inactive'}
+                </span>
+                </td>
+                <td style="text-align: right; white-space: nowrap;">
+                <button class="btn-edit" onclick="editCustomer(${c.id})">
+                Edit
+                </button>
+
+                <button class="btn-danger" onclick="deleteCustomer(${c.id})">
+                Delete
+                </button>
+                </td>
+                </tr>
+                `;
+            }).join('');
         }
 
         function editCustomer(id) {
@@ -519,6 +702,8 @@
             document.getElementById('address').value = customer.address || '';
             document.getElementById('city').value = customer.city || '';
             document.getElementById('postalCode').value = customer.postalCode || '';
+            document.getElementById('gstApplicable').checked = customer.gstApplicable !== false;
+            document.getElementById('pstApplicable').checked = customer.pstApplicable !== false;
 
             document.getElementById('formTitle').textContent = `Edit Customer — #${customer.id}`;
             document.getElementById('saveBtn').textContent = 'Update Customer';
@@ -537,6 +722,8 @@
         function resetCustomerForm() {
             editingCustomerId = null;
             document.getElementById('customerForm').reset();
+            document.getElementById('gstApplicable').checked = true;
+            document.getElementById('pstApplicable').checked = true;
             document.getElementById('formTitle').textContent = 'Add New Customer';
             document.getElementById('saveBtn').textContent = 'Save Customer';
             document.getElementById('cancelEditBtn').style.display = 'none';
@@ -554,16 +741,127 @@
 
                 if (response.ok) {
                     if (editingCustomerId === id) {
-                        resetCustomerForm();
+                    resetCustomerForm();
                     }
                     loadCustomers();
                 } else {
-                    alert('Could not delete customer.');
+                    const message = await readErrorMessage(response);
+                    alert('Could not delete customer: ' + message);
                 }
             } catch (err) {
                 console.error('Error deleting customer:', err);
                 alert('Could not connect to server.');
             }
+        }
+
+        // ==== Duplicates ====
+
+        async function openDuplicatesModal() {
+            const content = document.getElementById('duplicatesContent');
+            const mergeBtn = document.getElementById('mergeDuplicatesBtn');
+            const overlay = document.getElementById('duplicatesModal');
+
+            content.innerHTML = '<div class="empty-state">Checking duplicates...</div>';
+            mergeBtn.style.display = 'none';
+            overlay.style.display = 'flex';
+
+            try {
+                const response = await fetch(`${API_URL}/duplicates`);
+                const groups = await response.json();
+
+                if (!groups.length) {
+                content.innerHTML = '<div class="empty-state">No duplicated emails found. Nothing to merge.</div>';
+                return;
+                }
+
+                mergeBtn.style.display = 'inline-block';
+
+                content.innerHTML = groups.map(group => {
+                const keeperId = pickKeeperId(group.customers);
+
+                const rows = group.customers.map(c => `
+                <div class="dup-row ${c.id === keeperId ? 'dup-keeper' : ''}">
+                <strong>#${c.id}</strong> ${escapeHtml(c.companyName || c.name || '-')}
+                <small>
+                ${c.quoteCount} quote(s) · ${c.orderCount} order(s) —
+                ${c.id === keeperId ? 'will be KEPT (has history)' : 'will be deleted'}
+                </small>
+                </div>
+                `).join('');
+
+                return `
+                <div class="dup-group">
+                <div class="dup-group-email">${escapeHtml(group.email)}</div>
+                ${rows}
+                </div>
+                `;
+                }).join('');
+            } catch (err) {
+                console.error('Error checking duplicates:', err);
+                content.innerHTML = '<div class="empty-state">Could not check duplicates. Is the server running?</div>';
+            }
+        }
+
+        function pickKeeperId(customers) {
+            let keeper = customers[0];
+
+            customers.forEach(c => {
+                if (c.linkedTotal > keeper.linkedTotal
+                || (c.linkedTotal === keeper.linkedTotal && c.id < keeper.id)) {
+                keeper = c;
+                }
+            });
+
+            return keeper.id;
+        }
+
+        function closeDuplicatesModal() {
+            document.getElementById('duplicatesModal').style.display = 'none';
+        }
+
+        async function mergeDuplicates() {
+            if (!confirm('This will transfer all quotes and orders to the kept customer and delete the duplicated contacts. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/merge-duplicates`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                alert('Could not merge duplicates: ' + await readErrorMessage(response));
+                return;
+                }
+
+                closeDuplicatesModal();
+                loadCustomers();
+                alert('Duplicates merged successfully.');
+            } catch (err) {
+                console.error('Error merging duplicates:', err);
+                alert('Could not connect to server.');
+            }
+        }
+
+        async function readErrorMessage(response) {
+            let detail = 'HTTP ' + response.status;
+
+            try {
+                const text = await response.text();
+
+                if (text) {
+                    try {
+                        const data = JSON.parse(text);
+                        detail = data.error || data.message || text;
+                    } catch (parseError) {
+                        detail = text;
+                    }
+                }
+            } catch (readError) {
+                console.error('Unable to read error response body:', readError);
+            }
+
+            return detail;
         }
 
         function escapeHtml(text) {

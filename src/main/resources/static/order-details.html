@@ -6,12 +6,14 @@
     <title>Urban Print Shop — Order Details</title>
     <style>
         :root {
-            --primary: #1c2b39;
+            --primary: #1e293b;
             --accent: #2563eb;
-            --bg: #f4f5f7;
-            --card: #ffffff;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #fff;
             --border: #e2e8f0;
-            --text: #1e293b;
+            --text: #0f172a;
             --muted: #64748b;
         }
 
@@ -19,437 +21,160 @@
         body { margin: 0; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
         aside {
-            width: 230px;
-            background: var(--primary);
-            color: #fff;
-            padding: 20px 12px;
-            flex-shrink: 0;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
+            width: 230px; background: #1e293b; color: #fff; padding: 20px 12px;
+            flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
         }
+        .brand-logo-link { display: block; text-decoration: none; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #475569; }
+        .brand-logo { display: block; width: 100%; max-width: 190px; height: auto; margin: 0 auto; object-fit: contain; }
+        nav { display: flex; flex-direction: column; gap: 4px; }
+        nav a { color: #cbd5e1; text-decoration: none; padding: 10px 12px; border-radius: 6px; font-size: .9rem; }
+        nav a:hover, nav a.active { background: #334155; color: #fff; }
 
-        .brand-logo-link {
-            display: block;
-            text-decoration: none;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #334155;
-        }
+        main { flex: 1; min-width: 0; padding: 22px; }
+        h1 { margin: 0; font-size: 22px; color: #172235; }
+        .subtitle { margin: 5px 0 20px; color: var(--muted); font-size: 13px; }
+        .container { width: 100%; }
+        .back-link { display: inline-block; margin-bottom: 16px; color: var(--accent); text-decoration: none; font-size: 14px; font-weight: bold; }
 
-        .brand-logo {
-            display: block;
-            width: 100%;
-            max-width: 190px;
-            height: auto;
-            margin: 0 auto;
-            object-fit: contain;
-        }
-
-        aside nav {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        aside nav a {
-            color: #cbd5e1;
-            text-decoration: none;
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        aside nav a:hover,
-        aside nav a.active {
-            background: #334155;
-            color: #fff;
-        }
-
-        main { flex: 1; min-width: 0; }
-
-        .page-header {
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            padding: 20px 32px;
-        }
-
-        .page-header h1 { margin: 0; font-size: 20px; }
-
-        .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 16px;
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .order-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 16px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 7px; padding: 18px; margin-bottom: 18px; }
+        .order-header-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
         .order-title h2 { margin: 0 0 8px; font-size: 26px; }
-
-        .badge-priority {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-        }
+        .badge-priority { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .priority-LOW { background: #f1f5f9; color: #475569; }
         .priority-NORMAL { background: #e0f2fe; color: #0369a1; }
         .priority-HIGH { background: #ffedd5; color: #c2410c; }
-        .priority-RUSH { background: #fee2e2; color: #b91c1c; font-weight: bold; }
-        .priority-URGENT { background: #dc2626; color: #ffffff; font-weight: bold; }
+        .priority-RUSH { background: #fee2e2; color: #b91c1c; }
+        .priority-URGENT { background: #dc2626; color: #fff; }
 
-        .status-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+        .status-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        button { border: 0; border-radius: 4px; padding: 9px 13px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        button:hover { opacity: .9; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-secondary { background: #e2e8f0; color: var(--text); text-decoration: none; display: inline-block; text-align: center; }
+        .btn-danger { background: #ffe1e1; color: #b42323; }
+        .btn-invoice { background: #7c3aed; color: #fff; }
+        .btn-small { padding: 6px 9px; font-size: 11px; }
 
-        select {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            font-size: 14px;
-            background: white;
+        input, select, textarea {
+            width: 100%; border: 1px solid #d5dce5; border-radius: 4px; padding: 9px 10px;
+            font-size: 13px; background: #fff; color: var(--text);
         }
-
-        button.btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button.btn-primary:hover { background: #2c3e50; }
-
-        button.btn-secondary {
-            background: #e2e8f0;
-            color: #334155;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button.btn-secondary:hover { background: #cbd5e1; }
-
-        button.btn-invoice {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button.btn-invoice:hover { background: #6d28d9; }
-
-        .grid-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,.12); }
+        input[readonly] { background: #e2e8f0; color: #475569; font-weight: bold; }
+        label { display: block; font-size: 11px; color: #536071; font-weight: bold; margin-bottom: 5px; }
+        .grid-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
         .info-block label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
-        .info-block div { font-size: 15px; font-weight: bold; }
+        .info-value { font-size: 15px; font-weight: bold; }
+        .edit-link { background: none; color: var(--accent); font-size: 11px; padding: 0 4px; }
+        .inline-edit-row { display: flex; gap: 6px; align-items: center; margin-top: 5px; }
+        .inline-edit-row button { font-size: 11px; padding: 6px 8px; }
+        .inline-edit-row .searchable-select { min-width: 240px; }
 
-        .edit-link {
-            background: none;
-            border: none;
-            color: var(--accent);
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 6px;
-            padding: 0;
-        }
-
-        .inline-edit-row {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            margin-top: 4px;
-        }
-
-        .inline-edit-row select, .inline-edit-row input {
-            font-size: 13px;
-            padding: 4px 6px;
-        }
-
-        .inline-edit-row button {
-            font-size: 11px;
-            padding: 4px 8px;
-        }
-
-        /* ---- Item management (DocketManager-style) ---- */
-        .items-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0 0 4px;
-        }
+        .items-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
         .items-toolbar h3 { margin: 0; }
+        .btn-add-item { background: var(--accent); color: #fff; padding: 9px 14px; font-size: 12px; }
 
-        .btn-add-item {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        .btn-add-item:hover { background: #1d4ed8; }
+        /* ITEM FORM CONTAINER */
+        .item-form-card { display: none; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin: 14px 0 18px; }
+        .item-form-header, .type-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .item-form-header { margin-bottom: 12px; }
+        .item-form-header strong { font-size: 14px; }
+        .type-bar { margin-bottom: 12px; font-size: 12px; font-weight: bold; color: var(--muted); text-transform: uppercase; }
 
-        /* Form card emulates the DM modal: single centered column */
-        .item-form-card {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 12px 0 4px;
-            max-width: 760px;
-        }
-        .item-form-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-        .item-form-header strong { font-size: 15px; }
+        .type-chooser { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 18px; }
+        .type-chooser-q { font-weight: bold; font-size: 14px; margin-bottom: 12px; }
+        .type-chooser-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .type-btn { background: #fff; border: 2px solid var(--border); border-radius: 6px; padding: 16px; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+        .type-btn strong { font-size: 14px; color: var(--accent); }
+        .type-btn span { font-size: 12px; color: var(--muted); font-weight: normal; }
+        .type-btn:hover { border-color: var(--accent); opacity: 1; }
 
-        .form-field label {
-            display: block;
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-        .form-field input,
-        .form-field select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .form-row .form-field { flex: 1; }
-        .form-row .form-field.narrow { flex: 0 0 110px; }
-
-        /* DM-style stacked spec sections */
-        .spec-section {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 14px;
-        }
-        .spec-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--text);
-            margin: 0 0 12px;
-        }
-
-        .sides-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .side-col .col-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-
-        .stock-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr;
-            gap: 20px;
-        }
-
-        .size-pair {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-row .form-field { flex: 1 1 140px; min-width: 140px; }
+        .form-row .form-field.narrow { flex: 0 0 120px; min-width: 100px; }
+        .spec-section { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-top: 12px; }
+        .spec-title { font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+        .size-pair { display: flex; align-items: center; gap: 6px; }
         .size-pair input { flex: 1; min-width: 0; }
         .size-pair .x { color: var(--muted); font-weight: bold; }
 
-        .yn-select { width: 70px !important; padding: 7px !important; }
+        /* DYNAMIC WIZARD (Docket Manager 2 colunas) */
+        .cu-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+        .cu-right { position: sticky; top: 12px; }
+        .cu-hidden { display: none !important; }
+        .cu-hint { background: #fff; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 16px; font-size: 12px; color: var(--muted); }
 
-        /* Department items: DM-style inline rows with + button */
-        .di-row {
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-            padding: 8px;
-            border-radius: 6px;
-        }
-        .di-row:nth-child(odd) { background: #f8fafc; }
+        .di-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; padding: 8px; border-radius: 6px; }
+        .di-row:nth-child(odd) { background: #f1f5f9; }
         .di-row .form-field { margin-bottom: 0; }
-        .di-dept { flex: 0 0 130px; }
-        .di-desc { flex: 1 1 160px; }
+        .di-task { flex: 1 1 160px; }
+        .di-basis { flex: 0 0 170px; }
         .di-qty { flex: 0 0 80px; }
-        .di-unit { flex: 0 0 110px; }
-        .di-price { flex: 0 0 100px; }
-        .di-remove { flex: 0 0 34px; }
+        .di-rate { flex: 0 0 90px; }
+        .di-total { flex: 0 0 80px; text-align: right; font-weight: bold; font-size: 12px; padding-bottom: 9px; }
+        .di-remove { flex: 0 0 40px; }
 
-        .btn-add-dept-item {
-            background: white;
-            border: 1px solid #cbd5e1;
-            color: var(--accent);
-            font-weight: bold;
-            font-size: 14px;
-            width: 36px;
-            height: 34px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        .btn-add-dept-item:hover { background: #f1f5f9; }
+        .price-calc-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 12px; margin-top: 12px; font-size: 12px; color: #1e293b; }
+        .price-calc-box .calc-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+        .price-calc-box .calc-row.total { border-top: 1px solid #bfdbfe; margin-top: 6px; padding-top: 8px; font-weight: bold; }
+        .up-badge { background: #1e293b; color: #fff; border-radius: 6px; padding: 10px 12px; font-size: 14px; text-align: center; margin-bottom: 8px; }
+        .up-badge b { font-size: 22px; color: #facc15; }
+        .up-badge.zero { background: #991b1b; }
+        .up-badge.zero b { color: #fff; }
+        .cut-card { border: 1px solid var(--border); border-radius: 6px; padding: 10px; background: #fff; }
+        .cut-title { font-weight: bold; font-size: 12px; margin-bottom: 6px; }
+        .cut-info { margin-top: 8px; font-size: 12px; line-height: 1.5; }
 
-        .hint {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 8px;
-        }
+        .searchable-select { position: relative; width: 100%; }
+        .searchable-input { width: 100%; background: #fff; }
+        .searchable-dropdown { display: none; position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: #fff; border: 1px solid var(--border); border-radius: 4px; max-height: 240px; overflow-y: auto; z-index: 60; box-shadow: 0 4px 12px rgba(15,23,42,.08); }
+        .searchable-option { padding: 8px 10px; font-size: 13px; cursor: pointer; }
+        .searchable-option:hover, .searchable-option.active { background: #eff6ff; }
+        .searchable-empty { padding: 8px 10px; font-size: 12px; color: var(--muted); }
+        .searchable-hidden-select { display: none !important; }
 
-        .item-form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .specs-block {
-            margin-top: 4px;
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-
-        .row-btn {
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 11px;
-            padding: 4px 8px;
-            cursor: pointer;
-            margin-right: 4px;
-        }
-        .row-btn:hover { background: #e2e8f0; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; vertical-align: top; }
+        th { background: #f8fafc; color: var(--muted); font-size: 11px; text-transform: uppercase; }
+        td select { min-width: 150px; }
+        .specs-block { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+        .notes-tag { display: inline-block; background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin: 4px 0; }
+        .notes-btn, .row-btn { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; padding: 4px 8px; margin: 2px; }
         .row-btn-danger { color: #b91c1c; border-color: #fca5a5; }
-        .row-btn-danger:hover { background: #fee2e2; }
 
-        .notes-tag {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
+        .totals-section { max-width: 350px; margin-left: auto; margin-top: 20px; }
+        .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+        .totals-row.grand-total { font-size: 18px; font-weight: bold; border-top: 2px solid var(--border); margin-top: 8px; padding-top: 10px; }
+        .message { display: none; padding: 10px 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13px; }
+        .message.success { display: block; background: #ddf8e8; color: #08753e; }
+        .message.error { display: block; background: #ffe4e4; color: #a51f1f; word-break: break-word; }
 
-        .notes-btn {
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 11px;
-            padding: 2px 6px;
-            cursor: pointer;
+        @media (max-width: 1100px) {
+            .cu-layout { grid-template-columns: 1fr; }
+            .cu-right { position: static; }
         }
-        .notes-btn:hover { background: #e2e8f0; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
+        @media (max-width: 700px) {
+            body { display: block; }
+            aside { width: 100%; height: auto; position: relative; }
+            nav { flex-direction: row; flex-wrap: wrap; }
+            main { padding: 12px; }
+            .type-chooser-btns { grid-template-columns: 1fr; }
         }
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            text-align: left;
-            font-size: 14px;
-            vertical-align: top;
-        }
-        th { background: #f8fafc; color: var(--muted); font-size: 12px; text-transform: uppercase; }
-
-        .totals-section {
-            max-width: 350px;
-            margin-left: auto;
-            margin-top: 20px;
-        }
-        .totals-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 14px;
-        }
-        .totals-row.grand-total {
-            font-size: 18px;
-            font-weight: bold;
-            border-top: 2px solid var(--border);
-            margin-top: 8px;
-            padding-top: 10px;
-        }
-
         @media print {
             aside, .page-header, .back-link, .status-actions, .edit-link, .notes-btn,
-            .items-toolbar, .item-form-card, .row-btn {
-                display: none !important;
-            }
-            #itemsTable th:last-child,
-            #itemsTable td:last-child {
-                display: none;
-            }
+            .items-toolbar, .item-form-card, .row-btn { display: none !important; }
+            #itemsTable th:last-child, #itemsTable td:last-child { display: none; }
+            main { padding: 0; }
+            .tax-off { display: none !important; }
         }
     </style>
 </head>
 <body>
-
 <aside>
     <a href="dashboard.html" class="brand-logo-link" title="Go to Home">
-        <img
-            src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png"
-            alt="Urban Print Shop - Home"
-            class="brand-logo"
-        >
+        <img src="https://urbanprintshop.ca/wp-content/uploads/2025/06/Design-sem-nome-2.png" alt="Urban Print Shop - Home" class="brand-logo">
     </a>
     <nav>
         <a href="dashboard.html">Home / Dashboard</a>
@@ -462,14 +187,14 @@
 </aside>
 
 <main>
-    <div class="page-header">
-        <h1>Urban Print Shop — Order Details</h1>
-    </div>
+    <h1>Urban Print Shop — Order Details</h1>
+    <div class="subtitle">Manage order items, production details, status and due date.</div>
+    <div id="message" class="message"></div>
 
     <div class="container">
         <a href="orders.html" class="back-link">← Back to Orders</a>
 
-        <div class="card" id="orderCard">
+        <div class="card">
             <div class="order-header-row">
                 <div class="order-title">
                     <h2 id="orderNumber">Loading...</h2>
@@ -499,30 +224,24 @@
             <div class="grid-info">
                 <div class="info-block">
                     <label>Customer <button class="edit-link" onclick="toggleEditCustomer()">Change</button></label>
-                    <div id="customerName">-</div>
+                    <div class="info-value" id="customerName">-</div>
                     <div id="customerEditRow" class="inline-edit-row" style="display:none;">
                         <select id="customerSelect"></select>
                         <button class="btn-primary" onclick="saveCustomerChange()">Save</button>
                         <button class="btn-secondary" onclick="toggleEditCustomer()">Cancel</button>
                     </div>
                 </div>
-                <div class="info-block">
-                    <label>Order Date</label>
-                    <div id="orderDate">-</div>
-                </div>
+                <div class="info-block"><label>Order Date</label><div class="info-value" id="orderDate">-</div></div>
                 <div class="info-block">
                     <label>Due Date <button class="edit-link" onclick="toggleEditDueDate()">Edit</button></label>
-                    <div id="dueDate">Not defined</div>
+                    <div class="info-value" id="dueDate">Not defined</div>
                     <div id="dueDateEditRow" class="inline-edit-row" style="display:none;">
                         <input type="date" id="dueDateInput">
                         <button class="btn-primary" onclick="saveDueDate()">Save</button>
                         <button class="btn-secondary" onclick="toggleEditDueDate()">Cancel</button>
                     </div>
                 </div>
-                <div class="info-block">
-                    <label>Source Quote</label>
-                    <div id="sourceQuote">-</div>
-                </div>
+                <div class="info-block"><label>Source Quote</label><div class="info-value" id="sourceQuote">-</div></div>
             </div>
         </div>
 
@@ -532,1137 +251,1829 @@
                 <button type="button" class="btn-add-item" onclick="openAddItemForm()">+ Add Item</button>
             </div>
 
-            <!-- Quick Add Item — DocketManager style (stacked sections) -->
-            <div class="item-form-card" id="itemFormCard" style="display:none;">
+            <div class="item-form-card" id="itemFormCard">
                 <div class="item-form-header">
                     <strong id="itemFormTitle">Add Item</strong>
-                    <button type="button" class="notes-btn" onclick="closeItemForm()">✕ Close</button>
+                    <button type="button" class="btn-secondary btn-small" onclick="closeItemForm()">✕ Close</button>
                 </div>
-                <form id="itemForm" onsubmit="event.preventDefault(); saveItem();">
 
+                <div id="itemTypeChooser" class="type-chooser">
+                    <div class="type-chooser-q">What do you want to add?</div>
+                    <div class="type-chooser-btns">
+                        <button type="button" class="type-btn" onclick="chooseItemType('CATALOG')">
+                            <strong>Registered product</strong>
+                            <span>Pick from the catalog, select its size and quantity price.</span>
+                        </button>
+                        <button type="button" class="type-btn" onclick="chooseItemType('CUSTOM')">
+                            <strong>Custom product (guided)</strong>
+                            <span>Step-by-step: pick group, printer, media, size with cut plan and finishing.</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CATALOG PANEL -->
+                <div id="catalogPanel" style="display:none;">
+                    <div class="type-bar">
+                        <span>Registered product</span>
+                        <button type="button" class="btn-secondary btn-small" onclick="showItemTypeChooser()">← Change type</button>
+                    </div>
                     <div class="form-row">
-                        <div class="form-field">
+                        <div class="form-field" id="itemProductField">
                             <label for="itemProduct">Product</label>
-                            <select id="itemProduct" onchange="onItemProductChange()">
-                                <option value="">Loading products...</option>
-                            </select>
+                            <select id="itemProduct" onchange="onItemProductChange()"></select>
+                        </div>
+                        <div class="form-field" id="itemSizeField" style="display:none;">
+                            <label for="itemSize">Size / Variation</label>
+                            <select id="itemSize" onchange="onItemSizeChange()"></select>
                         </div>
                         <div class="form-field">
                             <label for="itemDescription">Description *</label>
-                            <input type="text" id="itemDescription" placeholder="e.g. Business Card - 4/4">
+                            <input id="itemDescription" placeholder="Item description">
+                        </div>
+                        <div class="form-field">
+                            <label for="itemQuantity">Quantity *</label>
+                            <input type="number" id="itemQuantity" min="1" step="1" oninput="onCatalogQtyChange()">
+                        </div>
+                        <div class="form-field">
+                            <label for="itemUnitPrice">Unit Price (CAD) *</label>
+                            <input type="number" id="itemUnitPrice" min="0" step="0.0001" oninput="onCatalogManualPriceInput()">
                         </div>
                     </div>
+                    <div id="catalogPriceScales" class="hint"></div>
 
-                    <div class="spec-section">
-                        <div class="spec-title">Number of Sides</div>
+                    <!-- MEDIA & SIDES (from product registration) -->
+                    <div id="catalogSpecsBar" class="spec-section" style="display:none;">
+                        <div class="spec-title">Media &amp; sides</div>
                         <div class="form-row" style="margin-bottom:0;">
+                            <div class="form-field">
+                                <label for="catMedia">Media / Stock</label>
+                                <input id="catMedia" type="text" placeholder="Media registered on the product">
+                            </div>
                             <div class="form-field narrow">
-                                <select id="itemSides" onchange="onSidesChange()">
-                                    <option value="SINGLE_SIDED">1</option>
-                                    <option value="DOUBLE_SIDED">2</option>
+                                <label for="catDouble">Print sides</label>
+                                <select id="catDouble" onchange="catMarkupTouched=true;recalcCatalog()">
+                                    <option value="SINGLE">Single (4/0)</option>
+                                    <option value="DOUBLE">Double (4/4 — 2x print)</option>
                                 </select>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="spec-section">
-                        <div class="spec-title">Press</div>
-                        <div class="form-row" style="margin-bottom:0;">
-                            <div class="form-field">
-                                <label for="itemDepartment">Group</label>
-                                <select id="itemDepartment" onchange="onDepartmentChange()">
-                                    <option value="">— Select group —</option>
-                                </select>
-                            </div>
-                            <div class="form-field">
-                                <label for="itemPress">Press</label>
-                                <select id="itemPress">
-                                    <option value="">— Select press —</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="spec-section">
-                        <div class="sides-grid">
-                            <div class="side-col">
-                                <div class="col-title">Single Sided — Front</div>
-                                <div class="form-row">
-                                    <div class="form-field">
-                                        <label>Black Sheets</label>
-                                        <input type="number" id="fsBlack" min="0" step="1" value="0">
-                                    </div>
-                                    <div class="form-field">
-                                        <label>Color Sheets</label>
-                                        <input type="number" id="fsColor" min="0" step="1" value="0">
-                                    </div>
-                                </div>
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <div class="form-field">
-                                        <label>Mixed Sheets</label>
-                                        <input type="number" id="fsMixed" min="0" step="1" value="0">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="side-col">
-                                <div class="col-title">Double Sided — Back</div>
-                                <div class="form-row">
-                                    <div class="form-field">
-                                        <label>Black Sheets</label>
-                                        <input type="number" id="bsBlack" min="0" step="1" value="0">
-                                    </div>
-                                    <div class="form-field">
-                                        <label>Color Sheets</label>
-                                        <input type="number" id="bsColor" min="0" step="1" value="0">
-                                    </div>
-                                </div>
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <div class="form-field">
-                                        <label>Mixed Sheets</label>
-                                        <input type="number" id="bsMixed" min="0" step="1" value="0">
-                                    </div>
+                            <div class="form-field" id="catManualSizeField" style="display:none;">
+                                <label>Size (inches) *</label>
+                                <div class="size-pair">
+                                    <input type="number" id="catW" step="0.01" min="0" placeholder="W" oninput="onCatSizeInput()">
+                                    <span class="x">×</span>
+                                    <input type="number" id="catH" step="0.01" min="0" placeholder="H" oninput="onCatSizeInput()">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="spec-section">
-                        <div class="spec-title">Stock</div>
-                        <div class="stock-grid">
-                            <div>
-                                <div class="form-row" style="flex-direction:column;">
-                                    <div class="form-field">
-                                        <label for="itemStock">Stock</label>
-                                        <input type="text" id="itemStock" list="stockSuggestions" placeholder="e.g. 14pt Coated Cover">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-field">
-                                        <label for="selPriceByCarton">Price By Carton</label>
-                                        <select id="selPriceByCarton" class="yn-select">
-                                            <option>No</option>
-                                            <option>Yes</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="selBlankStock">Blank Stock</label>
-                                        <select id="selBlankStock" class="yn-select">
-                                            <option>No</option>
-                                            <option>Yes</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="form-row" style="flex-direction:column;">
-                                    <div class="form-field">
-                                        <label>Run Size</label>
-                                        <div class="size-pair">
-                                            <input type="number" id="runW" step="0.01" min="0" placeholder="W">
-                                            <span class="x">×</span>
-                                            <input type="number" id="runH" step="0.01" min="0" placeholder="H">
-                                        </div>
-                                    </div>
-                                    <div class="form-field">
-                                        <label>Flat Size</label>
-                                        <div class="size-pair">
-                                            <input type="number" id="flatW" step="0.01" min="0" placeholder="W">
-                                            <span class="x">×</span>
-                                            <input type="number" id="flatH" step="0.01" min="0" placeholder="H">
-                                        </div>
-                                    </div>
-                                    <div class="form-field" style="margin-bottom:0;">
-                                        <label>Finished Size</label>
-                                        <div class="size-pair">
-                                            <input type="number" id="finW" step="0.01" min="0" placeholder="W">
-                                            <span class="x">×</span>
-                                            <input type="number" id="finH" step="0.01" min="0" placeholder="H">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="form-row">
-                                    <div class="form-field">
-                                        <label for="selOutsourced">Outsourced</label>
-                                        <select id="selOutsourced" class="yn-select">
-                                            <option>No</option>
-                                            <option>Yes</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="selWithBleed">With Bleed</label>
-                                        <select id="selWithBleed" class="yn-select">
-                                            <option>No</option>
-                                            <option>Yes</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <div class="form-field">
-                                        <label for="itemPages">Pages</label>
-                                        <input type="number" id="itemPages" min="1" step="1" placeholder="Pages">
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- PRICING (custom engine, same as custom item) -->
+                    <div id="catalogPricingSection" style="display:none;">
+                        <div class="spec-section">
+                            <div class="spec-title">Finishing &amp; extra tasks</div>
+                            <div id="catFinishingRows"></div>
+                            <button type="button" class="btn-secondary btn-small" onclick="addCatalogFinishingRow()" style="margin-top:8px;">+ Add finishing</button>
                         </div>
-                        <div class="form-row" style="margin: 12px 0 0;">
-                            <div class="form-field">
-                                <label for="itemExtraSpecs">Additional Print Specs</label>
-                                <input type="text" id="itemExtraSpecs" placeholder="e.g. matte laminate, rounded corners 1/4&quot;">
-                            </div>
+
+                        <div id="catCutCard" class="card cut-card" style="display:none;">
+                            <div id="catCutBadge" class="up-badge">Up to <b>0</b> in a sheet</div>
+                            <div class="cut-title" id="catCutSheetTitle">Cutting plan</div>
+                            <div id="catCutSvgBox"></div>
+                            <div class="cut-info" id="catCutStats"></div>
+                        </div>
+
+                        <div id="catCostBox" class="price-calc-box">
+                            <div class="calc-row"><span>Print cost</span><span id="catCostPrint">$0.00</span></div>
+                            <div class="calc-row"><span>Media cost</span><span id="catCostStock">$0.00</span></div>
+                            <div class="calc-row"><span>Cut cost</span><span id="catCostCut">$0.00</span></div>
+                            <div class="calc-row"><span>Finishing cost</span><span id="catCostFinishing">$0.00</span></div>
+                            <div class="calc-row total"><span>Total cost (locked)</span><strong id="catCostTotal">$0.00</strong></div>
+                            <div class="calc-row"><span>Markup %</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="catMarkup" min="0" step="1" value="100" style="width:80px;padding:3px 6px;text-align:right;" oninput="catMarkupTouched=true;recalcCatalog()"><span id="catCostMarkup">100%</span></span></div>
+                            <div class="calc-row total"><span>Line total</span><strong id="catCostLineTotal">$0.00</strong></div>
+                            <div class="calc-row"><span>Unit price</span><strong id="catCostUnitPrice">$0.0000</strong></div>
+                            <div class="calc-row" style="font-size:11px;color:#64748b;"><span>Price source</span><span id="catPriceSource">—</span></div>
                         </div>
                     </div>
 
-                    <div class="spec-section">
-                        <div class="spec-title">Department Items</div>
-                        <div id="deptItemsRows"></div>
-                        <button type="button" class="btn-add-dept-item" onclick="addDeptItemRow()" title="Add department item">+</button>
-                    </div>
-
-                    <div class="spec-section">
-                        <div class="spec-title">Quantities</div>
-                        <div class="form-row" style="margin-bottom:0;">
-                            <div class="form-field">
-                                <label for="itemQuantity">Quantity *</label>
-                                <input type="number" id="itemQuantity" min="1" step="1" onchange="onItemFieldChange()">
-                            </div>
-                            <div class="form-field">
-                                <label for="itemUnitPrice">Price (CAD) *</label>
-                                <input type="number" id="itemUnitPrice" min="0" step="0.01">
-                            </div>
-                        </div>
-                        <div class="hint">Auto-pricing from press cost per sq/ft will be connected in the Inventory &amp; Costs module.</div>
-                    </div>
-
-                    <datalist id="stockSuggestions"></datalist>
-                    <datalist id="taskSuggestions"></datalist>
-
-                    <div class="item-form-actions">
+                    <div class="item-form-actions" style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
                         <button type="button" class="btn-secondary" onclick="closeItemForm()">Cancel</button>
-                        <button type="button" class="btn-primary" onclick="saveItem()">Save</button>
+                        <button type="button" class="btn-primary" onclick="saveCatalogItem()">Save Item</button>
                     </div>
-                </form>
+                </div>
+
+                <!-- CUSTOM ITEM GUIDED (DOCKET MANAGER STYLE) -->
+                <div id="customItemCard" style="display:none;">
+                    <div class="type-bar">
+                        <span>Custom Item — Guided Specification &amp; Cut Plan</span>
+                        <button type="button" class="btn-secondary btn-small" onclick="showItemTypeChooser()">← Change type</button>
+                    </div>
+
+                    <div class="cu-layout">
+                        <!-- COLUNA ESQUERDA: FORMULÁRIO PASSO A PASSO -->
+                        <div class="cu-left">
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="cuDescription">Description *</label>
+                                    <input id="cuDescription" placeholder="e.g. Coroplast Signs 48x48">
+                                </div>
+                            </div>
+
+                            <!-- 1. Group & Printer -->
+                            <div class="spec-section">
+                                <div class="spec-title">1. Group and printer</div>
+                                <div class="form-row" style="margin-bottom:0;">
+                                    <div class="form-field">
+                                        <label for="cuGroup">Group</label>
+                                        <select id="cuGroup" onchange="onCuGroupChange()">
+                                            <option value="">— Select group —</option>
+                                            <option value="SMALL">Small Format</option>
+                                            <option value="WIDE">Wide Format</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="cuPrinter">Printer</label>
+                                        <select id="cuPrinter" onchange="onCuPrinterChange()">
+                                            <option value="">— Select group first —</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Colors & Sides -->
+                            <div class="spec-section cu-hidden" id="cuSecSides">
+                                <div class="spec-title">2. Inks and sides</div>
+                                <div class="form-row" style="margin-bottom:0;">
+                                    <div class="form-field">
+                                        <label for="cuColorMode">Inks</label>
+                                        <select id="cuColorMode" onchange="onCuColorChange()">
+                                            <option value="COLOR">Full Color</option>
+                                            <option value="BW">B&amp;W (Black only)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="cuSides">Sides</label>
+                                        <select id="cuSides" onchange="onCuColorChange()">
+                                            <option value="SINGLE">Single Sided (1 side)</option>
+                                            <option value="DOUBLE">Double Sided (2 sides)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Stock -->
+                            <div class="spec-section cu-hidden" id="cuSecStock">
+                                <div class="spec-title">3. Stock / Media</div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="cuStock">Stock / Substrate</label>
+                                        <select id="cuStock" onchange="onCuStockChange()">
+                                            <option value="">— Select stock —</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row" id="cuSheetRow" style="margin-bottom:0;">
+                                    <div class="form-field">
+                                        <label for="cuSheetSelect">Sheet / Board size</label>
+                                        <select id="cuSheetSelect" onchange="onCuSheetSelectChange()">
+                                            <option value="">— Select size —</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. Sizes -->
+                            <div class="spec-section cu-hidden" id="cuSecSizes">
+                                <div class="spec-title">4. Sizes (inches)</div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>Run Size (sheet / board)</label>
+                                        <div class="size-pair">
+                                            <input type="number" id="cuRunW" step="0.01" min="0" placeholder="W" oninput="onCuSizeChange()">
+                                            <span class="x">×</span>
+                                            <input type="number" id="cuRunH" step="0.01" min="0" placeholder="H" oninput="onCuSizeChange()">
+                                        </div>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Flat Size (piece to cut) *</label>
+                                        <div class="size-pair">
+                                            <input type="number" id="cuFlatW" step="0.01" min="0" placeholder="W" oninput="onCuSizeChange()">
+                                            <span class="x">×</span>
+                                            <input type="number" id="cuFlatH" step="0.01" min="0" placeholder="H" oninput="onCuSizeChange()">
+                                        </div>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Final Size</label>
+                                        <div class="size-pair">
+                                            <input type="number" id="cuFinW" step="0.01" min="0" placeholder="W" oninput="recalcCustom()">
+                                            <span class="x">×</span>
+                                            <input type="number" id="cuFinH" step="0.01" min="0" placeholder="H" oninput="recalcCustom()">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="margin-bottom:0;">
+                                    <div class="form-field">
+                                        <label for="cuBleed">Bleed (each side, in)</label>
+                                        <input type="number" id="cuBleed" step="0.005" min="0" value="0.125" oninput="onCuSizeChange()">
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="cuGap">Gap between pieces (in)</label>
+                                        <input type="number" id="cuGap" step="0.005" min="0" value="0.25" oninput="onCuSizeChange()">
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="cuMargin">Sheet margin (in)</label>
+                                        <input type="number" id="cuMargin" step="0.005" min="0" value="0.25" oninput="onCuSizeChange()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5. Finishing -->
+                            <div class="spec-section cu-hidden" id="cuSecFinishing">
+                                <div class="spec-title">5. Finishing &amp; extra tasks</div>
+                                <div id="cuFinishingRows"></div>
+                                <button type="button" class="btn-secondary btn-small" onclick="addCuFinishingRow()" style="margin-top:8px;">+ Add finishing</button>
+                            </div>
+
+                            <!-- 6. Pricing -->
+                            <div class="spec-section cu-hidden" id="cuSecPricing">
+                                <div class="spec-title">6. Quantity &amp; Pricing</div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="cuQty">Quantity *</label>
+                                        <input type="number" id="cuQty" min="1" step="1" value="1" oninput="onCuQtyInput()">
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="cuMarkup">Markup %</label>
+                                        <input type="number" id="cuMarkup" min="0" step="1" value="100" oninput="recalcCustom()">
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="cuPrice">Unit Price (CAD) *</label>
+                                        <input type="number" id="cuPrice" min="0" step="0.0001" oninput="onCuManualPriceInput()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <datalist id="cuFinishingPresets"></datalist>
+
+                            <div class="item-form-actions" style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+                                <button type="button" class="btn-secondary" onclick="closeItemForm()">Cancel</button>
+                                <button type="button" class="btn-primary" onclick="saveCustomItem()">Save Custom Item</button>
+                            </div>
+                        </div>
+
+                        <!-- COLUNA DIREITA: PLANO DE CORTE + RESUMO DE CUSTOS -->
+                        <div class="cu-right">
+                            <div id="cuCutPlanCard" class="card cut-card cu-hidden">
+                                <div id="cuCutBadge" class="up-badge">Up to <b>0</b> in a sheet</div>
+                                <div class="cut-title" id="cuCutSheetTitle">Cutting plan</div>
+                                <div id="cuCutSvgBox"></div>
+                                <div class="cut-info" id="cuCutStats"></div>
+                            </div>
+
+                            <div id="cuCostBox" class="price-calc-box cu-hidden">
+                                <div class="calc-row"><span>Print cost</span><span id="cuCostPrint">$0.00</span></div>
+                                <div class="calc-row"><span>Stock cost</span><span id="cuCostStock">$0.00</span></div>
+                                <div class="calc-row"><span>Finishing cost</span><span id="cuCostFinishing">$0.00</span></div>
+                                <div class="calc-row total"><span>Total cost (locked)</span><strong id="cuCostTotal">$0.00</strong></div>
+                                <div class="calc-row"><span>Markup</span><span id="cuCostMarkup">100%</span></div>
+                                <div class="calc-row total"><span>Line total</span><strong id="cuCostLineTotal">$0.00</strong></div>
+                                <div class="calc-row"><span>Unit price</span><strong id="cuCostUnitPrice">$0.0000</strong></div>
+                            </div>
+
+                            <div id="cuCutHint" class="cu-hint">
+                                Fill in group, printer, stock and sizes to see the cut plan and automatic price preview.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <table id="itemsTable">
-                <thead>
+            <!-- TABELA DE ITENS DO PEDIDO -->
+            <div class="table-wrapper">
+                <table id="itemsTable">
+                    <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Description</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Production Status</th>
-                        <th>Total</th>
-                        <th>Actions</th>
+                        <th>Product</th><th>Description</th><th>Quantity</th><th>Unit Price</th>
+                        <th>Production Status</th><th>Total</th><th>Actions</th>
                     </tr>
-                </thead>
-                <tbody id="itemsBody"></tbody>
-            </table>
+                    </thead>
+                    <tbody id="itemsBody"></tbody>
+                </table>
+            </div>
 
             <div class="totals-section">
-                <div class="totals-row">
-                    <span>Subtotal</span>
-                    <span id="subtotal">$0.00</span>
-                </div>
-                <div class="totals-row">
-                    <span>GST (<span id="gstRate">5</span>%)</span>
+                <div class="totals-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+                <div class="totals-row" id="gstRow">
+                    <span style="display: flex; align-items: center; gap: 7px;">
+                        <input type="checkbox" id="gstCheckbox" style="width: 16px; height: 16px; padding: 0; margin: 0; border: none; cursor: pointer; accent-color: #2563eb;" onchange="saveTaxFlags()">
+                        <span id="gstLabel">GST</span>
+                    </span>
                     <span id="gstAmount">$0.00</span>
                 </div>
-                <div class="totals-row">
-                    <span>PST (<span id="pstRate">7</span>%)</span>
+                <div class="totals-row" id="pstRow">
+                    <span style="display: flex; align-items: center; gap: 7px;">
+                        <input type="checkbox" id="pstCheckbox" style="width: 16px; height: 16px; padding: 0; margin: 0; border: none; cursor: pointer; accent-color: #2563eb;" onchange="saveTaxFlags()">
+                        <span id="pstLabel">PST</span>
+                    </span>
                     <span id="pstAmount">$0.00</span>
                 </div>
-                <div class="totals-row grand-total">
-                    <span>Total</span>
-                    <span id="totalAmount">$0.00</span>
-                </div>
+                <div class="totals-row grand-total"><span>Total</span><span id="totalAmount">$0.00</span></div>
             </div>
         </div>
 
         <div class="card">
-            <h3 style="margin: 0 0 8px;">Notes</h3>
-            <textarea id="orderNotesInput" style="width: 100%; height: 80px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; resize: vertical;" placeholder="Add notes about this order..."></textarea>
-            <div style="margin-top: 8px; text-align: right;">
-                <button class="btn-primary" onclick="saveOrderNotes()">Save Notes</button>
-            </div>
+            <h3 style="margin:0 0 8px;">Notes</h3>
+            <textarea id="orderNotesInput" style="height:80px;resize:vertical;" placeholder="Add notes about this order..."></textarea>
+            <div style="margin-top:8px;text-align:right;"><button class="btn-primary" onclick="saveOrderNotes()">Save Notes</button></div>
         </div>
     </div>
 </main>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const orderId = urlParams.get('id');
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("id");
     const PRODUCTS_API = "/api/products";
+    const CUT_PLAN_API = "/api/cut-plan";
+    const SPECS_FORMAT = "urban-print-item-specs-v1";
+
     let currentOrder = null;
     let products = [];
     let editingItemId = null;
+    let itemMode = null;
 
-    // =====================================================================
-    // ITEM OPTIONS — CONFIGURAÇÃO CENTRAL (edite aqui)
-    // =====================================================================
-    const ITEM_OPTIONS = {
-        departments: [
-            "Digital",
-            "Wide Format",
-            "Bindery",
-            "Finishing",
-            "Apparel",
-            "Other"
-        ],
-        presses: [
-            { name: "HP Indigo 15000", department: "Digital", type: "SF" },
-            { name: "Konica Minolta AccurioPress", department: "Digital", type: "SF" },
-            { name: "Ricoh Pro Series", department: "Digital", type: "SF" },
-            { name: "Roland VG Series", department: "Wide Format", type: "WF" },
-            { name: "Mimaki UV Flatbed", department: "Wide Format", type: "WF" },
-            { name: "Epson DTG", department: "Apparel", type: "SF" }
-        ],
-        stocks: [
-            "14pt Coated Cover (C2S)",
-            "16pt Coated Cover (C2S)",
-            "100lb Gloss Text",
-            "100lb Gloss Cover",
-            "Bright White Bond 28lb",
-            "13oz Vinyl Banner",
-            "Adhesive Vinyl",
-            "Coroplast 4mm",
-            "Foam Board 3mm",
-            "Aluminum Composite (ACM)",
-            "Apparel - Cotton Tee",
-            "Custom Stock"
-        ],
-        commonTasks: [
-            "File Prep",
-            "Cut",
-            "Trim",
-            "Rounded Corners",
-            "Crease",
-            "Score",
-            "Perforation",
-            "Fold - Bi-fold",
-            "Fold - Tri-fold",
-            "Fold - Z-fold",
-            "Fold - Half-fold",
-            "Fold - Gate-fold",
-            "Lamination - Gloss",
-            "Lamination - Matte",
-            "Lamination - Soft Touch",
-            "Spot UV",
-            "Foil Stamping",
-            "Embossing",
-            "Metallic Ink",
-            "Binding - Saddle Stitch",
-            "Binding - Spiral Coil",
-            "Binding - Wire-O",
-            "Binding - Perfect",
-            "Drilling (3-hole)",
-            "Padding",
-            "Numbering",
-            "Shrink Wrap",
-            "Packaging",
-            "Kit Assembly",
-            "Grommets",
-            "Hem",
-            "Pole Pockets",
-            "Wind Slits",
-            "Mounting",
-            "Weeding",
-            "Delivery",
-            "Installation",
-            "Other"
-        ],
-        units: [
-            "Each",
-            "Set",
-            "Hour",
-            "Sheet",
-            "Square Foot",
-            "Linear Foot",
-            "Carton"
-        ]
+    const CU_CONFIG = {
+        groups: {
+            SMALL: {
+                label: "Small Format",
+                printers: [{ id: "CANON_700", name: "Canon 700" }],
+                sheetSizes: [[11, 17], [12, 18], [13, 19]],
+                stocks: [
+                    { name: "Titan Dull", costPerSheet: 0 },
+                    { name: "Cougar Gloss", costPerSheet: 0 },
+                    { name: "Cougar Text", costPerSheet: 0 },
+                    { name: "Paper Sticker", costPerSheet: 0.50, onlySizes: [[11, 17]] }
+                ],
+                click: { BW: 0.009, COLOR: 0.045 },
+                defaultBleed: 0.125,
+                defaultGap: 0.25,
+                defaultMargin: 0.25
+            },
+            WIDE: {
+                label: "Wide Format",
+                printers: [
+                    { id: "MIMAKI", name: "Mimaki", printCostPerSqft: 0 },
+                    { id: "MTUTECH_1314", name: "Flatbed MTUTech 1314", printCostPerSqft: 0 }
+                ],
+                stocks: [
+                    { name: "Coroplast", costPerSqft: 0, sizes: [[48, 96], [60, 120]] },
+                    { name: "Vinyl Whiteback Polar", costPerSqft: 0.235, sizes: [] },
+                    { name: "Vinyl Protech Greyback", costPerSqft: 0.275, sizes: [] }
+                ],
+                defaultBleed: 0,
+                defaultGap: 0,
+                defaultMargin: 0
+            }
+        },
+        defaultMarkup: 100,
+        finishingPresets: ["Cutting", "Labour", "Lamination", "Grommets", "Other"]
     };
 
-    const SPECS_FORMAT = "urban-print-item-specs-v1";
+    const CU_BASES = {
+        MANUAL: { label: "Manual qty", unit: "Each" },
+        PIECE: { label: "Per piece", unit: "Piece" },
+        SHEET: { label: "Per sheet", unit: "Sheet" },
+        SQFT: { label: "Per sq ft (pieces)", unit: "Square Foot" },
+        SQFT_X2: { label: "Per sq ft (pieces) × 2 sides", unit: "Square Foot" },
+        SQFT_SHEET: { label: "Per sq ft (sheets)", unit: "Square Foot" }
+    };
+
+    let cuPlan = null;
+    let cuPlanPending = false;
+    let cuPlanTimer = null;
+    let cuPlanSeq = 0;
+    let cuCostBreakdown = { print: 0, stock: 0, finishing: 0, total: 0, lineTotal: 0, unitPrice: 0 };
+
+    // === Catalog custom-pricing state ===
+    let catPlan = null;
+    let catPlanSeq = 0;
+    let catPlanTimer = null;
+    let catLastScaleKey = null;
+    let catMarkupTouched = false;
+    let catCostBreakdown = { print: 0, stock: 0, cut: 0, finishing: 0, total: 0, lineTotal: 0, unitPrice: 0, markup: 100, source: "" };
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        initCustomItemPresets();
+        await Promise.all([loadProducts(), loadOrderDetails()]);
+    });
+
+    async function loadProducts() {
+        const select = document.getElementById("itemProduct");
+        try {
+            const res = await fetch(PRODUCTS_API);
+            if (!res.ok) throw new Error("Could not load products.");
+            products = await res.json();
+            select.innerHTML = '<option value="">— Select a product (type to search) —</option>' +
+                products.map(p => `<option value="${p.id}">${escapeHtml(p.productName || `Product #${p.id}`)}</option>`).join("");
+        } catch (err) {
+            console.error(err);
+            select.innerHTML = '<option value="">— No products loaded —</option>';
+        }
+        refreshSearchableSelect(select);
+    }
 
     async function loadOrderDetails() {
         if (!orderId) {
             alert("No order specified.");
-            window.location.href = 'orders.html';
+            window.location.href = "orders.html";
             return;
         }
 
         try {
             const res = await fetch(`/api/orders/${orderId}`);
-            if (!res.ok) throw new Error("Order not found");
-            const order = await res.json();
-            currentOrder = order;
+            if (!res.ok) throw new Error("Order not found.");
+            currentOrder = await res.json();
 
-            document.getElementById('orderNumber').textContent = order.orderNumber;
-            document.getElementById('orderStatusSelect').value = order.status;
+            document.getElementById("orderNumber").textContent = currentOrder.orderNumber || `Order #${orderId}`;
+            document.getElementById("orderStatusSelect").value = currentOrder.status || "PENDING_PAYMENT";
 
-            const priorityBadge = document.getElementById('orderPriority');
-            priorityBadge.textContent = order.priority || 'NORMAL';
-            priorityBadge.className = `badge-priority priority-${order.priority || 'NORMAL'}`;
+            const priority = currentOrder.priority || "NORMAL";
+            const badge = document.getElementById("orderPriority");
+            badge.textContent = priority;
+            badge.className = `badge-priority priority-${priority}`;
 
-            const customer = order.customer || {};
-            document.getElementById('customerName').textContent = customer.customerName || customer.name || customer.contactName || 'N/A';
-            document.getElementById('orderDate').textContent = order.orderDate || '-';
-            document.getElementById('dueDate').textContent = order.dueDate || 'Not defined';
-            document.getElementById('sourceQuote').textContent = order.quote ? order.quote.quoteNumber : 'Direct Order';
-            document.getElementById('orderNotesInput').value = order.notes || '';
+            const customer = currentOrder.customer || {};
+            document.getElementById("customerName").textContent = customer.customerName || customer.name || customer.contactName || "N/A";
+            document.getElementById("orderDate").textContent = currentOrder.orderDate || "-";
+            document.getElementById("dueDate").textContent = currentOrder.dueDate || "Not defined";
+            document.getElementById("sourceQuote").textContent = currentOrder.quote ? (currentOrder.quote.quoteNumber || "Quote") : "Direct Order";
+            document.getElementById("orderNotesInput").value = currentOrder.notes || "";
 
-            // Totals
-            document.getElementById('subtotal').textContent = `$${(order.subtotal || 0).toFixed(2)}`;
-            document.getElementById('gstRate').textContent = order.gstRate || 5;
-            document.getElementById('gstAmount').textContent = `$${(order.gstAmount || 0).toFixed(2)}`;
-            document.getElementById('pstRate').textContent = order.pstRate || 7;
-            document.getElementById('pstAmount').textContent = `$${(order.pstAmount || 0).toFixed(2)}`;
-            document.getElementById('totalAmount').textContent = `$${(order.totalAmount || 0).toFixed(2)}`;
+            document.getElementById("subtotal").textContent = money(currentOrder.subtotal);
+            document.getElementById("gstAmount").textContent = money(currentOrder.gstAmount);
+            document.getElementById("pstAmount").textContent = money(currentOrder.pstAmount);
+            document.getElementById("totalAmount").textContent = money(currentOrder.totalAmount);
+            renderTaxChecks();
 
-            // Items
-            const tbody = document.getElementById('itemsBody');
-            tbody.innerHTML = '';
-
-            if (!order.items || order.items.length === 0) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="7" style="text-align:center; color: var(--muted); padding: 24px;">No items yet. Click <strong>+ Add Item</strong> to add the first one.</td>`;
-                tbody.appendChild(tr);
-                return;
-            }
-
-            order.items.forEach(item => {
-                const tr = document.createElement('tr');
-                const pStatus = item.productionStatus || 'PENDING_FILE';
-                const hasNotes = item.productionNotes && item.productionNotes.trim().length > 0;
-                const specsHtml = buildSpecsDisplay(item.printSpecsSummary);
-
-                tr.innerHTML = `
-                    <td><strong>${escapeHtml(item.product?.productName || 'Custom Item')}</strong></td>
-                    <td>
-                        ${escapeHtml(item.itemDescription || '')}
-                        ${specsHtml}
-                        <div style="margin-top: 6px;">
-                            ${hasNotes ? `<div class="notes-tag"><strong>Notes:</strong> ${escapeHtml(item.productionNotes)}</div>` : ''}
-                            <button type="button" class="notes-btn" onclick="promptItemNotes(${item.id}, '${escapeForJs(item.productionNotes || '')}')">
-                                ${hasNotes ? 'Edit Notes' : '+ Add Note'}
-                            </button>
-                        </div>
-                    </td>
-                    <td>${item.quantity}</td>
-                    <td>$${(item.unitPrice || 0).toFixed(2)}</td>
-                    <td>
-                        <select onchange="updateItemProductionStatus(${item.id}, this.value)">
-                            <option value="PENDING_PAYMENT" ${pStatus === 'PENDING_PAYMENT' ? 'selected' : ''}>Pending Payment</option>
-                            <option value="PENDING_FILE" ${pStatus === 'PENDING_FILE' ? 'selected' : ''}>Pending File</option>
-                            <option value="GRAPHICS" ${pStatus === 'GRAPHICS' ? 'selected' : ''}>Graphics</option>
-                            <option value="SF_QUEUE" ${pStatus === 'SF_QUEUE' ? 'selected' : ''}>Small Format Queue</option>
-                            <option value="SF_PRINTING" ${pStatus === 'SF_PRINTING' ? 'selected' : ''}>SF Printing</option>
-                            <option value="WF_QUEUE" ${pStatus === 'WF_QUEUE' ? 'selected' : ''}>Wide Format Queue</option>
-                            <option value="WF_PRINTING" ${pStatus === 'WF_PRINTING' ? 'selected' : ''}>WF Printing</option>
-                            <option value="FINISHING" ${pStatus === 'FINISHING' ? 'selected' : ''}>Finishing</option>
-                            <option value="READY_FOR_PICKUP" ${pStatus === 'READY_FOR_PICKUP' ? 'selected' : ''}>Ready for Pick Up</option>
-                            <option value="SHIPPING" ${pStatus === 'SHIPPING' ? 'selected' : ''}>Shipping</option>
-                            <option value="COMPLETED" ${pStatus === 'COMPLETED' ? 'selected' : ''}>Completed</option>
-                            <option value="CANCELLED" ${pStatus === 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
-                        </select>
-                    </td>
-                    <td><strong>$${(item.totalPrice || 0).toFixed(2)}</strong></td>
-                    <td>
-                        <button type="button" class="row-btn" onclick="openEditItemForm(${item.id})">Edit</button>
-                        <button type="button" class="row-btn row-btn-danger" onclick="removeItem(${item.id})">Remove</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-        } catch (e) {
-            console.error(e);
+            renderOrderItems(currentOrder.items || []);
+        } catch (err) {
+            console.error(err);
             alert("Error loading order details.");
         }
     }
 
-    // ---- Item management (DocketManager-style flow) ----
+    // ==== GST / PST toggles ====
 
-    async function loadProducts() {
-        const select = document.getElementById('itemProduct');
+    function renderTaxChecks() {
+        const gstRate = currentOrder && currentOrder.gstRate != null ? Number(currentOrder.gstRate) : 5;
+        const pstRate = currentOrder && currentOrder.pstRate != null ? Number(currentOrder.pstRate) : 7;
+
+        const gstOn = gstRate > 0;
+        const pstOn = pstRate > 0;
+
+        document.getElementById("gstCheckbox").checked = gstOn;
+        document.getElementById("pstCheckbox").checked = pstOn;
+
+        document.getElementById("gstLabel").textContent = gstOn ? `GST (${gstRate.toFixed(2)}%)` : "GST (not charged)";
+        document.getElementById("pstLabel").textContent = pstOn ? `PST (${pstRate.toFixed(2)}%)` : "PST (not charged)";
+
+        const gstRow = document.getElementById("gstRow");
+        const pstRow = document.getElementById("pstRow");
+        gstRow.style.opacity = gstOn ? "1" : "0.45";
+        pstRow.style.opacity = pstOn ? "1" : "0.45";
+        gstRow.classList.toggle("tax-off", !gstOn);
+        pstRow.classList.toggle("tax-off", !pstOn);
+    }
+
+    function getTaxRateForSave(checkboxId, currentRate, defaultRate) {
+        if (!document.getElementById(checkboxId).checked) return 0.00;
+        const current = Number(currentRate);
+        return current > 0 ? current : defaultRate;
+    }
+
+    async function saveTaxFlags() {
         try {
-            const res = await fetch(PRODUCTS_API);
-            if (!res.ok) throw new Error("Could not load products.");
-            products = await res.json();
-
-            select.innerHTML = '<option value="">Custom Item (no product)</option>';
-            products.forEach(p => {
-                const option = document.createElement('option');
-                option.value = p.id;
-                option.textContent = p.productName || `Product #${p.id}`;
-                select.appendChild(option);
+            const res = await fetch(`/api/orders/${orderId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...currentOrder,
+                    gstRate: getTaxRateForSave("gstCheckbox", currentOrder.gstRate, 5),
+                    pstRate: getTaxRateForSave("pstCheckbox", currentOrder.pstRate, 7)
+                })
             });
-        } catch (e) {
-            console.error(e);
-            select.innerHTML = '<option value="">Custom Item (no product)</option>';
+            if (!res.ok) throw new Error("Failed to update taxes.");
+            await loadOrderDetails();
+            showMessage("Tax settings updated.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 
-    function initItemOptions() {
-        const deptSel = document.getElementById('itemDepartment');
-        deptSel.innerHTML = '<option value="">— Select group —</option>';
-        ITEM_OPTIONS.departments.forEach(d => deptSel.appendChild(new Option(d, d)));
+    function renderOrderItems(items) {
+        const tbody = document.getElementById("itemsBody");
+        if (!items.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748b;padding:24px;">No items yet. Click “+ Add Item” to add the first one.</td></tr>';
+            return;
+        }
 
-        populatePressOptions(null, null);
-
-        const stockList = document.getElementById('stockSuggestions');
-        ITEM_OPTIONS.stocks.forEach(s => stockList.appendChild(new Option(s, s)));
-
-        const taskList = document.getElementById('taskSuggestions');
-        ITEM_OPTIONS.commonTasks.forEach(t => taskList.appendChild(new Option(t, t)));
+        tbody.innerHTML = items.map(item => {
+            const id = Number(item.id);
+            const status = item.productionStatus || "PENDING_FILE";
+            const notes = item.productionNotes || "";
+            return `<tr>
+                <td><strong>${escapeHtml(item.product?.productName || "Custom Item")}</strong></td>
+                <td>${escapeHtml(item.itemDescription || "")}
+                    ${buildSpecsDisplay(item.printSpecsSummary)}
+                    <div style="margin-top:6px;">
+                        ${notes ? `<div class="notes-tag"><strong>Notes:</strong> ${escapeHtml(notes)}</div>` : ""}
+                        <button type="button" class="notes-btn" onclick="promptItemNotes(${id})">${notes ? "Edit Notes" : "+ Add Note"}</button>
+                    </div>
+                </td>
+                <td>${Number(item.quantity || 0)}</td>
+                <td>${money(item.unitPrice)}</td>
+                <td><select onchange="updateItemProductionStatus(${id}, this.value)">${statusOptions(status)}</select></td>
+                <td><strong>${money(item.totalPrice)}</strong></td>
+                <td>
+                    <button type="button" class="row-btn" onclick="openEditItemForm(${id})">Edit</button>
+                    <button type="button" class="row-btn row-btn-danger" onclick="removeItem(${id})">Remove</button>
+                </td>
+            </tr>`;
+        }).join("");
     }
 
-    function populatePressOptions(department, selectedName) {
-        const pressSel = document.getElementById('itemPress');
-        const list = department
-            ? ITEM_OPTIONS.presses.filter(p => p.department === department)
-            : ITEM_OPTIONS.presses;
-
-        pressSel.innerHTML = '';
-        pressSel.appendChild(new Option('— Select press —', ''));
-        list.forEach(p => pressSel.appendChild(new Option(`${p.name} (${p.type})`, p.name)));
-
-        if (selectedName) {
-            if (![...pressSel.options].some(o => o.value === selectedName)) {
-                pressSel.appendChild(new Option(selectedName, selectedName));
-            }
-            pressSel.value = selectedName;
-        } else {
-            pressSel.value = '';
-        }
-    }
-
-    function onDepartmentChange() {
-        const dept = document.getElementById('itemDepartment').value;
-        populatePressOptions(dept || null, null);
-    }
-
-    function onSidesChange() {
-        // As duas colunas ficam visíveis (estilo DM); o select define quais
-        // contadores são usados na produção (front apenas, ou front + back).
-    }
-
-    function onItemProductChange() {
-        const productId = document.getElementById('itemProduct').value;
-        const product = products.find(p => String(p.id) === String(productId));
-        if (product && !editingItemId) {
-            prefillSpecsFromProduct(product);
-        }
-        onItemFieldChange();
-    }
-
-    function prefillSpecsFromProduct(p) {
-        const dept = (p.productionDepartment || '').trim();
-        if (dept) {
-            const deptSel = document.getElementById('itemDepartment');
-            if (![...deptSel.options].some(o => o.value === dept)) {
-                deptSel.appendChild(new Option(dept, dept));
-            }
-            deptSel.value = dept;
-            populatePressOptions(dept, null);
-        }
-
-        if (p.defaultStock) {
-            document.getElementById('itemStock').value = p.defaultStock;
-        }
-
-        if (p.sidesInks) {
-            const parts = String(p.sidesInks).split('/');
-            const hasBackInk = parts.length > 1 && parts[1].trim() !== '0';
-            document.getElementById('itemSides').value = hasBackInk ? 'DOUBLE_SIDED' : 'SINGLE_SIDED';
-        }
-
-        if (p.defaultWidth != null || p.defaultHeight != null) {
-            const w = p.defaultWidth != null ? Number(p.defaultWidth) : '';
-            const h = p.defaultHeight != null ? Number(p.defaultHeight) : '';
-            document.getElementById('finW').value = w;
-            document.getElementById('finH').value = h;
-            document.getElementById('flatW').value = w;
-            document.getElementById('flatH').value = h;
-        }
+    function statusOptions(selected) {
+        const list = [
+            ["PENDING_PAYMENT", "Pending Payment"], ["PENDING_FILE", "Pending File"],
+            ["GRAPHICS", "Graphics"], ["SF_QUEUE", "Small Format Queue"],
+            ["SF_PRINTING", "SF Printing"], ["WF_QUEUE", "Wide Format Queue"],
+            ["WF_PRINTING", "WF Printing"], ["FINISHING", "Finishing"],
+            ["READY_FOR_PICKUP", "Ready for Pick Up"], ["SHIPPING", "Shipping"],
+            ["COMPLETED", "Completed"], ["CANCELLED", "Cancelled"]
+        ];
+        return list.map(([v, l]) => `<option value="${v}" ${v === selected ? "selected" : ""}>${l}</option>`).join("");
     }
 
     function openAddItemForm() {
         editingItemId = null;
-        document.getElementById('itemFormTitle').textContent = 'Add Item';
-        document.getElementById('itemForm').reset();
-        resetSpecFields();
-        document.getElementById('itemFormCard').style.display = 'block';
-        document.getElementById('itemDescription').focus();
+        itemMode = null;
+        resetCatalogForm();
+        resetCustomItemForm();
+        document.getElementById("itemFormTitle").textContent = "Add Item";
+        document.getElementById("itemFormCard").style.display = "block";
+        showItemTypeChooser();
+        document.getElementById("itemFormCard").scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    function openEditItemForm(itemId) {
-        const item = (currentOrder?.items || []).find(i => i.id === itemId);
-        if (!item) return;
+    function showItemTypeChooser() {
+        document.getElementById("itemTypeChooser").style.display = "block";
+        document.getElementById("catalogPanel").style.display = "none";
+        document.getElementById("customItemCard").style.display = "none";
+    }
 
-        editingItemId = itemId;
-        document.getElementById('itemFormTitle').textContent = `Edit Item #${itemId}`;
-        document.getElementById('itemForm').reset();
-        resetSpecFields();
+    function chooseItemType(mode) {
+        itemMode = mode;
+        document.getElementById("itemTypeChooser").style.display = "none";
+        document.getElementById("catalogPanel").style.display = mode === "CATALOG" ? "block" : "none";
+        document.getElementById("customItemCard").style.display = mode === "CUSTOM" ? "block" : "none";
 
-        document.getElementById('itemProduct').value = item.product ? String(item.product.id) : '';
-        document.getElementById('itemDescription').value = item.itemDescription || '';
-        document.getElementById('itemQuantity').value = item.quantity;
-        document.getElementById('itemUnitPrice').value = item.unitPrice != null ? Number(item.unitPrice).toFixed(2) : '';
-
-        const specs = parseSpecs(item.printSpecsSummary);
-        if (specs) {
-            populateFormFromSpecs(specs);
-        } else if (item.printSpecsSummary) {
-            // Specs antigas (texto simples) são preservadas no campo de texto livre
-            document.getElementById('itemExtraSpecs').value = item.printSpecsSummary;
+        if (mode === "CATALOG") {
+            const input = document.getElementById("itemProduct").parentNode.querySelector(".searchable-input");
+            if (input) input.focus();
+        } else {
+            document.getElementById("cuDescription").focus();
+            updateCuSteps();
         }
-
-        document.getElementById('itemFormCard').style.display = 'block';
-        document.getElementById('itemFormCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function closeItemForm() {
+        document.getElementById("itemFormCard").style.display = "none";
         editingItemId = null;
-        document.getElementById('itemFormCard').style.display = 'none';
-        document.getElementById('itemForm').reset();
+        itemMode = null;
     }
 
-    function onItemFieldChange() {
-        const productId = document.getElementById('itemProduct').value;
-        const quantity = parseInt(document.getElementById('itemQuantity').value, 10);
-        const priceInput = document.getElementById('itemUnitPrice');
+    // --- CATALOG ITEMS ---
+    function resetCatalogForm() {
+        document.getElementById("itemProduct").value = "";
+        refreshSearchableSelect(document.getElementById("itemProduct"));
+        document.getElementById("itemSize").innerHTML = "";
+        document.getElementById("itemSizeField").style.display = "none";
+        document.getElementById("itemDescription").value = "";
+        document.getElementById("itemQuantity").value = "";
+        document.getElementById("itemUnitPrice").value = "";
+        document.getElementById("catalogPriceScales").textContent = "";
+        document.getElementById("catMedia").value = "";
+        document.getElementById("catDouble").value = "SINGLE";
+        document.getElementById("catW").value = "";
+        document.getElementById("catH").value = "";
+        document.getElementById("catFinishingRows").innerHTML = "";
+        document.getElementById("catMarkup").value = "100";
+        document.getElementById("catalogSpecsBar").style.display = "none";
+        document.getElementById("catalogPricingSection").style.display = "none";
+        document.getElementById("catManualSizeField").style.display = "none";
+        document.getElementById("catCutCard").style.display = "none";
+        document.getElementById("catCostPrint").textContent = "$0.00";
+        document.getElementById("catCostStock").textContent = "$0.00";
+        document.getElementById("catCostCut").textContent = "$0.00";
+        document.getElementById("catCostFinishing").textContent = "$0.00";
+        document.getElementById("catCostTotal").textContent = "$0.00";
+        document.getElementById("catCostMarkup").textContent = "100%";
+        document.getElementById("catCostLineTotal").textContent = "$0.00";
+        document.getElementById("catCostUnitPrice").textContent = "$0.0000";
+        document.getElementById("catPriceSource").textContent = "—";
+        catPlan = null;
+        catLastScaleKey = null;
+        catMarkupTouched = false;
+        catCostBreakdown = { print: 0, stock: 0, cut: 0, finishing: 0, total: 0, lineTotal: 0, unitPrice: 0, markup: 100, source: "" };
+    }
 
-        if (!productId || !quantity || quantity <= 0) return;
+    function getProduct(id) {
+        return products.find(p => Number(p.id) === Number(id)) || null;
+    }
 
-        const product = products.find(p => String(p.id) === String(productId));
-        if (!product || !Array.isArray(product.priceScales)) return;
+    function getSelectedItemSize() {
+        const p = getProduct(document.getElementById("itemProduct").value);
+        if (!p || !Array.isArray(p.sizes)) return null;
+        const i = Number(document.getElementById("itemSize").value);
+        return p.sizes[i] || null;
+    }
 
-        const scale = product.priceScales.find(s => Number(s.quantity) === quantity);
-        if (scale && scale.pricePerPiece != null) {
-            priceInput.value = Number(scale.pricePerPiece).toFixed(2);
+    function catalogCustomReady(p) {
+        return Boolean(p && (Number(p.printCostPerSqft) > 0 || Number(p.stockCostPerSqft) > 0 ||
+            Number(p.stockSheetCost) > 0 || Number(p.cutCostPerLinearFt) > 0));
+    }
+
+    function onItemProductChange() {
+        const p = getProduct(document.getElementById("itemProduct").value);
+        const sizeSelect = document.getElementById("itemSize");
+        if (!p) {
+            sizeSelect.innerHTML = "";
+            document.getElementById("itemSizeField").style.display = "none";
+            document.getElementById("catalogPriceScales").textContent = "";
+            document.getElementById("catalogSpecsBar").style.display = "none";
+            document.getElementById("catalogPricingSection").style.display = "none";
+            return;
+        }
+
+        const sizes = Array.isArray(p.sizes) ? p.sizes : [];
+        sizeSelect.innerHTML = sizes.map((s, idx) => `<option value="${idx}">${escapeHtml(s.label || `Size ${idx + 1}`)}</option>`).join("");
+        document.getElementById("itemSizeField").style.display = sizes.length ? "" : "none";
+        refreshSearchableSelect(sizeSelect);
+        document.getElementById("itemDescription").value = p.productName || "";
+
+        const showPricing = sizes.length > 0 || catalogCustomReady(p);
+        document.getElementById("catalogSpecsBar").style.display = showPricing ? "" : "none";
+        document.getElementById("catalogPricingSection").style.display = showPricing ? "" : "none";
+        document.getElementById("catManualSizeField").style.display = sizes.length ? "none" : "";
+        document.getElementById("catMedia").value = p.defaultStock || "";
+        catLastScaleKey = null;
+        catPlan = null;
+
+        if (sizes.length) {
+            onItemSizeChange();
+        } else {
+            updateCatalogCutPlan(false);
+            recalcCatalog();
         }
     }
 
-    // ---- Department Items (tasks) ----
+    function onItemSizeChange() {
+        const p = getProduct(document.getElementById("itemProduct").value);
+        const size = getSelectedItemSize();
+        if (!p || !size) return;
 
-    function addDeptItemRow(data = {}) {
-        const rows = document.getElementById('deptItemsRows');
-        const tr = document.createElement('div');
-        tr.className = 'di-row';
+        const scales = Array.isArray(size.priceScales) ? size.priceScales : [];
+        document.getElementById("catalogPriceScales").textContent = scales.length
+            ? "Price options: " + scales.map(s => `${Number(s.quantity)} pcs — ${money(s.totalPrice)}`).join(" · ")
+            : "";
 
-        const deptOpts = ['<option value=""></option>'].concat(
-            ITEM_OPTIONS.departments.map(d => `<option value="${escapeHtml(d)}" ${data.department === d ? 'selected' : ''}>${escapeHtml(d)}</option>`)
-        ).join('');
+        if (size.label) document.getElementById("itemDescription").value = `${p.productName} - ${size.label}`;
 
-        const unitOpts = ['<option value=""></option>'].concat(
-            ITEM_OPTIONS.units.map(u => `<option value="${escapeHtml(u)}" ${data.unit === u ? 'selected' : ''}>${escapeHtml(u)}</option>`)
-        ).join('');
-
-        tr.innerHTML = `
-            <div class="form-field di-dept">
-                <label>Department</label>
-                <select class="di-dept-sel">${deptOpts}</select>
-            </div>
-            <div class="form-field di-desc">
-                <label>Task</label>
-                <input type="text" class="di-desc-in" list="taskSuggestions" placeholder="e.g. Fold - Tri-fold" value="${escapeHtml(data.description || '')}">
-            </div>
-            <div class="form-field di-qty">
-                <label>Qty</label>
-                <input type="number" class="di-qty-in" min="0" step="0.01" value="${data.quantity != null ? data.quantity : ''}">
-            </div>
-            <div class="form-field di-unit">
-                <label>Unit</label>
-                <select class="di-unit-sel">${unitOpts}</select>
-            </div>
-            <div class="form-field di-price">
-                <label>Price</label>
-                <input type="number" class="di-price-in" min="0" step="0.01" value="${data.price != null ? data.price : ''}">
-            </div>
-            <div class="form-field di-remove">
-                <label>&nbsp;</label>
-                <button type="button" class="row-btn row-btn-danger" onclick="this.closest('.di-row').remove()">✕</button>
-            </div>
-        `;
-        rows.appendChild(tr);
+        document.getElementById("catMedia").value = size.stock || p.defaultStock || "";
+        catLastScaleKey = null;
+        catPlan = null;
+        updateCatalogCutPlan(false);
+        onCatalogQtyChange();
     }
 
-    // ---- Specs JSON: leitura, escrita e resumo legível ----
+    function onCatalogQtyChange() {
+        const p = getProduct(document.getElementById("itemProduct").value);
+        if (!p) return;
+        const qty = Number(document.getElementById("itemQuantity").value);
+        const size = getSelectedItemSize();
 
-    function parseSpecs(summaryText) {
-        if (!summaryText) return null;
-        try {
-            const obj = JSON.parse(summaryText);
-            if (obj && obj.format === SPECS_FORMAT) return obj;
-            return null;
-        } catch (e) {
-            return null;
+        updateCatalogCutPlan(false);
+
+        if (qty < 1) {
+            recalcCatalog();
+            return;
         }
+
+        const scales = size && Array.isArray(size.priceScales)
+            ? size.priceScales
+            : (Array.isArray(p.priceScales) ? p.priceScales : []);
+        const scale = scales.find(s => Number(s.quantity) === qty);
+        if (scale) {
+            const unit = scale.pricePerPiece != null ? Number(scale.pricePerPiece) : Number(scale.totalPrice || 0) / qty;
+            document.getElementById("itemUnitPrice").value = unit.toFixed(4);
+        }
+        recalcCatalog();
     }
 
-    function readFormIntoSpecs() {
-        const val = id => document.getElementById(id).value.trim();
-        const num = id => { const n = parseFloat(val(id)); return isNaN(n) ? null : n; };
-        const intOr0 = id => { const n = parseInt(val(id), 10); return isNaN(n) ? 0 : n; };
-        const yn = id => document.getElementById(id).value === 'Yes';
+    // === CATALOG CUSTOM PRICING ENGINE (same math as the custom item wizard) ===
+    function getCatDims() {
+        const size = getSelectedItemSize();
+        if (size && Number(size.width) > 0 && Number(size.height) > 0) {
+            return { w: Number(size.width), h: Number(size.height) };
+        }
+        return { w: cuNum("catW"), h: cuNum("catH") };
+    }
 
-        const pressName = val('itemPress') || null;
-        const pressDef = ITEM_OPTIONS.presses.find(p => p.name === pressName);
+    function onCatSizeInput() {
+        updateCatalogCutPlan(false);
+        recalcCatalog();
+    }
 
-        const specs = {
+    function updateCatalogCutPlan(keepPlan) {
+        const p = getProduct(document.getElementById("itemProduct").value);
+        const qty = Number(document.getElementById("itemQuantity").value) || 1;
+        const d = getCatDims();
+        const sheetW = p ? Number(p.stockSheetWidth) || 0 : 0;
+        const sheetH = p ? Number(p.stockSheetHeight) || 0 : 0;
+        const valid = Boolean(p) && d.w > 0 && d.h > 0 && sheetW > 0 && sheetH > 0;
+
+        document.getElementById("catCutCard").style.display = valid ? "" : "none";
+        if (!valid) { catPlan = null; return; }
+
+        if (keepPlan && catPlan && catPlan.perSheet > 0) {
+            catPlan.sheetsNeeded = Math.ceil(qty / catPlan.perSheet);
+            renderCatCutSvg(catPlan);
+            return;
+        }
+
+        clearTimeout(catPlanTimer);
+        const seq = ++catPlanSeq;
+        catPlanTimer = setTimeout(async () => {
+            const q = new URLSearchParams({
+                sheetW: sheetW, sheetH: sheetH, pieceW: d.w, pieceH: d.h,
+                qty: qty, gap: 0, margin: 0, rotate: true
+            });
+            try {
+                const res = await fetch(`${CUT_PLAN_API}?${q}`);
+                const plan = await res.json();
+                if (seq !== catPlanSeq) return;
+                if (!res.ok) throw new Error(plan.error || "Cut plan error");
+                catPlan = plan;
+                renderCatCutSvg(plan);
+                recalcCatalog();
+            } catch (err) {
+                if (seq === catPlanSeq) {
+                    catPlan = null;
+                    document.getElementById("catCutCard").style.display = "none";
+                }
+            }
+        }, 200);
+    }
+
+    function renderCatCutSvg(p) {
+        const perSheet = p.perSheet || 0;
+        const badge = document.getElementById("catCutBadge");
+        badge.className = `up-badge ${perSheet === 0 ? "zero" : ""}`;
+        badge.innerHTML = `Up to <b>${perSheet}</b> in a sheet`;
+        document.getElementById("catCutSheetTitle").textContent = `Cutting plan — sheet ${p.sheetW}×${p.sheetH}"`;
+
+        const maxW = 300, maxH = 340;
+        const s = Math.min(maxW / p.sheetW, maxH / p.sheetH);
+        const sw = p.sheetW * s, sh = p.sheetH * s;
+
+        let svg = `<svg width="${sw + 2}" height="${sh + 2}" style="background:#fff;border:1px solid #cbd5e1;display:block;margin:0 auto;">
+            <rect x="1" y="1" width="${sw}" height="${sh}" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>`;
+
+        const pieces = p.pieces || [];
+        pieces.forEach(pc => {
+            const x = pc.x * s + 1, y = pc.y * s + 1, w = pc.w * s, h = pc.h * s;
+            svg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${pc.rotated ? "#fed7aa" : "#bfdbfe"}" stroke="#2563eb"/>`;
+            if (pieces.length <= 30) {
+                svg += `<text x="${x + w / 2}" y="${y + h / 2}" font-size="9" text-anchor="middle" dominant-baseline="middle" fill="#0f172a">${pc.w}×${pc.h}</text>`;
+            }
+        });
+        svg += "<​/svg>";
+
+        document.getElementById("catCutSvgBox").innerHTML = svg;
+        document.getElementById("catCutStats").innerHTML = pieces.length > 0
+            ? `<b>${perSheet}</b> piece(s) per sheet · Sheets needed: <b>${p.sheetsNeeded}</b> · Utilization: ${p.utilizationPct}%`
+            : `<span style="color:#b91c1c;">This size does not fit the registered sheet (${p.sheetW}×${p.sheetH}"). Adjust the product's sheet size or produce in panels.</span>`;
+    }
+
+    function addCatalogFinishingRow(data = {}) {
+        const row = document.createElement("div");
+        row.className = "di-row";
+        row.innerHTML = `
+            <div class="form-field di-task"><label>Task</label><input class="cu-fi-task" list="cuFinishingPresets" placeholder="e.g. Grommets" value="${escapeHtml(data.task || "")}" oninput="recalcCatalog()"></div>
+            <div class="form-field di-basis"><label>Basis</label><select class="cu-fi-basis" onchange="recalcCatalog()">
+                ${Object.entries(CU_BASES).map(([k, v]) => `<option value="${k}" ${data.basis === k ? "selected" : ""}>${v.label}</option>`).join("")}
+            </select></div>
+            <div class="form-field di-qty"><label>Qty</label><input class="cu-fi-qty" type="number" min="0" step="0.01" value="${data.qty ?? ""}" oninput="recalcCatalog()"></div>
+            <div class="form-field di-rate"><label>Rate ($)</label><input class="cu-fi-rate" type="number" min="0" step="0.001" value="${data.rate ?? ""}" oninput="recalcCatalog()"></div>
+            <div class="di-total"><span class="cu-fi-total">$0.00</span></div>
+            <div class="form-field di-remove"><label>&nbsp;</label><button type="button" class="btn-danger btn-small" onclick="this.closest('.di-row').remove();recalcCatalog()">✕</button></div>`;
+        document.getElementById("catFinishingRows").appendChild(row);
+        recalcCatalog();
+    }
+
+    function readCatalogFinishing() {
+        const tasks = [];
+        document.querySelectorAll("#catFinishingRows .di-row").forEach(r => {
+            const task = r.querySelector(".cu-fi-task").value.trim();
+            const basis = r.querySelector(".cu-fi-basis").value;
+            const qty = parseFloat(r.querySelector(".cu-fi-qty").value) || 0;
+            const rate = parseFloat(r.querySelector(".cu-fi-rate").value) || 0;
+            if (task) tasks.push({ task, basis, qty, rate, total: Number((qty * rate).toFixed(2)) });
+        });
+        return tasks;
+    }
+
+    function recalcCatalog() {
+        const p = getProduct(document.getElementById("itemProduct").value);
+        const size = getSelectedItemSize();
+        const qty = Number(document.getElementById("itemQuantity").value) || 0;
+        const d = getCatDims();
+        const area = (d.w * d.h) / 144;
+        const totalArea = area * qty;
+        const sidesFactor = document.getElementById("catDouble").value === "DOUBLE" ? 2 : 1;
+
+        const sheetW = p ? Number(p.stockSheetWidth) || 0 : 0;
+        const sheetH = p ? Number(p.stockSheetHeight) || 0 : 0;
+        const sheetsNeeded = catPlan && catPlan.perSheet > 0 ? catPlan.sheetsNeeded : 0;
+        const hasCustom = catalogCustomReady(p);
+
+        let printCost = 0, stockCost = 0, cutCost = 0;
+        let source = "No pricing data — register product costs";
+
+        if (p && hasCustom && area > 0 && qty > 0) {
+            printCost = totalArea * (Number(p.printCostPerSqft) || 0) * sidesFactor;
+
+            if (sheetW > 0 && sheetH > 0 && Number(p.stockSheetCost) > 0) {
+                if (sheetsNeeded > 0) {
+                    stockCost = sheetsNeeded * Number(p.stockSheetCost);
+                } else {
+                    const stockSqft = Number(p.stockCostPerSqft) || (Number(p.stockSheetCost) / ((sheetW * sheetH) / 144));
+                    stockCost = totalArea * stockSqft;
+                }
+            } else {
+                stockCost = totalArea * (Number(p.stockCostPerSqft) || 0);
+            }
+
+            const cutRate = Number(p.cutCostPerLinearFt) || 0;
+            if (cutRate > 0) {
+                const linearFt = (2 * (d.w + d.h) / 12) * qty;
+                cutCost = Math.max(linearFt * cutRate, Number(p.cutMinimum) || 0);
+            }
+            source = `Custom calc — ${qty} × ${d.w}×${d.h}"`;
+        }
+
+        // Finishing rows
+        let finishingCost = 0;
+        const pieceSqft = area;
+        const sheetSqft = (sheetW * sheetH) / 144;
+        document.querySelectorAll("#catFinishingRows .di-row").forEach(row => {
+            const basis = row.querySelector(".cu-fi-basis").value;
+            const qtyInput = row.querySelector(".cu-fi-qty");
+            const rate = parseFloat(row.querySelector(".cu-fi-rate").value) || 0;
+            let effQty = parseFloat(qtyInput.value) || 0;
+            if (basis === "PIECE") { effQty = qty; qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SHEET") { effQty = sheetsNeeded; qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SQFT") { effQty = Number((pieceSqft * qty).toFixed(2)); qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SQFT_X2") { effQty = Number((pieceSqft * qty * 2).toFixed(2)); qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SQFT_SHEET") { effQty = sheetSqft > 0 ? Number((sheetSqft * Math.max(sheetsNeeded, 1)).toFixed(2)) : 0; qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else { qtyInput.readOnly = false; }
+            const rowTotal = effQty * rate;
+            row.querySelector(".cu-fi-total").textContent = money(rowTotal);
+            finishingCost += rowTotal;
+        });
+
+        // Registered price scale (locked cost) when the quantity matches exactly
+        let scaleUsed = null;
+        const scales = size && Array.isArray(size.priceScales) && size.priceScales.length
+            ? size.priceScales
+            : (p && Array.isArray(p.priceScales) ? p.priceScales : []);
+        if (qty > 0 && scales.length) {
+            const sc = scales.find(s => Number(s.quantity) === qty);
+            if (sc && Number(sc.totalCost) > 0) scaleUsed = sc;
+        }
+        if (scaleUsed) {
+            source = `Price scale — ${Number(scaleUsed.quantity)} pcs`;
+            const key = `${p ? p.id : ""}|${size ? size.label : ""}|${qty}`;
+            if (catLastScaleKey !== key) {
+                catLastScaleKey = key;
+                if (!catMarkupTouched) {
+                    const imp = Number(scaleUsed.markupPercentage) || 0;
+                    document.getElementById("catMarkup").value = imp > 0 ? imp.toFixed(1) : "100";
+                }
+            }
+        } else if (catLastScaleKey) {
+            catLastScaleKey = null;
+        }
+
+        const totalCost = scaleUsed ? (Number(scaleUsed.totalCost) + finishingCost)
+                                    : (printCost + stockCost + cutCost + finishingCost);
+
+        const markupInput = parseFloat(document.getElementById("catMarkup").value);
+        const markup = Number.isFinite(markupInput) ? markupInput : 100;
+        const lineTotal = totalCost * (1 + markup / 100);
+        const unitPrice = qty > 0 ? lineTotal / qty : 0;
+
+        catCostBreakdown = {
+            print: scaleUsed ? 0 : printCost,
+            stock: scaleUsed ? 0 : stockCost,
+            cut: scaleUsed ? 0 : cutCost,
+            finishing: finishingCost,
+            total: totalCost, lineTotal, unitPrice, markup, source
+        };
+
+        document.getElementById("catCostPrint").textContent = scaleUsed ? "—" : money(printCost);
+        document.getElementById("catCostStock").textContent = scaleUsed ? "—" : money(stockCost);
+        document.getElementById("catCostCut").textContent = scaleUsed ? "—" : money(cutCost);
+        document.getElementById("catCostFinishing").textContent = money(finishingCost);
+        document.getElementById("catCostTotal").textContent = money(totalCost);
+        document.getElementById("catCostMarkup").textContent = `${markup}%`;
+        document.getElementById("catCostLineTotal").textContent = money(lineTotal);
+        document.getElementById("catCostUnitPrice").textContent = `$${unitPrice.toFixed(4)}`;
+        document.getElementById("catPriceSource").textContent = source;
+
+        document.getElementById("itemUnitPrice").value = unitPrice > 0 ? unitPrice.toFixed(4) : "";
+    }
+
+    function onCatalogManualPriceInput() {
+        const qty = Number(document.getElementById("itemQuantity").value) || 1;
+        const unitPrice = parseFloat(document.getElementById("itemUnitPrice").value) || 0;
+        const lineTotal = unitPrice * qty;
+        const cost = catCostBreakdown.total || 0;
+        if (cost > 0) {
+            const mk = ((lineTotal - cost) / cost) * 100;
+            document.getElementById("catMarkup").value = mk.toFixed(1);
+            document.getElementById("catCostMarkup").textContent = `${mk.toFixed(1)}%`;
+        }
+        document.getElementById("catCostLineTotal").textContent = money(lineTotal);
+        document.getElementById("catCostUnitPrice").textContent = `$${unitPrice.toFixed(4)}`;
+        catCostBreakdown.lineTotal = lineTotal;
+        catCostBreakdown.unitPrice = unitPrice;
+    }
+
+    function buildCatalogSpecs(p, size, d) {
+        return {
             format: SPECS_FORMAT,
-            department: val('itemDepartment') || null,
-            press: pressName,
-            pressType: pressDef ? pressDef.type : null,
-            sides: val('itemSides') || 'SINGLE_SIDED',
-            frontSheets: { black: intOr0('fsBlack'), color: intOr0('fsColor'), mixed: intOr0('fsMixed') },
-            backSheets: { black: intOr0('bsBlack'), color: intOr0('bsColor'), mixed: intOr0('bsMixed') },
-            stock: val('itemStock') || null,
-            runWidth: num('runW'), runHeight: num('runH'),
-            flatWidth: num('flatW'), flatHeight: num('flatH'),
-            finishedWidth: num('finW'), finishedHeight: num('finH'),
-            pages: num('itemPages'),
-            blankStock: yn('selBlankStock'),
-            withBleed: yn('selWithBleed'),
-            priceByCarton: yn('selPriceByCarton'),
-            outsourced: yn('selOutsourced'),
-            extraSpecs: val('itemExtraSpecs') || null,
-            departmentItems: []
+            mode: "CATALOG",
+            group: p.productionDepartment || "CATALOG",
+            printer: "",
+            colorMode: "COLOR",
+            sides: document.getElementById("catDouble").value,
+            stock: document.getElementById("catMedia").value || (size && size.stock) || p.defaultStock || "",
+            runW: Number(p.stockSheetWidth) || 0,
+            runH: Number(p.stockSheetHeight) || 0,
+            flatW: d.w, flatH: d.h,
+            finW: d.w, finH: d.h,
+            bleed: 0, gap: 0, margin: 0,
+            perSheet: catPlan ? catPlan.perSheet : 0,
+            sheetsNeeded: catPlan ? catPlan.sheetsNeeded : 0,
+            finishing: readCatalogFinishing(),
+            costBreakdown: catCostBreakdown
         };
-
-        document.querySelectorAll('#deptItemsRows .di-row').forEach(row => {
-            const dept = row.querySelector('.di-dept-sel').value;
-            const desc = row.querySelector('.di-desc-in').value.trim();
-            const qty = parseFloat(row.querySelector('.di-qty-in').value);
-            const unit = row.querySelector('.di-unit-sel').value;
-            const price = parseFloat(row.querySelector('.di-price-in').value);
-
-            if (!dept && !desc && isNaN(qty)) return; // ignora linhas vazias
-
-            specs.departmentItems.push({
-                department: dept || null,
-                description: desc || null,
-                quantity: isNaN(qty) ? null : qty,
-                unit: unit || null,
-                price: isNaN(price) ? null : price
-            });
-        });
-
-        return specs;
     }
 
-    function hasMeaningfulSpecs(s) {
-        return Boolean(
-            s.department || s.press || s.stock || s.pages != null || s.extraSpecs ||
-            s.runWidth != null || s.runHeight != null ||
-            s.flatWidth != null || s.flatHeight != null ||
-            s.finishedWidth != null || s.finishedHeight != null ||
-            s.blankStock || s.withBleed || s.priceByCarton || s.outsourced ||
-            (s.frontSheets && (s.frontSheets.black || s.frontSheets.color || s.frontSheets.mixed)) ||
-            (s.backSheets && (s.backSheets.black || s.backSheets.color || s.backSheets.mixed)) ||
-            (s.departmentItems && s.departmentItems.length)
-        );
-    }
+    async function saveCatalogItem() {
+        const productId = document.getElementById("itemProduct").value;
+        const description = document.getElementById("itemDescription").value.trim();
+        const quantity = Number(document.getElementById("itemQuantity").value);
+        const unitPrice = Number(document.getElementById("itemUnitPrice").value);
 
-    function resetSpecFields() {
-        document.getElementById('itemDepartment').value = '';
-        populatePressOptions(null, null);
-        document.getElementById('itemSides').value = 'SINGLE_SIDED';
-        ['fsBlack', 'fsColor', 'fsMixed', 'bsBlack', 'bsColor', 'bsMixed'].forEach(id => {
-            document.getElementById(id).value = 0;
-        });
-        document.getElementById('itemStock').value = '';
-        ['runW', 'runH', 'flatW', 'flatH', 'finW', 'finH', 'itemPages'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
-        document.getElementById('selBlankStock').value = 'No';
-        document.getElementById('selWithBleed').value = 'No';
-        document.getElementById('selPriceByCarton').value = 'No';
-        document.getElementById('selOutsourced').value = 'No';
-        document.getElementById('itemExtraSpecs').value = '';
-        document.getElementById('deptItemsRows').innerHTML = '';
-        addDeptItemRow();
-    }
+        if (!productId) return showMessage("Select a product.", "error");
+        if (!description) return showMessage("Enter a description.", "error");
+        if (!quantity || quantity < 1) return showMessage("Enter a valid quantity.", "error");
+        if (!Number.isFinite(unitPrice) || unitPrice < 0) return showMessage("Enter a valid unit price.", "error");
 
-    function populateFormFromSpecs(specs) {
-        const setVal = (id, v) => { document.getElementById(id).value = (v == null ? '' : v); };
+        const p = getProduct(productId);
+        const size = getSelectedItemSize();
+        const d = getCatDims();
 
-        const dept = specs.department || '';
-        if (dept) {
-            const deptSel = document.getElementById('itemDepartment');
-            if (![...deptSel.options].some(o => o.value === dept)) {
-                deptSel.appendChild(new Option(dept, dept));
-            }
-            deptSel.value = dept;
-        }
-        populatePressOptions(dept || null, specs.press);
-
-        setVal('itemSides', specs.sides || 'SINGLE_SIDED');
-
-        const fs = specs.frontSheets || {};
-        const bs = specs.backSheets || {};
-        setVal('fsBlack', fs.black || 0);
-        setVal('fsColor', fs.color || 0);
-        setVal('fsMixed', fs.mixed || 0);
-        setVal('bsBlack', bs.black || 0);
-        setVal('bsColor', bs.color || 0);
-        setVal('bsMixed', bs.mixed || 0);
-
-        setVal('itemStock', specs.stock);
-        setVal('runW', specs.runWidth);
-        setVal('runH', specs.runHeight);
-        setVal('flatW', specs.flatWidth);
-        setVal('flatH', specs.flatHeight);
-        setVal('finW', specs.finishedWidth);
-        setVal('finH', specs.finishedHeight);
-        setVal('itemPages', specs.pages);
-
-        document.getElementById('selBlankStock').value = specs.blankStock ? 'Yes' : 'No';
-        document.getElementById('selWithBleed').value = specs.withBleed ? 'Yes' : 'No';
-        document.getElementById('selPriceByCarton').value = specs.priceByCarton ? 'Yes' : 'No';
-        document.getElementById('selOutsourced').value = specs.outsourced ? 'Yes' : 'No';
-        setVal('itemExtraSpecs', specs.extraSpecs);
-
-        const rows = document.getElementById('deptItemsRows');
-        rows.innerHTML = '';
-        (specs.departmentItems || []).forEach(di => addDeptItemRow(di));
-        if (!(specs.departmentItems || []).length) addDeptItemRow();
-    }
-
-    function fmtSizeVal(w, h) {
-        return `${w != null ? w : '—'} × ${h != null ? h : '—'}`;
-    }
-
-    function specsToReadable(s) {
-        const lines = [];
-
-        const head = [];
-        if (s.department) head.push(s.department);
-        if (s.press) head.push(s.press + (s.pressType ? ` (${s.pressType})` : ''));
-        if (s.sides) head.push(s.sides === 'DOUBLE_SIDED' ? 'Double Sided' : 'Single Sided');
-        if (head.length) lines.push(head.join(' • '));
-
-        const fs = s.frontSheets || {};
-        const bs = s.backSheets || {};
-        const fsParts = [], bsParts = [];
-        if (fs.black) fsParts.push(`${fs.black} Black`);
-        if (fs.color) fsParts.push(`${fs.color} Color`);
-        if (fs.mixed) fsParts.push(`${fs.mixed} Mixed`);
-        if (bs.black) bsParts.push(`${bs.black} Black`);
-        if (bs.color) bsParts.push(`${bs.color} Color`);
-        if (bs.mixed) bsParts.push(`${bs.mixed} Mixed`);
-        const sheetParts = [];
-        if (fsParts.length) sheetParts.push(`Front: ${fsParts.join(', ')}`);
-        if (bsParts.length) sheetParts.push(`Back: ${bsParts.join(', ')}`);
-        if (sheetParts.length) lines.push('Sheets — ' + sheetParts.join(' | '));
-
-        const stockLine = [];
-        if (s.stock) stockLine.push(`Stock: ${s.stock}`);
-        if (s.pages) stockLine.push(`Pages: ${s.pages}`);
-        if (stockLine.length) lines.push(stockLine.join(' • '));
-
-        const sizes = [];
-        if (s.runWidth != null || s.runHeight != null) sizes.push(`Run ${fmtSizeVal(s.runWidth, s.runHeight)}`);
-        if (s.flatWidth != null || s.flatHeight != null) sizes.push(`Flat ${fmtSizeVal(s.flatWidth, s.flatHeight)}`);
-        if (s.finishedWidth != null || s.finishedHeight != null) sizes.push(`Finished ${fmtSizeVal(s.finishedWidth, s.finishedHeight)}`);
-        if (sizes.length) lines.push(sizes.join(' • '));
-
-        const flags = [];
-        if (s.blankStock) flags.push('Blank Stock');
-        if (s.withBleed) flags.push('With Bleed');
-        if (s.priceByCarton) flags.push('Price By Carton');
-        if (s.outsourced) flags.push('Outsourced');
-        if (flags.length) lines.push(flags.join(', '));
-
-        if (Array.isArray(s.departmentItems) && s.departmentItems.length) {
-            const tasks = s.departmentItems.map(t => {
-                const qty = t.quantity != null ? ` ×${t.quantity}${t.unit ? ' ' + t.unit : ''}` : '';
-                const price = t.price ? ` ($${Number(t.price).toFixed(2)})` : '';
-                return `${t.description || t.department || 'Task'}${qty}${price}`;
-            });
-            lines.push('Department Items: ' + tasks.join(' • '));
+        let summary = "";
+        if (p) {
+            const specs = buildCatalogSpecs(p, size, d);
+            specs.sizeLabel = size ? size.label : "";
+            summary = JSON.stringify(specs);
         }
 
-        if (s.extraSpecs) lines.push(s.extraSpecs);
-
-        return lines;
-    }
-
-    function buildSpecsDisplay(printSpecsSummary) {
-        const specs = parseSpecs(printSpecsSummary);
-        if (specs) {
-            const lines = specsToReadable(specs);
-            if (lines.length) {
-                return `<div class="specs-block">${lines.map(l => `<div>${escapeHtml(l)}</div>`).join('')}</div>`;
-            }
-            return '';
-        }
-        if (printSpecsSummary) {
-            return `<br><small style="color: var(--muted); display: block; margin-top: 4px;"><strong>Specs:</strong> ${escapeHtml(printSpecsSummary)}</small>`;
-        }
-        return '';
-    }
-
-    async function saveItem() {
-        const productId = document.getElementById('itemProduct').value;
-        const description = document.getElementById('itemDescription').value.trim();
-        const quantity = parseInt(document.getElementById('itemQuantity').value, 10);
-        const unitPrice = parseFloat(document.getElementById('itemUnitPrice').value);
-
-        if (!description) {
-            alert("Please enter a description.");
-            return;
-        }
-        if (!quantity || quantity <= 0) {
-            alert("Please enter a valid quantity.");
-            return;
-        }
-        if (isNaN(unitPrice) || unitPrice < 0) {
-            alert("Please enter a valid unit price.");
-            return;
-        }
-
-        const specs = readFormIntoSpecs();
-
-        const payload = {
-            product: productId ? { id: Number(productId) } : null,
+        await saveOrderItem({
+            product: { id: Number(productId) },
             itemDescription: description,
-            quantity: quantity,
-            unitPrice: unitPrice,
-            printSpecsSummary: hasMeaningfulSpecs(specs) ? JSON.stringify(specs) : null
-        };
+            quantity,
+            unitPrice,
+            printSpecsSummary: summary
+        });
+    }
 
+    // --- CUSTOM ITEM GUIDED WIZARD ---
+    function cuEl(id) { return document.getElementById(id); }
+    function cuVal(id) { return cuEl(id) ? cuEl(id).value.trim() : ""; }
+    function cuNum(id) { const n = parseFloat(cuVal(id)); return Number.isFinite(n) ? n : 0; }
+
+    function initCustomItemPresets() {
+        document.getElementById("cuFinishingPresets").innerHTML =
+            CU_CONFIG.finishingPresets.map(f => `<option value="${escapeHtml(f)}"></option>`).join("");
+    }
+
+    function resetCustomItemForm() {
+        cuEl("cuDescription").value = "";
+        cuEl("cuGroup").value = "";
+        cuEl("cuPrinter").innerHTML = '<option value="">— Select group first —</option>';
+        cuEl("cuColorMode").value = "COLOR";
+        cuEl("cuSides").value = "SINGLE";
+        cuEl("cuStock").innerHTML = '<option value="">— Select stock —</option>';
+        cuEl("cuSheetSelect").innerHTML = '<option value="">— Select sheet size —</option>';
+        cuEl("cuRunW").value = ""; cuEl("cuRunH").value = "";
+        cuEl("cuFlatW").value = ""; cuEl("cuFlatH").value = "";
+        cuEl("cuFinW").value = ""; cuEl("cuFinH").value = "";
+        cuEl("cuBleed").value = "0.125";
+        cuEl("cuGap").value = "0.25";
+        cuEl("cuMargin").value = "0.25";
+        cuEl("cuFinishingRows").innerHTML = "";
+        cuEl("cuQty").value = "1";
+        cuEl("cuMarkup").value = "100";
+        cuEl("cuPrice").value = "";
+        cuPlan = null;
+        cuPlanPending = false;
+        cuPlanSeq++;
+        clearTimeout(cuPlanTimer);
+        updateCuSteps();
+    }
+
+    function onCuGroupChange() {
+        const groupKey = cuVal("cuGroup");
+        const printerSelect = cuEl("cuPrinter");
+        const stockSelect = cuEl("cuStock");
+
+        printerSelect.innerHTML = '<option value="">— Select printer —</option>';
+        stockSelect.innerHTML = '<option value="">— Select stock —</option>';
+        cuEl("cuSheetSelect").innerHTML = '<option value="">— Select sheet size —</option>';
+        cuEl("cuRunW").value = ""; cuEl("cuRunH").value = "";
+
+        if (groupKey && CU_CONFIG.groups[groupKey]) {
+            const grp = CU_CONFIG.groups[groupKey];
+            printerSelect.innerHTML += grp.printers.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+            if (grp.printers.length === 1) printerSelect.value = grp.printers[0].id;
+
+            stockSelect.innerHTML += grp.stocks.map(s => `<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)}</option>`).join("");
+
+            // Ajusta bleed/gap/margin padrão para o grupo
+            cuEl("cuBleed").value = grp.defaultBleed;
+            cuEl("cuGap").value = grp.defaultGap;
+            cuEl("cuMargin").value = grp.defaultMargin;
+        }
+
+        updateCuSteps();
+        updateCuCutPlan(false);
+        recalcCustom();
+    }
+
+    function onCuPrinterChange() {
+        updateCuSteps();
+        recalcCustom();
+    }
+
+    function onCuColorChange() {
+        updateCuSteps();
+        recalcCustom();
+    }
+
+    function onCuStockChange() {
+        const groupKey = cuVal("cuGroup");
+        const stockName = cuVal("cuStock");
+        const sheetSelect = cuEl("cuSheetSelect");
+        sheetSelect.innerHTML = '<option value="">— Select sheet size —</option>';
+
+        if (!groupKey || !stockName || !CU_CONFIG.groups[groupKey]) {
+            updateCuSteps();
+            return;
+        }
+
+        const grp = CU_CONFIG.groups[groupKey];
+        const stock = grp.stocks.find(s => s.name === stockName);
+
+        if (groupKey === "SMALL") {
+            const sizes = (stock && stock.onlySizes) ? stock.onlySizes : grp.sheetSizes;
+            sheetSelect.innerHTML += sizes.map(sz => `<option value="${sz[0]}x${sz[1]}">${sz[0]}" × ${sz[1]}"</option>`).join("");
+            if (sizes.length === 1) sheetSelect.value = `${sizes[0][0]}x${sizes[0][1]}`;
+            onCuSheetSelectChange();
+        } else {
+            if (stock && stock.sizes && stock.sizes.length > 0) {
+                sheetSelect.innerHTML += stock.sizes.map(sz => `<option value="${sz[0]}x${sz[1]}">${sz[0]}" × ${sz[1]}" (sheet)</option>`).join("");
+                sheetSelect.value = `${stock.sizes[0][0]}x${stock.sizes[0][1]}`;
+                onCuSheetSelectChange();
+            } else {
+                cuEl("cuRunW").value = ""; cuEl("cuRunH").value = "";
+            }
+        }
+
+        updateCuSteps();
+        updateCuCutPlan(false);
+        recalcCustom();
+    }
+
+    function onCuSheetSelectChange() {
+        const v = cuVal("cuSheetSelect");
+        if (v && v.includes("x")) {
+            const [w, h] = v.split("x");
+            cuEl("cuRunW").value = w;
+            cuEl("cuRunH").value = h;
+        }
+        onCuSizeChange();
+    }
+
+    function onCuSizeChange() {
+        const fw = cuVal("cuFlatW");
+        const fh = cuVal("cuFlatH");
+        if (!cuVal("cuFinW") && fw) cuEl("cuFinW").value = fw;
+        if (!cuVal("cuFinH") && fh) cuEl("cuFinH").value = fh;
+
+        updateCuSteps();
+        updateCuCutPlan(false);
+        recalcCustom();
+    }
+
+    function onCuQtyInput() {
+        updateCuCutPlan(true);
+        recalcCustom();
+    }
+
+    function updateCuSteps() {
+        const grp = cuVal("cuGroup");
+        const hasGrp = Boolean(grp);
+        const hasPrinter = Boolean(cuVal("cuPrinter"));
+        const hasStock = Boolean(cuVal("cuStock"));
+        const hasRun = cuNum("cuRunW") > 0 && cuNum("cuRunH") > 0;
+        const hasFlat = cuNum("cuFlatW") > 0 && cuNum("cuFlatH") > 0;
+
+        cuEl("cuSecSides").classList.toggle("cu-hidden", !hasGrp);
+        cuEl("cuSecStock").classList.toggle("cu-hidden", !hasPrinter);
+        cuEl("cuSecSizes").classList.toggle("cu-hidden", !hasStock);
+        cuEl("cuSecFinishing").classList.toggle("cu-hidden", !(hasRun && hasFlat));
+        cuEl("cuSecPricing").classList.toggle("cu-hidden", !(hasRun && hasFlat));
+
+        cuEl("cuSheetRow").style.display = (grp === "SMALL" || (grp === "WIDE" && cuEl("cuSheetSelect").options.length > 1)) ? "" : "none";
+    }
+
+    function updateCuCutPlan(keepPlan) {
+        const rw = cuNum("cuRunW"), rh = cuNum("cuRunH");
+        const fw = cuNum("cuFlatW"), fh = cuNum("cuFlatH");
+        const bleed = cuNum("cuBleed");
+        const gap = cuNum("cuGap");
+        const margin = cuNum("cuMargin");
+        const qty = Number(cuEl("cuQty").value) || 1;
+        const valid = rw > 0 && rh > 0 && fw > 0 && fh > 0;
+
+        cuEl("cuCutPlanCard").classList.toggle("cu-hidden", !valid);
+        cuEl("cuCostBox").classList.toggle("cu-hidden", !valid);
+        cuEl("cuCutHint").classList.toggle("cu-hidden", valid);
+
+        if (!valid) {
+            cuPlan = null;
+            return;
+        }
+
+        if (keepPlan && cuPlan && cuPlan.perSheet > 0) {
+            cuPlan.sheetsNeeded = Math.ceil(qty / cuPlan.perSheet);
+            renderCuCutSvg(cuPlan);
+            return;
+        }
+
+        clearTimeout(cuPlanTimer);
+        const seq = ++cuPlanSeq;
+        cuPlanPending = true;
+
+        cuPlanTimer = setTimeout(async () => {
+            const pieceW = fw + 2 * bleed;
+            const pieceH = fh + 2 * bleed;
+
+            const q = new URLSearchParams({
+                sheetW: rw,
+                sheetH: rh,
+                pieceW: pieceW,
+                pieceH: pieceH,
+                qty: qty,
+                gap: gap,
+                margin: margin,
+                rotate: true
+            });
+
+            try {
+                const res = await fetch(`${CUT_PLAN_API}?${q}`);
+                const plan = await res.json();
+                if (seq !== cuPlanSeq) return;
+                if (!res.ok) throw new Error(plan.error || "Cut plan error");
+
+                cuPlan = plan;
+                cuPlanPending = false;
+                renderCuCutSvg(plan);
+                recalcCustom();
+            } catch (err) {
+                if (seq === cuPlanSeq) {
+                    cuPlan = null;
+                    cuPlanPending = false;
+                    cuEl("cuCutBadge").className = "up-badge zero";
+                    cuEl("cuCutBadge").innerHTML = `Up to <b>0</b> in a sheet`;
+                    cuEl("cuCutSvgBox").innerHTML = `<div style="color:#b91c1c;font-size:12px;padding:12px;background:#fef2f2;border:1px dashed #fca5a5;border-radius:6px;margin:8px 0;">
+                        <strong>Piece does not fit into the sheet!</strong><br>
+                        Piece + bleed is ${pieceW}"×${pieceH}".<br>
+                        Usable sheet width/height after margins is too small. Try setting Bleed or Margins to 0.
+                    </div>`;
+                    cuEl("cuCutStats").innerHTML = "";
+                }
+            }
+        }, 200);
+    }
+
+    function renderCuCutSvg(p) {
+        const perSheet = p.perSheet || 0;
+        const badge = cuEl("cuCutBadge");
+        badge.className = `up-badge ${perSheet === 0 ? "zero" : ""}`;
+        badge.innerHTML = `Up to <b>${perSheet}</b> in a sheet`;
+        cuEl("cuCutSheetTitle").textContent = `Cutting plan — sheet ${p.sheetW}×${p.sheetH}"`;
+
+        const bleed = cuNum("cuBleed");
+        const margin = cuNum("cuMargin");
+        const maxW = 300, maxH = 340;
+        const s = Math.min(maxW / p.sheetW, maxH / p.sheetH);
+        const sw = p.sheetW * s, sh = p.sheetH * s;
+
+        let svg = `<svg width="${sw + 2}" height="${sh + 2}" style="background:#fff;border:1px solid #cbd5e1;display:block;margin:0 auto;">
+            <rect x="1" y="1" width="${sw}" height="${sh}" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>`;
+
+        if (margin > 0) {
+            const mx = margin * s + 1, my = margin * s + 1;
+            const mw = (p.sheetW - 2 * margin) * s, mh = (p.sheetH - 2 * margin) * s;
+            if (mw > 0 && mh > 0) {
+                svg += `<rect x="${mx}" y="${my}" width="${mw}" height="${mh}" fill="none" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>`;
+            }
+        }
+
+        const pieces = p.pieces || [];
+        if (pieces.length === 0) {
+            svg += `<text x="${sw / 2}" y="${sh / 2}" font-size="12" text-anchor="middle" dominant-baseline="middle" fill="#b91c1c">Does not fit on sheet</text>`;
+        } else {
+            pieces.forEach(pc => {
+                const x = pc.x * s + 1, y = pc.y * s + 1, w = pc.w * s, h = pc.h * s;
+                svg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${pc.rotated ? "#fed7aa" : "#bfdbfe"}" stroke="#2563eb"/>`;
+
+                if (bleed > 0) {
+                    const tx = (pc.x + bleed) * s + 1, ty = (pc.y + bleed) * s + 1;
+                    const tw = (pc.w - 2 * bleed) * s, th = (pc.h - 2 * bleed) * s;
+                    if (tw > 0 && th > 0) {
+                        svg += `<rect x="${tx}" y="${ty}" width="${tw}" height="${th}" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2"/>`;
+                    }
+                }
+
+                if (pieces.length <= 30) {
+                    svg += `<text x="${x + w / 2}" y="${y + h / 2}" font-size="9" text-anchor="middle" dominant-baseline="middle" fill="#0f172a">${pc.w}×${pc.h}</text>`;
+                }
+            });
+        }
+        svg += "<​/svg>";
+
+        cuEl("cuCutSvgBox").innerHTML = svg;
+        cuEl("cuCutStats").innerHTML = pieces.length > 0 ? `
+            <b>${p.perSheet}</b> piece(s) per sheet · Sheets needed: <b>${p.sheetsNeeded}</b><br>
+            Utilization: ${p.utilizationPct}% · Waste: ${p.wastePct}%<br>
+            <span style="display:inline-block;width:10px;height:10px;background:#bfdbfe;border:1px solid #2563eb;"></span> upright
+            <span style="display:inline-block;width:10px;height:10px;background:#fed7aa;border:1px solid #ea580c;margin-left:8px;"></span> rotated
+            ${bleed > 0 ? '<br><span style="color:#ef4444;">-- red dashed line = final trim</span>' : ""}`
+            : `<div style="color:#b91c1c;margin-top:6px;font-size:12px;"><strong>0 piece(s) fit into this sheet with the current Bleed / Margins.</strong><br>For large boards (e.g. Coroplast 48×48 into 48×96), set Bleed to 0 and Sheet Margin to 0.</div>`;
+    }
+
+    function addCuFinishingRow(data = {}) {
+        const row = document.createElement("div");
+        row.className = "di-row";
+        row.innerHTML = `
+            <div class="form-field di-task"><label>Task</label><input class="cu-fi-task" list="cuFinishingPresets" placeholder="e.g. Lamination" value="${escapeHtml(data.task || "")}" oninput="recalcCustom()"></div>
+            <div class="form-field di-basis"><label>Basis</label><select class="cu-fi-basis" onchange="recalcCustom()">
+                ${Object.entries(CU_BASES).map(([k, v]) => `<option value="${k}" ${data.basis === k ? "selected" : ""}>${v.label}</option>`).join("")}
+            </select></div>
+            <div class="form-field di-qty"><label>Qty</label><input class="cu-fi-qty" type="number" min="0" step="0.01" value="${data.qty ?? ""}" oninput="recalcCustom()"></div>
+            <div class="form-field di-rate"><label>Rate ($)</label><input class="cu-fi-rate" type="number" min="0" step="0.001" value="${data.rate ?? ""}" oninput="recalcCustom()"></div>
+            <div class="di-total"><span class="cu-fi-total">$0.00</span></div>
+            <div class="form-field di-remove"><label>&nbsp;</label><button type="button" class="btn-danger btn-small" onclick="this.closest('.di-row').remove();recalcCustom()">✕</button></div>`;
+        cuEl("cuFinishingRows").appendChild(row);
+        recalcCustom();
+    }
+
+    function recalcCustom() {
+        const grp = cuVal("cuGroup");
+        const qty = Number(cuEl("cuQty").value) || 1;
+        const sides = cuVal("cuSides");
+        const sidesFactor = sides === "DOUBLE" ? 2 : 1;
+        const colorMode = cuVal("cuColorMode");
+
+        let printCost = 0;
+        let stockCost = 0;
+        let finishingCost = 0;
+
+        const perSheet = cuPlan ? (cuPlan.perSheet || 0) : 0;
+        const sheetsNeeded = perSheet > 0 ? Math.ceil(qty / perSheet) : 1;
+
+        if (grp === "SMALL") {
+            const clickRate = colorMode === "BW" ? CU_CONFIG.groups.SMALL.click.BW : CU_CONFIG.groups.SMALL.click.COLOR;
+            printCost = sheetsNeeded * clickRate * sidesFactor;
+
+            const stock = CU_CONFIG.groups.SMALL.stocks.find(s => s.name === cuVal("cuStock"));
+            if (stock) stockCost = sheetsNeeded * (stock.costPerSheet || 0);
+        } else if (grp === "WIDE") {
+            const fw = cuNum("cuFlatW"), fh = cuNum("cuFlatH");
+            const areaSqftPerPiece = (fw * fh) / 144;
+            const totalAreaSqft = areaSqftPerPiece * qty;
+
+            const printer = CU_CONFIG.groups.WIDE.printers.find(p => p.id === cuVal("cuPrinter"));
+            if (printer) printCost = totalAreaSqft * (printer.printCostPerSqft || 0) * sidesFactor;
+
+            const stock = CU_CONFIG.groups.WIDE.stocks.find(s => s.name === cuVal("cuStock"));
+            if (stock) stockCost = totalAreaSqft * (stock.costPerSqft || 0);
+        }
+
+        const fw = cuNum("cuFinW") || cuNum("cuFlatW");
+        const fh = cuNum("cuFinH") || cuNum("cuFlatH");
+        const pieceSqft = (fw * fh) / 144;
+        const rw = cuNum("cuRunW"), rh = cuNum("cuRunH");
+        const sheetSqft = (rw * rh) / 144;
+
+        document.querySelectorAll("#cuFinishingRows .di-row").forEach(row => {
+            const basis = row.querySelector(".cu-fi-basis").value;
+            const qtyInput = row.querySelector(".cu-fi-qty");
+            const rate = parseFloat(row.querySelector(".cu-fi-rate").value) || 0;
+            let effQty = parseFloat(qtyInput.value) || 0;
+
+            if (basis === "PIECE") { effQty = qty; qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SHEET") { effQty = sheetsNeeded; qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SQFT") { effQty = Number((pieceSqft * qty).toFixed(2)); qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SQFT_X2") { effQty = Number((pieceSqft * qty * 2).toFixed(2)); qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else if (basis === "SQFT_SHEET") { effQty = Number((sheetSqft * sheetsNeeded).toFixed(2)); qtyInput.value = effQty; qtyInput.readOnly = true; }
+            else { qtyInput.readOnly = false; }
+
+            const rowTotal = effQty * rate;
+            row.querySelector(".cu-fi-total").textContent = money(rowTotal);
+            finishingCost += rowTotal;
+        });
+
+        const totalCost = printCost + stockCost + finishingCost;
+        const markup = parseFloat(cuVal("cuMarkup")) || 0;
+        const lineTotal = totalCost * (1 + markup / 100);
+        const unitPrice = qty > 0 ? (lineTotal / qty) : 0;
+
+        cuCostBreakdown = { print: printCost, stock: stockCost, finishing: finishingCost, total: totalCost, lineTotal, unitPrice };
+
+        cuEl("cuCostPrint").textContent = money(printCost);
+        cuEl("cuCostStock").textContent = money(stockCost);
+        cuEl("cuCostFinishing").textContent = money(finishingCost);
+        cuEl("cuCostTotal").textContent = money(totalCost);
+        cuEl("cuCostMarkup").textContent = `${markup}%`;
+        cuEl("cuCostLineTotal").textContent = money(lineTotal);
+        cuEl("cuCostUnitPrice").textContent = `$${unitPrice.toFixed(4)}`;
+
+        cuEl("cuPrice").value = unitPrice.toFixed(4);
+    }
+
+    function onCuManualPriceInput() {
+        const qty = Number(cuEl("cuQty").value) || 1;
+        const unitPrice = parseFloat(cuVal("cuPrice")) || 0;
+        const lineTotal = unitPrice * qty;
+        const cost = cuCostBreakdown.total || 0;
+
+        if (cost > 0) {
+            const markup = ((lineTotal - cost) / cost) * 100;
+            cuEl("cuMarkup").value = markup.toFixed(1);
+            cuEl("cuCostMarkup").textContent = `${markup.toFixed(1)}%`;
+        }
+        cuEl("cuCostLineTotal").textContent = money(lineTotal);
+        cuEl("cuCostUnitPrice").textContent = `$${unitPrice.toFixed(4)}`;
+    }
+
+    function readCustomSpecs() {
+        const tasks = [];
+        document.querySelectorAll("#cuFinishingRows .di-row").forEach(r => {
+            const task = r.querySelector(".cu-fi-task").value.trim();
+            const basis = r.querySelector(".cu-fi-basis").value;
+            const qty = parseFloat(r.querySelector(".cu-fi-qty").value) || 0;
+            const rate = parseFloat(r.querySelector(".cu-fi-rate").value) || 0;
+            if (task) tasks.push({ task, basis, qty, rate, total: qty * rate });
+        });
+
+        return {
+            format: SPECS_FORMAT,
+            group: cuVal("cuGroup"),
+            printer: cuVal("cuPrinter"),
+            colorMode: cuVal("cuColorMode"),
+            sides: cuVal("cuSides"),
+            stock: cuVal("cuStock"),
+            runW: cuNum("cuRunW"), runH: cuNum("cuRunH"),
+            flatW: cuNum("cuFlatW"), flatH: cuNum("cuFlatH"),
+            finW: cuNum("cuFinW"), finH: cuNum("cuFinH"),
+            bleed: cuNum("cuBleed"), gap: cuNum("cuGap"), margin: cuNum("cuMargin"),
+            perSheet: cuPlan ? cuPlan.perSheet : 0,
+            sheetsNeeded: cuPlan ? cuPlan.sheetsNeeded : 0,
+            finishing: tasks,
+            costBreakdown: cuCostBreakdown
+        };
+    }
+
+    function buildSpecsDisplay(text) {
+        if (!text) return "";
+        try {
+            const s = JSON.parse(text);
+            if (s && s.format === SPECS_FORMAT) {
+                const lines = [];
+                lines.push(`<strong>${s.group || ""} • ${s.printer || ""}</strong> (${s.colorMode || ""} ${s.sides === "DOUBLE" ? "2 sides" : "1 side"})`);
+                if (s.stock) lines.push(`Stock: ${s.stock} | Sheet: ${s.runW}×${s.runH}"`);
+                if (s.sizeLabel) lines.push(`Registered size: ${s.sizeLabel}`);
+                lines.push(`Flat: ${s.flatW}×${s.flatH}" | Bleed: ${s.bleed || 0}" | Up on sheet: <b>${s.perSheet || 0}</b>`);
+                if (s.finishing && s.finishing.length) {
+                    lines.push("Finishing: " + s.finishing.map(f => `${f.task} (${f.qty} @ $${f.rate})`).join(", "));
+                }
+                return `<div class="specs-block">${lines.map(l => `<div>${l}</div>`).join("")}</div>`;
+            }
+        } catch (_) {}
+        return `<div class="specs-block">${escapeHtml(text)}</div>`;
+    }
+
+    async function saveCustomItem() {
+        const desc = cuVal("cuDescription");
+        const qty = Number(cuVal("cuQty"));
+        const unitPrice = parseFloat(cuVal("cuPrice"));
+
+        if (!desc) return showMessage("Enter a description for the custom item.", "error");
+        if (!qty || qty < 1) return showMessage("Enter a valid quantity.", "error");
+        if (!Number.isFinite(unitPrice) || unitPrice < 0) return showMessage("Complete the calculation or enter a valid unit price.", "error");
+
+        const specs = readCustomSpecs();
+        await saveOrderItem({
+            product: null,
+            itemDescription: desc,
+            quantity: qty,
+            unitPrice: unitPrice,
+            printSpecsSummary: JSON.stringify(specs)
+        });
+    }
+
+    async function saveOrderItem(payload) {
         try {
             const url = editingItemId
                 ? `/api/orders/${orderId}/items/${editingItemId}`
                 : `/api/orders/${orderId}/items`;
-            const method = editingItemId ? 'PUT' : 'POST';
-
             const res = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
+                method: editingItemId ? "PUT" : "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
 
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}));
-                throw new Error(data.error || "Failed to save item.");
+                throw new Error(data.error || data.message || `HTTP ${res.status}`);
             }
 
-            alert(editingItemId ? "Item updated!" : "Item added to order!");
+            showMessage(editingItemId ? "Item updated." : "Item added to order.", "success");
             closeItemForm();
             await loadOrderDetails();
-        } catch (e) {
-            console.error(e);
-            alert(e.message || "Error saving item.");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message || "Error saving item.", "error");
         }
+    }
+
+    function openEditItemForm(itemId) {
+        const item = (currentOrder?.items || []).find(i => Number(i.id) === Number(itemId));
+        if (!item) return;
+
+        editingItemId = itemId;
+        document.getElementById("itemFormCard").style.display = "block";
+        document.getElementById("itemFormTitle").textContent = `Edit Item #${itemId}`;
+
+        if (item.product) {
+            chooseItemType("CATALOG");
+            document.getElementById("itemProduct").value = String(item.product.id);
+            refreshSearchableSelect(document.getElementById("itemProduct"));
+            onItemProductChange();
+
+            let savedSpecs = null;
+            try {
+                const s = JSON.parse(item.printSpecsSummary || "{}");
+                if (s && s.format === SPECS_FORMAT && s.mode === "CATALOG") savedSpecs = s;
+            } catch (_) {}
+
+            // Seleciona o tamanho salvo, quando possível
+            const sizeSel = document.getElementById("itemSize");
+            if (savedSpecs && savedSpecs.sizeLabel) {
+                Array.from(sizeSel.options).forEach(o => { if (o.textContent === savedSpecs.sizeLabel) sizeSel.value = o.value; });
+            } else {
+                const m = /Size: (.+?) \|/.exec(item.printSpecsSummary || "");
+                if (m) Array.from(sizeSel.options).forEach(o => { if (o.textContent === m[1]) sizeSel.value = o.value; });
+            }
+            if (sizeSel.value) onItemSizeChange();
+
+            if (savedSpecs) {
+                document.getElementById("catDouble").value = savedSpecs.sides || "SINGLE";
+                if (savedSpecs.stock) document.getElementById("catMedia").value = savedSpecs.stock;
+                if (savedSpecs.costBreakdown && savedSpecs.costBreakdown.markup != null) {
+                    document.getElementById("catMarkup").value = savedSpecs.costBreakdown.markup;
+                    catMarkupTouched = true;
+                }
+                document.getElementById("catFinishingRows").innerHTML = "";
+                (savedSpecs.finishing || []).forEach(addCatalogFinishingRow);
+            }
+
+            document.getElementById("itemDescription").value = item.itemDescription || "";
+            document.getElementById("itemQuantity").value = item.quantity || "";
+            document.getElementById("itemUnitPrice").value = item.unitPrice ?? "";
+        } else {
+            chooseItemType("CUSTOM");
+            document.getElementById("cuDescription").value = item.itemDescription || "";
+            document.getElementById("cuQty").value = item.quantity || 1;
+            document.getElementById("cuPrice").value = item.unitPrice ?? "";
+
+            try {
+                const s = JSON.parse(item.printSpecsSummary || "{}");
+                if (s && s.format === SPECS_FORMAT) {
+                    cuEl("cuGroup").value = s.group || "";
+                    onCuGroupChange();
+                    cuEl("cuPrinter").value = s.printer || "";
+                    cuEl("cuColorMode").value = s.colorMode || "COLOR";
+                    cuEl("cuSides").value = s.sides || "SINGLE";
+                    cuEl("cuStock").value = s.stock || "";
+                    onCuStockChange();
+                    cuEl("cuRunW").value = s.runW || ""; cuEl("cuRunH").value = s.runH || "";
+                    cuEl("cuFlatW").value = s.flatW || ""; cuEl("cuFlatH").value = s.flatH || "";
+                    cuEl("cuFinW").value = s.finW || ""; cuEl("cuFinH").value = s.finH || "";
+                    cuEl("cuBleed").value = s.bleed ?? 0;
+                    cuEl("cuGap").value = s.gap ?? 0;
+                    cuEl("cuMargin").value = s.margin ?? 0;
+
+                    cuEl("cuFinishingRows").innerHTML = "";
+                    (s.finishing || []).forEach(addCuFinishingRow);
+                    onCuSizeChange();
+                }
+            } catch (_) {}
+        }
+        document.getElementById("itemFormCard").scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     async function removeItem(itemId) {
         if (!confirm("Remove this item from the order?")) return;
-
         try {
-            const res = await fetch(`/api/orders/${orderId}/items/${itemId}`, { method: 'DELETE' });
+            const res = await fetch(`/api/orders/${orderId}/items/${itemId}`, { method: "DELETE" });
             if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                throw new Error(data.error || "Failed to remove item.");
+                const d = await res.json().catch(() => ({}));
+                throw new Error(d.error || "Failed to remove item.");
             }
-            alert("Item removed.");
+            showMessage("Item removed.", "success");
             await loadOrderDetails();
-        } catch (e) {
-            console.error(e);
-            alert(e.message || "Error removing item.");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message || "Error removing item.", "error");
         }
     }
-
-    // ---- End of item management ----
 
     async function updateOrderStatus() {
-        const newStatus = document.getElementById('orderStatusSelect').value;
+        const st = document.getElementById("orderStatusSelect").value;
         try {
-            const res = await fetch(`/api/orders/${orderId}/status?status=${newStatus}`, { method: 'PATCH' });
-            if (!res.ok) throw new Error("Failed to update status");
-            alert("Order status updated!");
-        } catch (e) {
-            console.error(e);
-            alert("Error updating order status.");
+            const res = await fetch(`/api/orders/${orderId}/status?status=${encodeURIComponent(st)}`, { method: "PATCH" });
+            if (!res.ok) throw new Error("Failed to update status.");
+            showMessage("Order status updated.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 
-    async function updateItemProductionStatus(itemId, newStatus) {
+    async function updateItemProductionStatus(itemId, st) {
         try {
-            const res = await fetch(`/api/order-items/${itemId}/status?status=${newStatus}`, { method: 'PATCH' });
-            if (!res.ok) throw new Error("Failed to update item status");
+            const res = await fetch(`/api/order-items/${itemId}/status?status=${encodeURIComponent(st)}`, { method: "PATCH" });
+            if (!res.ok) throw new Error("Failed to update item status.");
             await loadOrderDetails();
-        } catch (e) {
-            console.error(e);
-            alert("Error updating item production status.");
-            loadOrderDetails();
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
+            await loadOrderDetails();
         }
     }
 
-    async function promptItemNotes(itemId, currentNotes) {
-        const newNotes = prompt("Production Notes for this item:", currentNotes);
-        if (newNotes === null) return; // cancelou
-
+    async function promptItemNotes(itemId) {
+        const item = (currentOrder?.items || []).find(i => Number(i.id) === Number(itemId));
+        const notes = prompt("Production Notes for this item:", item?.productionNotes || "");
+        if (notes === null) return;
         try {
             const res = await fetch(`/api/order-items/${itemId}/notes`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productionNotes: newNotes })
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productionNotes: notes })
             });
-            if (!res.ok) throw new Error("Failed to update notes");
+            if (!res.ok) throw new Error("Failed to update notes.");
             await loadOrderDetails();
-        } catch (e) {
-            console.error(e);
-            alert("Error updating item notes.");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 
     function toggleEditDueDate() {
-        const label = document.getElementById('dueDate');
-        const row = document.getElementById('dueDateEditRow');
-        const isHidden = row.style.display === 'none';
-
-        if (isHidden) {
-            document.getElementById('dueDateInput').value = currentOrder?.dueDate || '';
-        }
-
-        label.style.display = isHidden ? 'none' : 'block';
-        row.style.display = isHidden ? 'flex' : 'none';
+        const row = document.getElementById("dueDateEditRow");
+        const show = row.style.display === "none";
+        if (show) document.getElementById("dueDateInput").value = currentOrder?.dueDate || "";
+        document.getElementById("dueDate").style.display = show ? "none" : "block";
+        row.style.display = show ? "flex" : "none";
     }
 
     async function saveDueDate() {
-        const newDueDate = document.getElementById('dueDateInput').value;
-        if (!newDueDate) {
-            alert("Please select a valid date.");
-            return;
-        }
-
+        const dueDate = document.getElementById("dueDateInput").value;
+        if (!dueDate) return showMessage("Please select a valid date.", "error");
         try {
-            const updatedOrder = { ...currentOrder, dueDate: newDueDate };
-
             const res = await fetch(`/api/orders/${orderId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedOrder)
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...currentOrder, dueDate })
             });
-
-            if (!res.ok) throw new Error("Failed to update due date");
-            alert("Due date updated!");
+            if (!res.ok) throw new Error("Failed to update due date.");
+            await loadOrderDetails();
             toggleEditDueDate();
-            loadOrderDetails();
-        } catch (e) {
-            console.error(e);
-            alert("Error updating due date.");
+            showMessage("Due date updated.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 
     function toggleEditCustomer() {
-        const label = document.getElementById('customerName');
-        const row = document.getElementById('customerEditRow');
-        const isHidden = row.style.display === 'none';
-
-        if (isHidden) {
-            loadCustomerOptions();
-        }
-
-        label.style.display = isHidden ? 'none' : 'block';
-        row.style.display = isHidden ? 'flex' : 'none';
+        const row = document.getElementById("customerEditRow");
+        const show = row.style.display === "none";
+        if (show) loadCustomerOptions();
+        document.getElementById("customerName").style.display = show ? "none" : "block";
+        row.style.display = show ? "flex" : "none";
     }
 
     async function loadCustomerOptions() {
+        const select = document.getElementById("customerSelect");
         try {
             const res = await fetch("/api/customers");
             if (!res.ok) throw new Error("Could not load customers.");
             const customers = await res.json();
-
-            const select = document.getElementById("customerSelect");
             select.innerHTML = customers.map(c => {
                 const name = c.customerName || c.companyName || c.name || `Customer #${c.id}`;
-                const selected = currentOrder?.customer?.id === c.id ? "selected" : "";
-                return `<option value="${c.id}" ${selected}>${name}</option>`;
+                const selected = Number(currentOrder?.customer?.id) === Number(c.id) ? "selected" : "";
+                return `<option value="${c.id}" ${selected}>${escapeHtml(name)}</option>`;
             }).join("");
-        } catch (e) {
-            console.error(e);
-            alert("Error loading customer list.");
+            refreshSearchableSelect(select);
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 
     async function saveCustomerChange() {
-        const newCustomerId = document.getElementById("customerSelect").value;
-
+        const customerId = document.getElementById("customerSelect").value;
+        if (!customerId) return showMessage("Select a customer.", "error");
         try {
-            const updatedOrder = { ...currentOrder, customer: { id: Number(newCustomerId) } };
-
             const res = await fetch(`/api/orders/${orderId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedOrder)
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...currentOrder, customer: { id: Number(customerId) } })
             });
-
-            if (!res.ok) throw new Error("Failed to update customer");
-            alert("Customer updated!");
+            if (!res.ok) throw new Error("Failed to update customer.");
+            await loadOrderDetails();
             toggleEditCustomer();
-            loadOrderDetails();
-        } catch (e) {
-            console.error(e);
-            alert("Error updating customer.");
+            showMessage("Customer updated.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 
     async function sendInvoice() {
         if (!confirm("Send this invoice to the customer by email?")) return;
-
         try {
-            const res = await fetch(`/api/orders/${orderId}/send-invoice`, { method: 'POST' });
-            const data = await res.json();
-
+            const res = await fetch(`/api/orders/${orderId}/send-invoice`, { method: "POST" });
+            const data = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(data.error || "Failed to send invoice.");
-
-            alert("Invoice email sent successfully!");
+            showMessage("Invoice email sent successfully.", "success");
             window.print();
-        } catch (e) {
-            console.error(e);
-            alert(e.message || "Error sending invoice.");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
-
-    function escapeHtml(val) {
-        const div = document.createElement("div");
-        div.textContent = val == null ? "" : String(val);
-        return div.innerHTML;
-    }
-
-    function escapeForJs(val) {
-        return (val || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        initItemOptions();
-        loadOrderDetails();
-        loadProducts();
-    });
 
     async function saveOrderNotes() {
-        const notes = document.getElementById('orderNotesInput').value;
         try {
             const res = await fetch(`/api/orders/${orderId}/notes`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ notes: notes })
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ notes: document.getElementById("orderNotesInput").value })
             });
-            if (!res.ok) throw new Error("Failed to update order notes");
-            alert("Order notes saved!");
-        } catch (e) {
-            console.error(e);
-            alert("Error saving order notes.");
+            if (!res.ok) throw new Error("Failed to update order notes.");
+            showMessage("Order notes saved.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 
-</script>
+    function refreshSearchableSelect(select) {
+        if (!select) return;
+        if (select.__searchable) select.__searchable.sync();
+        else makeSelectSearchable(select);
+    }
 
+    function makeSelectSearchable(select) {
+        if (!select || select.__searchable) return;
+        const wrapper = document.createElement("div");
+        wrapper.className = "searchable-select";
+        if (select.style.width) wrapper.style.width = select.style.width;
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "searchable-input";
+        input.autocomplete = "off";
+        input.placeholder = "Type to search...";
+        const dropdown = document.createElement("div");
+        dropdown.className = "searchable-dropdown";
+        wrapper.insertBefore(input, select);
+        wrapper.insertBefore(dropdown, select);
+        select.classList.add("searchable-hidden-select");
+
+        const state = { activeIndex: -1, visibleOptions: [] };
+        const sync = () => {
+            const option = select.options[select.selectedIndex];
+            input.value = option ? option.textContent.trim() : "";
+        };
+        const close = () => { dropdown.style.display = "none"; state.activeIndex = -1; };
+        const choose = option => {
+            select.value = option.value;
+            select.dispatchEvent(new Event("change"));
+            sync();
+            close();
+        };
+        const render = filter => {
+            const terms = String(filter || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+            state.visibleOptions = Array.from(select.options).filter(option =>
+                terms.every(term => option.textContent.toLowerCase().includes(term))
+            );
+            dropdown.innerHTML = state.visibleOptions.length
+                ? state.visibleOptions.map((option, idx) => `<div class="searchable-option${idx === state.activeIndex ? " active" : ""}" data-index="${idx}">${escapeHtml(option.textContent.trim())}</div>`).join("")
+                : '<div class="searchable-empty">No matches found</div>';
+            dropdown.style.display = "block";
+        };
+
+        dropdown.addEventListener("mousedown", e => {
+            const t = e.target.closest(".searchable-option");
+            if (!t) return;
+            e.preventDefault();
+            const option = state.visibleOptions[Number(t.dataset.index)];
+            if (option) choose(option);
+            input.focus();
+        });
+        input.addEventListener("focus", () => { input.select(); state.activeIndex = -1; render(""); });
+        input.addEventListener("input", () => { state.activeIndex = -1; render(input.value); });
+        input.addEventListener("blur", () => setTimeout(() => { close(); sync(); }, 150));
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const option = state.visibleOptions[state.activeIndex >= 0 ? state.activeIndex : 0];
+                if (dropdown.style.display === "block" && option) choose(option);
+            } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                state.activeIndex = Math.min(state.activeIndex + 1, state.visibleOptions.length - 1);
+                render(input.value);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                state.activeIndex = Math.max(state.activeIndex - 1, 0);
+                render(input.value);
+            } else if (e.key === "Escape") {
+                close();
+                sync();
+            }
+        });
+        state.sync = sync;
+        select.__searchable = state;
+        sync();
+    }
+
+    function showMessage(text, type) {
+        const msg = document.getElementById("message");
+        msg.textContent = text;
+        msg.className = `message ${type}`;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (type === "success") setTimeout(() => { msg.className = "message"; }, 5000);
+    }
+
+    function money(v) { return "$" + Number(v || 0).toFixed(2); }
+    function escapeHtml(v) {
+        return String(v ?? "").replaceAll("&", "&amp;").replaceAll("<​", "&lt;")
+            .replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+</script>
 </body>
 </html>

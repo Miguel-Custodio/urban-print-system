@@ -52,6 +52,46 @@ public class Product {
 
     private boolean active = true;
 
+    // ===== Custom pricing =====
+    @Column(precision = 10, scale = 4)
+    private BigDecimal printCostPerSqft;
+
+    @Column(precision = 10, scale = 4)
+    private BigDecimal stockCostPerSqft;
+
+    private BigDecimal stockSheetWidth;
+    private BigDecimal stockSheetHeight;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal stockSheetCost;
+
+    @Column(precision = 10, scale = 4)
+    private BigDecimal cutCostPerLinearFt;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal cutMinimum;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("productOptions")
+    private List<ProductOption> options = new ArrayList<>();
+
+    public BigDecimal getPrintCostPerSqft() { return printCostPerSqft; }
+    public void setPrintCostPerSqft(BigDecimal v) { this.printCostPerSqft = v; }
+    public BigDecimal getStockCostPerSqft() { return stockCostPerSqft; }
+    public void setStockCostPerSqft(BigDecimal v) { this.stockCostPerSqft = v; }
+    public BigDecimal getStockSheetWidth() { return stockSheetWidth; }
+    public void setStockSheetWidth(BigDecimal v) { this.stockSheetWidth = v; }
+    public BigDecimal getStockSheetHeight() { return stockSheetHeight; }
+    public void setStockSheetHeight(BigDecimal v) { this.stockSheetHeight = v; }
+    public BigDecimal getStockSheetCost() { return stockSheetCost; }
+    public void setStockSheetCost(BigDecimal v) { this.stockSheetCost = v; }
+    public BigDecimal getCutCostPerLinearFt() { return cutCostPerLinearFt; }
+    public void setCutCostPerLinearFt(BigDecimal v) { this.cutCostPerLinearFt = v; }
+    public BigDecimal getCutMinimum() { return cutMinimum; }
+    public void setCutMinimum(BigDecimal v) { this.cutMinimum = v; }
+    public List<ProductOption> getOptions() { return options; }
+    public void setOptions(List<ProductOption> options) { this.options = options; }
+
     // 5. Sizes / Variations (each size has its own price scales)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -205,3 +245,4 @@ public class Product {
         }
     }
 }
+

@@ -59,6 +59,14 @@ public class Order {
     @Column(name = "total_amount", precision = 12, scale = 2, nullable = false)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
+    // Turnaround herdado da quote de origem: "3-5", "5-7", "7-10" ou "RUSH"
+    @Column(name = "turnaround_option", length = 20)
+    private String turnaroundOption;
+
+    // Rush fee herdado da quote (US$ 20.00 quando RUSH); entra na base taxavel
+    @Column(name = "rush_fee", precision = 10, scale = 2)
+    private BigDecimal rushFee = BigDecimal.ZERO;
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 
@@ -140,6 +148,12 @@ public class Order {
 
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+
+    public String getTurnaroundOption() { return turnaroundOption; }
+    public void setTurnaroundOption(String turnaroundOption) { this.turnaroundOption = turnaroundOption; }
+
+    public BigDecimal getRushFee() { return rushFee; }
+    public void setRushFee(BigDecimal rushFee) { this.rushFee = rushFee; }
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }

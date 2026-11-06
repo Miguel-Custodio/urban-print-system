@@ -28,8 +28,9 @@ public class Quote {
 
     private LocalDate expiryDate;
 
-    @Column(nullable = false)
-    private String status = "DRAFT"; // DRAFT, SENT, ACCEPTED, REJECTED, CONVERTED
+    // Sem DRAFT: null enquanto aberta; CONVERTED quando vira pedido
+    @Column
+    private String status;
 
     // Delivery: PICKUP, ZONE_A, ZONE_B, ZONE_C, ZONE_F, COURIER
     private String deliveryMethod;
@@ -54,6 +55,13 @@ public class Quote {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    // Turnaround informado na quote: "3-5", "5-7", "7-10" ou "RUSH"
+    @Column(length = 20)
+    private String turnaroundOption;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal rushFee = BigDecimal.ZERO;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -105,6 +113,12 @@ public class Quote {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    public String getTurnaroundOption() { return turnaroundOption; }
+    public void setTurnaroundOption(String turnaroundOption) { this.turnaroundOption = turnaroundOption; }
+
+    public BigDecimal getRushFee() { return rushFee; }
+    public void setRushFee(BigDecimal rushFee) { this.rushFee = rushFee; }
 
     public List<QuoteItem> getItems() { return items; }
     public void setItems(List<QuoteItem> items) {
