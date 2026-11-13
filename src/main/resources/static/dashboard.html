@@ -194,6 +194,7 @@
         .summary-card.success-card { border-left: 5px solid var(--success); }
         .summary-card.graphics-card { border-left: 5px solid #7c3aed; }
         .summary-card.production-card { border-left: 5px solid #0891b2; }
+        .summary-card.installing-card { border-left: 5px solid #0891b2; }
         .summary-card.financial-card { border-left: 5px solid #0f766e; }
 
         .summary-card.financial-card .value {
@@ -210,6 +211,15 @@
         .summary-card.goal-card .value {
             font-size: 1.55rem;
             white-space: nowrap;
+        }
+
+        .summary-card.clickable {
+            cursor: pointer;
+        }
+
+        .summary-card.clickable:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
         }
 
         .summary-card .subvalue {
@@ -584,11 +594,17 @@
         .FINISHING { background: #fae8ff; color: #86198f; }
         .READY_FOR_PICKUP { background: #dcfce7; color: #166534; }
         .SHIPPING { background: #f0fdf4; color: #15803d; }
+        .INSTALLING { background: #cffafe; color: #0e7490; }
         .COMPLETED { background: #f1f5f9; color: #334155; }
         .CANCELLED { background: #fee2e2; color: #991b1b; }
 
         .overdue { color: var(--danger); font-weight: bold; }
         .due-today { color: var(--warning); font-weight: bold; }
+
+        .photos-warning {
+            color: var(--danger);
+            font-weight: bold;
+        }
 
         /* ---- Bottleneck bar chart ---- */
         .stage-list {
@@ -851,6 +867,11 @@
                     <div id="shippingCount" class="value">—</div>
                 </a>
 
+                <a href="orders.html?status=INSTALLING" class="summary-card installing-card">
+                    <div class="label">Installing</div>
+                    <div id="installingCount" class="value">—</div>
+                </a>
+
                 <a href="orders.html?filter=active" class="summary-card financial-card">
                     <div class="label">Active Pipeline Value</div>
                     <div id="activePipelineValue" class="value">—</div>
@@ -866,19 +887,22 @@
                     <div id="completedOrdersValue" class="value">—</div>
                 </a>
 
-                <div class="summary-card sales-card">
+                <div class="summary-card sales-card clickable" onclick="openSalesTodayModal()" title="Click to view today's orders">
                     <div class="label">Sales Today</div>
                     <div id="salesTodayValue" class="value">—</div>
+                    <div class="subvalue">Click to view orders</div>
                 </div>
 
-                <div class="summary-card sales-card">
+                <div class="summary-card sales-card clickable" onclick="openSalesWeekModal()" title="Click to view this week's orders">
                     <div class="label">Sales This Week</div>
                     <div id="salesWeekValue" class="value">—</div>
+                    <div class="subvalue">Click to view orders</div>
                 </div>
 
-                <div class="summary-card sales-card">
+                <div class="summary-card sales-card clickable" onclick="openSalesMonthModal()" title="Click to view this month's orders">
                     <div class="label">Sales This Month</div>
                     <div id="salesMonthValue" class="value">—</div>
+                    <div class="subvalue">Click to view orders</div>
                 </div>
 
                 <div class="summary-card goal-card">
@@ -1011,7 +1035,7 @@
                     <tbody id="salesModalBody"></tbody>
                 </table>
             </div>
-            <div id="salesModalEmpty" class="empty-state" style="display:none;">No orders for this month.</div>
+            <div id="salesModalEmpty" class="empty-state" style="display:none;">No orders for this period.</div>
         </div>
     </div>
 
@@ -1027,6 +1051,7 @@
             FINISHING: "Finishing",
             READY_FOR_PICKUP: "Ready for Pick Up",
             SHIPPING: "Shipping",
+            INSTALLING: "Installing",
             COMPLETED: "Completed",
             CANCELLED: "Cancelled"
         };
@@ -1042,12 +1067,14 @@
             FINISHING: "#86198f",
             READY_FOR_PICKUP: "#166534",
             SHIPPING: "#15803d",
+            INSTALLING: "#0891b2",
             COMPLETED: "#334155",
             CANCELLED: "#991b1b"
         };
 
         const ORDER_STATUS_COLORS = {
             PENDING_PAYMENT: "#d97706",
+            INSTALLING: "#0891b2",
             COMPLETED: "#334155",
             CANCELLED: "#991b1b"
         };
@@ -1066,6 +1093,9 @@
         let monthlySalesOrders = {};
         let lastAllItems = [];
         let lastToday = "";
+        let lastSalesTodayOrders = [];
+        let lastSalesWeekOrders = [];
+        let lastSalesMonthOrders = [];
 
         async function loadDashboard() {
             const errBox = document.getElementById("errorMessage");
@@ -1154,14 +1184,21 @@
             const weekStartKey = toLocalDateKey(weekStart);
             const monthKey = today.slice(0, 7);
             const saleOrders = orders.filter(order => order.status !== "CANCELLED");
-            const salesToday = saleOrders.filter(order => getOrderDateKey(order) === today)
-                .reduce((sum, order) => sum + getOrderTotal(order), 0);
-            const salesWeek = saleOrders.filter(order => {
+
+            const salesTodayOrders = saleOrders.filter(order => getOrderDateKey(order) === today);
+            const salesWeekOrders = saleOrders.filter(order => {
                 const dateKey = getOrderDateKey(order);
                 return dateKey >= weekStartKey && dateKey <= today;
-            }).reduce((sum, order) => sum + getOrderTotal(order), 0);
-            const salesMonth = saleOrders.filter(order => getOrderDateKey(order).slice(0, 7) === monthKey)
-                .reduce((sum, order) => sum + getOrderTotal(order), 0);
+            });
+            const salesMonthOrders = saleOrders.filter(order => getOrderDateKey(order).slice(0, 7) === monthKey);
+
+            const salesToday = salesTodayOrders.reduce((sum, order) => sum + getOrderTotal(order), 0);
+            const salesWeek = salesWeekOrders.reduce((sum, order) => sum + getOrderTotal(order), 0);
+            const salesMonth = salesMonthOrders.reduce((sum, order) => sum + getOrderTotal(order), 0);
+
+            lastSalesTodayOrders = salesTodayOrders;
+            lastSalesWeekOrders = salesWeekOrders;
+            lastSalesMonthOrders = salesMonthOrders;
 
             document.getElementById("salesTodayValue").textContent = formatCurrency(salesToday);
             document.getElementById("salesWeekValue").textContent = formatCurrency(salesWeek);
@@ -1170,6 +1207,7 @@
             document.getElementById("salesGoalProgress").textContent =
                 formatCurrency(salesMonth) + " of " + formatCurrency(MONTHLY_SALES_GOAL) + " goal" +
                 (salesMonth >= MONTHLY_SALES_GOAL ? " · Goal reached" : "");
+
             const overdue = allItems.filter(x => {
                 const s = x.item.productionStatus || "PENDING_FILE";
                 return s !== "COMPLETED" && s !== "CANCELLED" && x.order.dueDate && x.order.dueDate < today;
@@ -1194,6 +1232,9 @@
 
             document.getElementById("shippingCount").textContent =
                 allItems.filter(x => (x.item.productionStatus || "") === "SHIPPING").length;
+
+            document.getElementById("installingCount").textContent =
+                allItems.filter(x => (x.item.productionStatus || "") === "INSTALLING").length;
 
             lastAllItems = allItems;
             lastToday = today;
@@ -1426,18 +1467,18 @@
                 goalLine;
         }
 
-        /* ---- Sales modal ---- */
-        function openSalesModal(monthKey) {
-            const list = monthlySalesOrders[monthKey] || [];
+        /* ---- Sales modal (month bars + Today / Week / Month cards) ---- */
+        function fillSalesModal(title, list, includeGoal) {
             const total = list.reduce((sum, o) => sum + getOrderTotal(o), 0);
-            const parts = monthKey.split("-");
-            const monthLabel = new Date(Number(parts[0]), Number(parts[1]) - 1, 1)
-                .toLocaleString("en-US", { month: "long", year: "numeric" });
-            const pct = MONTHLY_SALES_GOAL > 0 ? Math.round((total / MONTHLY_SALES_GOAL) * 100) : 0;
 
-            document.getElementById("salesModalTitle").textContent = "Sales — " + monthLabel;
-            document.getElementById("salesModalSummary").textContent =
-                list.length + " orders · " + formatCurrency(total) + " · " + pct + "% of the " + formatCurrency(MONTHLY_SALES_GOAL) + " goal";
+            let summary = list.length + " orders · " + formatCurrency(total);
+            if (includeGoal && MONTHLY_SALES_GOAL > 0) {
+                const pct = Math.round((total / MONTHLY_SALES_GOAL) * 100);
+                summary += " · " + pct + "% of the " + formatCurrency(MONTHLY_SALES_GOAL) + " goal";
+            }
+
+            document.getElementById("salesModalTitle").textContent = title;
+            document.getElementById("salesModalSummary").textContent = summary;
 
             const tbody = document.getElementById("salesModalBody");
             tbody.innerHTML = list
@@ -1459,6 +1500,28 @@
 
             document.getElementById("salesModalEmpty").style.display = list.length === 0 ? "block" : "none";
             document.getElementById("salesModalOverlay").classList.add("open");
+        }
+
+        function monthKeyLabel(monthKey) {
+            const parts = monthKey.split("-");
+            return new Date(Number(parts[0]), Number(parts[1]) - 1, 1)
+                .toLocaleString("en-US", { month: "long", year: "numeric" });
+        }
+
+        function openSalesModal(monthKey) {
+            fillSalesModal("Sales — " + monthKeyLabel(monthKey), monthlySalesOrders[monthKey] || [], true);
+        }
+
+        function openSalesTodayModal() {
+            fillSalesModal("Sales — Today (" + (lastToday || "") + ")", lastSalesTodayOrders, false);
+        }
+
+        function openSalesWeekModal() {
+            fillSalesModal("Sales — This Week", lastSalesWeekOrders, false);
+        }
+
+        function openSalesMonthModal() {
+            fillSalesModal("Sales — " + monthKeyLabel(lastToday ? lastToday.slice(0, 7) : ""), lastSalesMonthOrders, true);
         }
 
         function closeSalesModal() {
@@ -1494,6 +1557,10 @@
                     else if (order.dueDate === today) dueClass = "due-today";
                 }
 
+                const photosWarn = st === "INSTALLING" && !hasInstallationPhotos(order)
+                    ? ' <span class="photos-warning">⚠ photos</span>'
+                    : "";
+
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td><a href="order-details.html?id=${order.id}" class="order-link">${escapeHtml(order.orderNumber)}</a></td>
@@ -1501,7 +1568,7 @@
                     <td>${escapeHtml(itemName)}</td>
                     <td>${formatCurrency(getOrderTotal(order))}</td>
                     <td class="${dueClass}">${escapeHtml(order.dueDate || "Not set")}</td>
-                    <td><a href="orders.html?status=${st}" class="status-badge-link"><span class="status-badge ${st}">${escapeHtml(STAGES[st] || st)}</span></a></td>
+                    <td><a href="orders.html?status=${st}" class="status-badge-link"><span class="status-badge ${st}">${escapeHtml(STAGES[st] || st)}</span></a>${photosWarn}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1574,11 +1641,16 @@
                     else if (order.dueDate === today) dueClass = "due-today";
                     }
 
+                    const photosWarn = key === "INSTALLING" && !hasInstallationPhotos(order)
+                    ? '<div class="photos-warning">⚠ Installation photos required</div>'
+                    : "";
+
                     cardsHtml += `
                     <div class="kanban-card">
                     <a href="order-details.html?id=${order.id}" class="card-order">${escapeHtml(order.orderNumber)}</a>
                     <div class="card-customer">${escapeHtml(custName)}</div>
                     <div class="card-item">${escapeHtml(itemName)}</div>
+                    ${photosWarn}
                     <div class="card-footer">
                     <span class="${dueClass}">${escapeHtml(order.dueDate || "No due date")}</span>
                     <span>${formatCurrency(getOrderTotal(order))}</span>
@@ -1598,6 +1670,10 @@
 
                 board.appendChild(column);
             });
+        }
+
+        function hasInstallationPhotos(order) {
+            return String((order && order.installationPhotos) || "").trim() !== "";
         }
 
         function getOrderTotal(order) {

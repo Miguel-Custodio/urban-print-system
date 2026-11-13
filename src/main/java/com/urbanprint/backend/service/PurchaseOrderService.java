@@ -5,6 +5,7 @@ import com.urbanprint.backend.repository.InventoryItemRepository;
 import com.urbanprint.backend.repository.PurchaseOrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.urbanprint.backend.repository.SupplierRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,15 +17,18 @@ public class PurchaseOrderService {
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final InventoryItemRepository inventoryItemRepository;
     private final InventoryService inventoryService;
+    private final SupplierRepository supplierRepository;
 
     public PurchaseOrderService(
             PurchaseOrderRepository purchaseOrderRepository,
             InventoryItemRepository inventoryItemRepository,
-            InventoryService inventoryService
+            InventoryService inventoryService,
+            SupplierRepository supplierRepository
     ) {
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.inventoryService = inventoryService;
+        this.supplierRepository = supplierRepository;
     }
 
     @Transactional(readOnly = true)
@@ -39,9 +43,7 @@ public class PurchaseOrderService {
 
     @Transactional
     public PurchaseOrder create(PurchaseOrder order) {
-        if (order.getSupplier() == null || order.getSupplier().isBlank()) {
-            throw new IllegalArgumentException("Supplier is required.");
-        }
+        resolveSupplier(order);
         if (order.getLines() == null || order.getLines().isEmpty()) {
             throw new IllegalArgumentException("Add at least one material to the purchase order.");
         }
@@ -162,6 +164,26 @@ public class PurchaseOrderService {
 
         order.setStatus(PurchaseOrderStatus.CANCELLED);
         return purchaseOrderRepository.save(order);
+    }
+
+    private void resolveSupplier(PurchaseOrder order) {
+        Long supplierId = order.getSupplierRef() == null
+                ? null : order.getSupplierRef().getId();
+
+        if (supplierId != null) {
+            Supplier supplier = supplierRepository.findById(supplierId)
+                    .orElseThrow(() -> new IllegalArgumentException(
+                    "Supplier not found: " + supplierId
+                    ));
+
+            order.setSupplierRef(supplier);
+
+            if (order.getSupplier() == null || order.getSupplier().isBlank()) {
+                order.setSupplier(supplier.getName());
+            }
+        } else if (order.getSupplier() == null || order.getSupplier().isBlank()) {
+            throw new IllegalArgumentException("Supplier is required.");
+        }
     }
 
     private void validateLine(PurchaseOrderLine line) {

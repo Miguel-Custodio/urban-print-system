@@ -47,6 +47,10 @@ public class QuoteService {
             quote.setPstRate(new BigDecimal("7.00"));
         }
 
+        if (quote.getRushFeeType() == null) {
+            quote.setRushFeeType("FIXED");
+        }
+
         if (quote.getItems() != null) {
             for (QuoteItem item : quote.getItems()) {
                 item.setQuote(quote);
@@ -72,6 +76,19 @@ public class QuoteService {
             existing.setPstRate(updatedQuote.getPstRate());
             existing.setDeliveryMethod(updatedQuote.getDeliveryMethod());
 
+            // Rush editavel: tipo (FIXED/PERCENT), percentual e o valor fixo em $
+            // (usado quando FIXED). O valor final e sempre recalculado em
+            // calculateTotals -> applyRushFee.
+            if (updatedQuote.getRushFeeType() != null) {
+                existing.setRushFeeType(updatedQuote.getRushFeeType());
+            }
+            if (updatedQuote.getRushFeePercent() != null) {
+                existing.setRushFeePercent(updatedQuote.getRushFeePercent());
+            }
+            if (updatedQuote.getRushFee() != null) {
+                existing.setRushFee(updatedQuote.getRushFee());
+            }
+
             if (updatedQuote.getItems() == null) {
                 updatedQuote.setItems(new java.util.ArrayList<>());
             }
@@ -94,9 +111,9 @@ public class QuoteService {
                 QuoteItem matched = newItem.getId() == null
                     ? null
                     : existing.getItems().stream()
-                        .filter(oldItem -> oldItem.getId().equals(newItem.getId()))
-                        .findFirst()
-                        .orElse(null);
+                    .filter(oldItem -> oldItem.getId().equals(newItem.getId()))
+                    .findFirst()
+                    .orElse(null);
 
                 if (matched != null) {
                     matched.setProduct(newItem.getProduct());
@@ -129,8 +146,8 @@ public class QuoteService {
             for (QuoteItem item : quote.getItems()) {
                 if (item.getQuantity() != null && item.getUnitPrice() != null) {
                     BigDecimal itemTotal = item.getUnitPrice()
-                        .multiply(BigDecimal.valueOf(item.getQuantity()))
-                        .setScale(2, RoundingMode.HALF_UP);
+                    .multiply(BigDecimal.valueOf(item.getQuantity()))
+                    .setScale(2, RoundingMode.HALF_UP);
                     item.setTotalPrice(itemTotal);
                     subtotal = subtotal.add(itemTotal);
                 }
@@ -139,12 +156,10 @@ public class QuoteService {
 
         quote.setSubtotal(subtotal);
 
-        // Rush fee: $20 quando a opcao e RUSH (decidido pelo backend,
-        // o front nao manda o valor). Vale na criacao E na edicao.
-        BigDecimal rush = "RUSH".equals(quote.getTurnaroundOption())
-                ? new BigDecimal("20.00")
-                : BigDecimal.ZERO;
-        quote.setRushFee(rush);
+        // Rush fee editavel: valor fixo em $ ou % do subtotal (antes dos impostos)
+        applyRushFee(quote, subtotal);
+
+        BigDecimal rush = quote.getRushFee() != null ? quote.getRushFee() : BigDecimal.ZERO;
 
         // Base taxavel = subtotal + rush fee
         BigDecimal taxable = subtotal.add(rush);
@@ -163,6 +178,35 @@ public class QuoteService {
         quote.setTotalAmount(taxable.add(gstAmount).add(pstAmount));
     }
 
+    // Rush fee so vale quando o turnaround e RUSH.
+    // FIXED = valor fixo em $ (o que vier no campo; sem valor, usa o padrao de $20).
+    // PERCENT = percentual do subtotal (base antes dos impostos).
+    private void applyRushFee(Quote quote, BigDecimal subtotal) {
+        if (!"RUSH".equals(quote.getTurnaroundOption())) {
+            quote.setRushFee(BigDecimal.ZERO);
+            if (quote.getRushFeeType() == null) {
+                quote.setRushFeeType("FIXED");
+            }
+            return;
+        }
+
+        String type = quote.getRushFeeType() == null ? "FIXED" : quote.getRushFeeType();
+
+        if ("PERCENT".equals(type)) {
+            BigDecimal percent = quote.getRushFeePercent() == null
+                    ? BigDecimal.ZERO
+                    : quote.getRushFeePercent();
+
+            quote.setRushFee(subtotal.multiply(percent)
+                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
+        } else {
+            quote.setRushFeeType("FIXED");
+            quote.setRushFee(quote.getRushFee() == null
+                    ? new BigDecimal("20.00")
+                    : quote.getRushFee().max(BigDecimal.ZERO));
+        }
+    }
+
     private String generateQuoteNumber() {
         long maxSeq = 1000;
 
@@ -174,7 +218,7 @@ public class QuoteService {
                     long seq = Long.parseLong(num.substring(3));
 
                     if (seq > maxSeq) {
-                        maxSeq = seq;
+                    maxSeq = seq;
                     }
                 } catch (NumberFormatException ignored) {
                     // ignora quote numbers fora do padrao QU-XXXX

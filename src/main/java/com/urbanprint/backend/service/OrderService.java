@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +68,10 @@ public class OrderService {
             order.setPstRate(new BigDecimal("7.00"));
         }
 
+        if (order.getRushFeeType() == null) {
+            order.setRushFeeType("FIXED");
+        }
+
         if (order.getRushFee() == null) {
             order.setRushFee(BigDecimal.ZERO);
         }
@@ -99,6 +104,12 @@ public class OrderService {
             // salva sem esses campos (evita apagar o rush em todo save).
             if (updatedOrder.getTurnaroundOption() != null) {
                 existing.setTurnaroundOption(updatedOrder.getTurnaroundOption());
+            }
+            if (updatedOrder.getRushFeeType() != null) {
+                existing.setRushFeeType(updatedOrder.getRushFeeType());
+            }
+            if (updatedOrder.getRushFeePercent() != null) {
+                existing.setRushFeePercent(updatedOrder.getRushFeePercent());
             }
             if (updatedOrder.getRushFee() != null) {
                 existing.setRushFee(updatedOrder.getRushFee());
@@ -205,6 +216,8 @@ public class OrderService {
         newOrder.setGstRate(original.getGstRate());
         newOrder.setPstRate(original.getPstRate());
         newOrder.setTurnaroundOption(original.getTurnaroundOption());
+        newOrder.setRushFeeType(original.getRushFeeType());
+        newOrder.setRushFeePercent(original.getRushFeePercent());
         newOrder.setRushFee(original.getRushFee() != null ? original.getRushFee() : BigDecimal.ZERO);
         newOrder.setNotes("Re-order of " + original.getOrderNumber());
         newOrder.setOrderNumber(generateOrderNumber());
@@ -315,6 +328,8 @@ public class OrderService {
 
         // Herda o turnaround e o rush fee do pedido de origem
         quote.setTurnaroundOption(order.getTurnaroundOption());
+        quote.setRushFeeType(order.getRushFeeType() != null ? order.getRushFeeType() : "FIXED");
+        quote.setRushFeePercent(order.getRushFeePercent());
         quote.setRushFee(order.getRushFee() != null ? order.getRushFee() : BigDecimal.ZERO);
 
         quote.setNotes("Converted from order " + order.getOrderNumber() + " with updated pricing.");
@@ -387,9 +402,10 @@ public class OrderService {
         }
         quote.setSubtotal(subtotal);
 
-        // Rush fee entra na base taxavel, igual ao calculo da QuoteService
+        // Rush fee editavel (fixo ou % do subtotal), igual ao calculo da QuoteService
+        applyRushFee(quote, subtotal);
+
         BigDecimal rush = quote.getRushFee() != null ? quote.getRushFee() : BigDecimal.ZERO;
-        quote.setRushFee(rush);
 
         BigDecimal taxable = subtotal.add(rush);
 
@@ -447,7 +463,13 @@ public class OrderService {
 
         // Herda o turnaround e o rush fee da quote
         order.setTurnaroundOption(quote.getTurnaroundOption());
+        order.setRushFeeType(quote.getRushFeeType() != null ? quote.getRushFeeType() : "FIXED");
+        order.setRushFeePercent(quote.getRushFeePercent());
         order.setRushFee(quote.getRushFee() != null ? quote.getRushFee() : BigDecimal.ZERO);
+
+        // Due date automatica pelo tempo de producao da quote, em dias UTEIS
+        // contados da data da conversao. A tela do pedido permite alterar depois.
+        order.setDueDate(calculateDueDateFromTurnaround(quote.getTurnaroundOption()));
 
         String notes = "Converted from quote " + quote.getQuoteNumber();
         if (quote.getNotes() != null && !quote.getNotes().trim().isEmpty()) {
@@ -486,6 +508,47 @@ public class OrderService {
         return savedOrder;
     }
 
+    // Due date em dias UTEIS a partir da data da conversao:
+    // 3-5 -> 4, 5-7 -> 6, 7-10 -> 9 (ponto medio arredondado para cima),
+    // RUSH -> 1 dia util. Outros valores nao setam due date automatica.
+    private LocalDate calculateDueDateFromTurnaround(String turnaroundOption) {
+        Integer businessDays;
+
+        if (turnaroundOption == null) {
+            return null;
+        }
+
+        switch (turnaroundOption) {
+            case "3-5":
+                businessDays = 4;
+                break;
+            case "5-7":
+                businessDays = 6;
+                break;
+            case "7-10":
+                businessDays = 9;
+                break;
+            case "RUSH":
+                businessDays = 1;
+                break;
+            default:
+                return null;
+        }
+
+        LocalDate dueDate = LocalDate.now();
+
+        while (businessDays > 0) {
+            dueDate = dueDate.plusDays(1);
+
+            if (dueDate.getDayOfWeek() != DayOfWeek.SATURDAY
+                    && dueDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                businessDays--;
+            }
+        }
+
+        return dueDate;
+    }
+
     private void calculateTotals(Order order) {
         BigDecimal subtotal = BigDecimal.ZERO;
 
@@ -503,9 +566,10 @@ public class OrderService {
 
         order.setSubtotal(subtotal);
 
-        // Rush fee herdado da quote entra na base taxavel, igual a QuoteService
+        // Rush fee editavel (fixo em $ ou % do subtotal antes dos impostos)
+        applyRushFee(order, subtotal);
+
         BigDecimal rushFee = order.getRushFee() != null ? order.getRushFee() : BigDecimal.ZERO;
-        order.setRushFee(rushFee);
 
         BigDecimal taxable = subtotal.add(rushFee);
 
@@ -521,6 +585,54 @@ public class OrderService {
 
         // Total = Subtotal + Rush fee + GST + PST
         order.setTotalAmount(taxable.add(gstAmount).add(pstAmount));
+    }
+
+    // ---- Rush fee editavel: FIXED = valor fixo em $; PERCENT = % do subtotal
+    // (base antes dos impostos). So calcula quando o turnaround e RUSH;
+    // caso contrario o rush e zero. ----
+
+    private void applyRushFee(Quote quote, BigDecimal subtotal) {
+        if (!"RUSH".equals(quote.getTurnaroundOption())) {
+            quote.setRushFee(BigDecimal.ZERO);
+            if (quote.getRushFeeType() == null) {
+                quote.setRushFeeType("FIXED");
+            }
+            return;
+        }
+
+        String type = quote.getRushFeeType() == null ? "FIXED" : quote.getRushFeeType();
+
+        if ("PERCENT".equals(type)) {
+            BigDecimal percent = quote.getRushFeePercent() == null
+                    ? BigDecimal.ZERO
+                    : quote.getRushFeePercent();
+
+            quote.setRushFee(subtotal.multiply(percent)
+                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
+        } else {
+            quote.setRushFeeType("FIXED");
+            quote.setRushFee(quote.getRushFee() == null
+                    ? new BigDecimal("20.00")
+                    : quote.getRushFee().max(BigDecimal.ZERO));
+        }
+    }
+
+    private void applyRushFee(Order order, BigDecimal subtotal) {
+        String type = order.getRushFeeType() == null ? "FIXED" : order.getRushFeeType();
+
+        if ("PERCENT".equals(type)) {
+            BigDecimal percent = order.getRushFeePercent() == null
+                    ? BigDecimal.ZERO
+                    : order.getRushFeePercent();
+
+            order.setRushFee(subtotal.multiply(percent)
+                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP));
+        } else {
+            order.setRushFeeType("FIXED");
+            order.setRushFee(order.getRushFee() == null
+                    ? BigDecimal.ZERO
+                    : order.getRushFee().max(BigDecimal.ZERO));
+        }
     }
 
     private String generateOrderNumber() {

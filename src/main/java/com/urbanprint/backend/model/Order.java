@@ -63,12 +63,27 @@ public class Order {
     @Column(name = "turnaround_option", length = 20)
     private String turnaroundOption;
 
-    // Rush fee herdado da quote (US$ 20.00 quando RUSH); entra na base taxavel
+    // Rush fee: FIXED = valor fixo em $; PERCENT = % do subtotal (antes dos impostos)
+    @Column(name = "rush_fee_type", length = 10)
+    private String rushFeeType = "FIXED";
+
+    // Percentual usado quando rushFeeType = PERCENT
+    @Column(name = "rush_fee_percent", precision = 5, scale = 2)
+    private BigDecimal rushFeePercent;
+
+    // Rush fee em $ (fixo digitado ou calculado a partir do percentual);
+    // entra na base taxavel (GST/PST)
     @Column(name = "rush_fee", precision = 10, scale = 2)
     private BigDecimal rushFee = BigDecimal.ZERO;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    // Fotos da instalação: exigidas antes de mover o pedido/itens de INSTALLING para COMPLETED.
+    // URLs separadas por quebra de linha; podem ser servidas pelo próprio backend
+    // (/uploads/installation-photos/...) ou links externos.
+    @Column(name = "installation_photos", columnDefinition = "TEXT")
+    private String installationPhotos;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -152,11 +167,41 @@ public class Order {
     public String getTurnaroundOption() { return turnaroundOption; }
     public void setTurnaroundOption(String turnaroundOption) { this.turnaroundOption = turnaroundOption; }
 
+    public String getRushFeeType() { return rushFeeType; }
+    public void setRushFeeType(String rushFeeType) { this.rushFeeType = rushFeeType; }
+
+    public BigDecimal getRushFeePercent() { return rushFeePercent; }
+    public void setRushFeePercent(BigDecimal rushFeePercent) { this.rushFeePercent = rushFeePercent; }
+
     public BigDecimal getRushFee() { return rushFee; }
     public void setRushFee(BigDecimal rushFee) { this.rushFee = rushFee; }
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    public String getInstallationPhotos() { return installationPhotos; }
+    public void setInstallationPhotos(String installationPhotos) { this.installationPhotos = installationPhotos; }
+
+    // Lista das fotos (ignora linhas vazias)
+    public List<String> getInstallationPhotoList() {
+        List<String> result = new ArrayList<>();
+        if (installationPhotos != null && !installationPhotos.isBlank()) {
+            for (String url : installationPhotos.split("\\R")) {
+                if (url != null && !url.isBlank()) {
+                    result.add(url.trim());
+                }
+            }
+        }
+        return result;
+    }
+
+    public void setInstallationPhotoList(List<String> urls) {
+        this.installationPhotos = (urls == null || urls.isEmpty()) ? null : String.join("\n", urls);
+    }
+
+    public boolean hasInstallationPhotos() {
+        return !getInstallationPhotoList().isEmpty();
+    }
 
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }

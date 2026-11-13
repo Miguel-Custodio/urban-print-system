@@ -121,13 +121,85 @@
     border-color: var(--primary);
   }
 
+  .view-toggle {
+    display: flex;
+    gap: 4px;
+    background: #e9edf1;
+    padding: 3px;
+    border-radius: 8px;
+  }
+
+  .view-toggle button {
+    border: none;
+    background: transparent;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+  }
+
+  .view-toggle button.active {
+    background: #fff;
+    color: var(--primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  }
+
+  /* ===== BULK BAR ===== */
+  .bulk-bar {
+    position: sticky;
+    top: 10px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+  }
+
+  .bulk-count { font-weight: bold; font-size: 13px; }
+
+  .bulk-bar select {
+    padding: 7px 8px;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    font-size: 13px;
+  }
+
+  .bulk-move {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .bulk-clear {
+    background: transparent;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* ===== LIST VIEW ===== */
   .queue-grid {
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
 
-  /* ===== ORDER GROUP ===== */
   .order-group {
     background: var(--card);
     border: 1px solid var(--border);
@@ -211,25 +283,26 @@
 
   .og-item:last-child { border-bottom: none; }
 
+  .og-item-check {
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .og-item-check input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent);
+  }
+
   .og-item-main {
     flex: 1;
     min-width: 240px;
   }
 
   .og-item-desc {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    flex-wrap: wrap;
     font-size: 13px;
     color: #475569;
-  }
-
-  .og-item-price {
-    font-weight: bold;
-    color: #1e293b;
-    white-space: nowrap;
   }
 
   .specs-preview {
@@ -313,14 +386,7 @@
     color: #475569;
   }
 
-  .og-footer strong {
-    color: #1e293b;
-  }
-
-  .og-total strong {
-    color: var(--accent);
-    font-size: 14px;
-  }
+  .og-footer strong { color: #1e293b; }
 
   .empty-state {
     text-align: center;
@@ -338,7 +404,126 @@
     border-radius: 6px;
   }
 
-  /* MODAL */
+  .error-message a { color: #991b1b; font-weight: bold; }
+
+  /* ===== CALENDAR VIEW ===== */
+  .calendar-wrap { overflow-x: auto; padding-bottom: 10px; }
+
+  .cal-grid {
+    display: flex;
+    gap: 10px;
+    min-width: max-content;
+    align-items: flex-start;
+  }
+
+  .cal-col { width: 225px; flex-shrink: 0; }
+
+  .cal-col.wide-col { width: 280px; }
+
+  .cal-day-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px 8px 0 0;
+    padding: 8px 10px;
+    font-weight: bold;
+    font-size: 13px;
+    color: #1e293b;
+  }
+
+  .cal-count {
+    background: #e2e8f0;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .cal-col.today-col .cal-day-head {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .cal-col.today-col .cal-count {
+    background: #334155;
+    color: #fff;
+  }
+
+  .cal-col.overdue-col .cal-day-head {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+
+  .cal-col.overdue-col .cal-count {
+    background: #fecaca;
+    color: #991b1b;
+  }
+
+  .cal-col-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    background: #f8fafc;
+    border-radius: 0 0 8px 8px;
+    min-height: 160px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cal-col.overdue-col .cal-col-body {
+    border-color: #fecaca;
+    background: #fff5f5;
+  }
+
+  .cal-empty {
+    color: #b0b9c3;
+    text-align: center;
+    font-size: 12px;
+    padding: 14px 4px;
+  }
+
+  .cal-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+
+  .cal-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.10); }
+
+  .overdue-col .cal-card { border-left-color: var(--danger); }
+
+  .today-col .cal-card { border-left-color: var(--warning); }
+
+  .cc-num {
+    font-weight: bold;
+    color: var(--accent);
+    font-size: 13px;
+  }
+
+  .cc-cust {
+    font-size: 12px;
+    font-weight: bold;
+    color: #1e293b;
+    margin-top: 1px;
+  }
+
+  .cc-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* ===== MODALS ===== */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -358,6 +543,8 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
 
+  .modal-box.quick-modal-box { max-width: 620px; }
+
   .modal-header {
     display: flex;
     justify-content: space-between;
@@ -368,6 +555,7 @@
   }
 
   .modal-header h3 { margin: 0; font-size: 18px; }
+
   .modal-close {
     background: none;
     border: none;
@@ -377,6 +565,7 @@
   }
 
   .modal-section { margin-bottom: 14px; }
+
   .modal-section label {
     font-size: 12px;
     font-weight: bold;
@@ -410,6 +599,7 @@
   .modal-footer {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 8px;
     margin-top: 14px;
   }
@@ -423,6 +613,68 @@
     font-size: 13px;
     font-weight: bold;
     cursor: pointer;
+  }
+
+  .btn-open-order {
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .quick-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .quick-body {
+    max-height: 55vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .qm-item {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    background: #f8fafc;
+  }
+
+  .qm-line { font-size: 13px; color: #1e293b; }
+
+  .qm-status {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    background: #e2e8f0;
+    color: #334155;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .qm-notes {
+    margin-top: 6px;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    background: #fef3c7;
+    color: #b45309;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .qm-specs {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: pre-wrap;
   }
 </style>
 </head>
@@ -453,13 +705,29 @@
 
     <div class="toolbar">
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search order #, customer or item..." oninput="renderQueue()">
+        <input type="text" id="searchInput" placeholder="Search order #, customer or item..." oninput="renderCurrent()">
+      </div>
+
+      <div class="view-toggle">
+        <button id="calViewBtn" class="active" onclick="setView('calendar')">Calendar</button>
+        <button id="listViewBtn" onclick="setView('list')">List</button>
       </div>
 
       <div class="sector-tabs" id="sectorTabs"></div>
     </div>
 
-    <div id="queueGrid" class="queue-grid"></div>
+    <div id="bulkBar" class="bulk-bar" style="display:none;">
+      <span id="bulkCount" class="bulk-count">0 selected</span>
+      <select id="bulkStatusSelect"></select>
+      <button class="bulk-move" onclick="moveSelectedItems()">Move selected</button>
+      <button class="bulk-clear" onclick="clearSelection()">Clear</button>
+    </div>
+
+    <div id="queueGrid" class="queue-grid" style="display:none;"></div>
+
+    <div id="calendarWrap" class="calendar-wrap">
+      <div id="calendarGrid" class="cal-grid"></div>
+    </div>
   </div>
 </main>
 
@@ -485,6 +753,22 @@
   </div>
 </div>
 
+<!-- QUICK ORDER ITEMS MODAL (calendar card click) -->
+<div id="quickModal" class="modal-overlay">
+  <div class="modal-box quick-modal-box">
+    <div class="modal-header">
+      <h3 id="quickModalTitle">Order</h3>
+      <button class="modal-close" onclick="closeQuickModal()">&times;</button>
+    </div>
+    <div id="quickMeta" class="quick-meta"></div>
+    <div id="quickModalBody" class="quick-body"></div>
+    <div class="modal-footer">
+      <a id="quickOpenLink" href="#" class="btn-open-order">Open order page →</a>
+      <button class="modal-close" style="font-size: 13px;" onclick="closeQuickModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const STAGES = {
   PENDING_PAYMENT: "Pending Payment",
@@ -497,6 +781,7 @@ const STAGES = {
   FINISHING: "Finishing",
   READY_FOR_PICKUP: "Ready for Pick Up",
   SHIPPING: "Shipping",
+  INSTALLING: "Installing",
   COMPLETED: "Completed",
   CANCELLED: "Cancelled"
 };
@@ -515,18 +800,33 @@ const SECTORS = {
   finishing: { label: "Finishing", statuses: ["FINISHING"] },
   ready: { label: "Ready for Pick Up", statuses: ["READY_FOR_PICKUP"] },
   shipping: { label: "Shipping", statuses: ["SHIPPING"] },
+  installing: { label: "Installing", statuses: ["INSTALLING"] },
   completed: { label: "Completed", statuses: ["COMPLETED"] },
   cancelled: { label: "Cancelled", statuses: ["CANCELLED"] }
 };
 
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const CALENDAR_DAYS = 12;
+
 let allItems = [];
 let currentSector = "all";
-let today = new Date().toISOString().split("T")[0];
+let currentView = "calendar";
+let today = "";
 let activeItemId = null;
+let selectedItemIds = new Set();
+let lastGroupsByOrder = new Map();
+
+function toDateKey(d) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
 
 async function loadQueue() {
   const errBox = document.getElementById("errorMessage");
   errBox.style.display = "none";
+
+  today = toDateKey(new Date());
+  selectedItemIds.clear();
+  updateBulkBar();
 
   try {
     const res = await fetch("/api/orders");
@@ -542,7 +842,7 @@ async function loadQueue() {
     });
 
     renderTabs();
-    renderQueue();
+    renderCurrent();
   } catch (err) {
     console.error(err);
     errBox.textContent = "Error loading production queue: " + err.message;
@@ -560,13 +860,26 @@ function renderTabs() {
     const btn = document.createElement("button");
     btn.textContent = `${sector.label} (${count})`;
     btn.className = key === currentSector ? "active" : "";
-    btn.onclick = () => { currentSector = key; renderTabs(); renderQueue(); };
+    btn.onclick = () => { currentSector = key; renderTabs(); renderCurrent(); };
     wrap.appendChild(btn);
   });
 }
 
-function renderQueue() {
-  const grid = document.getElementById("queueGrid");
+function setView(view) {
+  currentView = view;
+  document.getElementById("calViewBtn").classList.toggle("active", view === "calendar");
+  document.getElementById("listViewBtn").classList.toggle("active", view === "list");
+  document.getElementById("calendarWrap").style.display = view === "calendar" ? "block" : "none";
+  document.getElementById("queueGrid").style.display = view === "list" ? "flex" : "none";
+  renderCurrent();
+}
+
+function renderCurrent() {
+  if (currentView === "calendar") renderCalendar();
+  else renderQueue();
+}
+
+function getFilteredItems() {
   const search = document.getElementById("searchInput").value.trim().toLowerCase();
   const sector = SECTORS[currentSector];
 
@@ -581,7 +894,10 @@ function renderQueue() {
     });
   }
 
-  // Agrupar os itens por pedido
+  return filtered;
+}
+
+function groupItemsByOrder(filtered) {
   const groups = new Map();
   filtered.forEach(({ order, item }) => {
     if (!groups.has(order.id)) {
@@ -589,8 +905,149 @@ function renderQueue() {
     }
     groups.get(order.id).items.push(item);
   });
+  return Array.from(groups.values());
+}
 
-  const groupList = Array.from(groups.values());
+/* ================= CALENDAR VIEW ================= */
+
+function getCalendarDays() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  start.setDate(start.getDate() - start.getDay()); // back to Sunday
+
+  const days = [];
+  for (let i = 0; i < CALENDAR_DAYS; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    days.push(toDateKey(d));
+  }
+  return days;
+}
+
+function renderCalendar() {
+  const grid = document.getElementById("calendarGrid");
+  lastGroupsByOrder = new Map();
+
+  const groups = groupItemsByOrder(getFilteredItems());
+  grid.innerHTML = "";
+
+  if (groups.length === 0) {
+    grid.innerHTML = `<div class="empty-state">No items found for this view.</div>`;
+    return;
+  }
+
+  const days = getCalendarDays();
+  const lastDay = days[days.length - 1];
+
+  const overdue = [];
+  const noDate = [];
+  const later = [];
+  const byDay = new Map();
+  days.forEach(k => byDay.set(k, []));
+
+  groups.forEach(g => {
+    lastGroupsByOrder.set(String(g.order.id), g);
+    const d = g.order.dueDate;
+    if (!d) { noDate.push(g); return; }
+    if (d < today) { overdue.push(g); return; }
+    if (byDay.has(d)) { byDay.get(d).push(g); return; }
+    later.push(g);
+  });
+
+  overdue.sort((a, b) => (a.order.dueDate || "").localeCompare(b.order.dueDate || ""));
+  later.sort((a, b) => (a.order.dueDate || "").localeCompare(b.order.dueDate || ""));
+
+  if (overdue.length) {
+    grid.appendChild(buildCalColumn("Overdue", overdue, { isOverdue: true }));
+  }
+
+  days.forEach(dayKey => {
+    const d = new Date(dayKey + "T12:00:00");
+    const label = WEEKDAYS[d.getDay()] + " " + String(d.getDate()).padStart(2, "0");
+    grid.appendChild(buildCalColumn(label, byDay.get(dayKey) || [], { isToday: dayKey === today }));
+  });
+
+  if (later.length) {
+    grid.appendChild(buildCalColumn("Later", later, { wide: true }));
+  }
+
+  if (noDate.length) {
+    grid.appendChild(buildCalColumn("No due date", noDate, { wide: true }));
+  }
+}
+
+function buildCalColumn(label, groups, opts) {
+  opts = opts || {};
+  const col = document.createElement("div");
+  col.className = "cal-col"
+    + (opts.isOverdue ? " overdue-col" : "")
+    + (opts.isToday ? " today-col" : "")
+    + (opts.wide ? " wide-col" : "");
+
+  col.innerHTML = `
+    <div class="cal-day-head">
+      <span>${escapeHtml(label)}</span>
+      <span class="cal-count">${groups.length}</span>
+    </div>
+    <div class="cal-col-body"></div>
+  `;
+
+  const body = col.querySelector(".cal-col-body");
+  if (!groups.length) {
+    body.innerHTML = '<div class="cal-empty">—</div>';
+  } else {
+    groups.forEach(g => body.appendChild(buildCalCard(g)));
+  }
+
+  return col;
+}
+
+function buildCalCard(group) {
+  const { order, items } = group;
+  const card = document.createElement("div");
+  card.className = "cal-card";
+  card.innerHTML = `
+    <div class="cc-num">${escapeHtml(order.orderNumber || "")}</div>
+    <div class="cc-cust">${escapeHtml(getCustomerName(order))}</div>
+    <div class="cc-meta">${items.length} item${items.length === 1 ? "" : "s"} · due ${escapeHtml(order.dueDate || "—")}</div>
+  `;
+  card.onclick = () => openQuickModal(String(order.id));
+  return card;
+}
+
+function openQuickModal(orderId) {
+  const group = lastGroupsByOrder.get(orderId);
+  if (!group) return;
+
+  const { order, items } = group;
+  const custName = getCustomerName(order);
+
+  document.getElementById("quickModalTitle").textContent =
+    `${order.orderNumber || ""} — ${custName}`;
+  document.getElementById("quickMeta").textContent =
+    `Converted: ${order.orderDate || "—"} · Due: ${order.dueDate || "—"} · ${items.length} item${items.length === 1 ? "" : "s"}`;
+
+  document.getElementById("quickModalBody").innerHTML = items.map(item => `
+    <div class="qm-item">
+      <div class="qm-line"><strong>Qty ${item.quantity || 1}</strong> — ${escapeHtml(getItemName(item))}</div>
+      <span class="qm-status">${escapeHtml(STAGES[item.productionStatus || "PENDING_FILE"])}</span>
+      ${item.productionNotes ? `<span class="qm-notes">📝 Notes attached</span>` : ""}
+      ${item.printSpecsSummary ? `<div class="qm-specs">${escapeHtml(specsAsText(item.printSpecsSummary))}</div>` : ""}
+    </div>
+  `).join("");
+
+  document.getElementById("quickOpenLink").href = "order-details.html?id=" + order.id;
+  document.getElementById("quickModal").style.display = "flex";
+}
+
+function closeQuickModal() {
+  document.getElementById("quickModal").style.display = "none";
+}
+
+/* ================= LIST VIEW ================= */
+
+function renderQueue() {
+  const grid = document.getElementById("queueGrid");
+  const groupList = groupItemsByOrder(getFilteredItems());
 
   groupList.sort((a, b) => {
     const da = a.order.dueDate || "9999-12-31";
@@ -620,9 +1077,6 @@ function buildOrderGroup(order, items) {
     else if (order.dueDate === today) { dueClass = "due-today"; dueLabel = "DUE TODAY"; }
   }
 
-  const itemsSubtotal = items.reduce((sum, item) => sum + getLineTotal(item), 0);
-  const orderTotal = getOrderTotal(order);
-
   const wrap = document.createElement("div");
   wrap.className = "order-group" + (dueClass !== "normal" ? " " + dueClass : "");
 
@@ -637,8 +1091,8 @@ function buildOrderGroup(order, items) {
     </div>
     <div class="og-items"></div>
     <div class="og-footer">
-      <span>Items subtotal (${items.length}): <strong>${formatMoney(itemsSubtotal)}</strong></span>
-      <span class="og-total">Order total: <strong>${formatMoney(orderTotal)}</strong></span>
+      <span>Converted: <strong>${escapeHtml(order.orderDate || "—")}</strong></span>
+      <span>Due: <strong>${escapeHtml(order.dueDate || "—")}</strong></span>
     </div>
   `;
 
@@ -661,11 +1115,11 @@ function buildItemRow(order, item) {
   ).join("");
 
   row.innerHTML = `
+    <div class="og-item-check">
+      <input type="checkbox" class="item-check" data-item-id="${item.id}" title="Select for batch move">
+    </div>
     <div class="og-item-main">
-      <div class="og-item-desc">
-        <span><strong>Qty: ${item.quantity || 1}</strong> — ${escapeHtml(getItemName(item))}</span>
-        <span class="og-item-price">${formatMoney(getLineTotal(item))}</span>
-      </div>
+      <div class="og-item-desc"><strong>Qty: ${item.quantity || 1}</strong> — ${escapeHtml(getItemName(item))}</div>
       ${item.printSpecsSummary ? `<div class="specs-preview">${escapeHtml(specsAsText(item.printSpecsSummary, " | "))}</div>` : ''}
       ${item.productionNotes ? `<span class="notes-badge">📝 Notes attached</span>` : ''}
     </div>
@@ -676,8 +1130,15 @@ function buildItemRow(order, item) {
     </div>
   `;
 
+  const checkbox = row.querySelector(".item-check");
   const select = row.querySelector(".status-select");
   const moveBtn = row.querySelector(".move-btn");
+
+  checkbox.addEventListener("change", (e) => {
+    if (e.target.checked) selectedItemIds.add(item.id);
+    else selectedItemIds.delete(item.id);
+    updateBulkBar();
+  });
 
   moveBtn.addEventListener("click", () => {
     select.classList.remove("hidden");
@@ -703,9 +1164,42 @@ function buildItemRow(order, item) {
   return row;
 }
 
+/* ================= STATUS MOVES ================= */
+
+function orderHasPhotos(order) {
+  return String(order.installationPhotos || "").trim() !== "";
+}
+
+function showGateError(orderId) {
+  const errBox = document.getElementById("errorMessage");
+  errBox.innerHTML =
+    'Installation photos are required before moving this item to Completed. ' +
+    `<a href="order-details.html?id=${orderId}">Open the order to upload the photos</a>.`;
+  errBox.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 async function updateItemStatus(itemId, newStatus) {
+  const entry = allItems.find(x => x.item.id === itemId);
   const errBox = document.getElementById("errorMessage");
   errBox.style.display = "none";
+
+  if (!entry) return;
+
+  // Lock: cancelling requires confirmation
+  if (newStatus === "CANCELLED") {
+    const ok = confirm(`Cancel item "${getItemName(entry.item)}" from order ${entry.order.orderNumber}? It will be marked as Cancelled.`);
+    if (!ok) { renderCurrent(); return; }
+  }
+
+  // Lock: INSTALLING -> COMPLETED requires installation photos on the order
+  if (newStatus === "COMPLETED"
+      && (entry.item.productionStatus === "INSTALLING" || entry.order.status === "INSTALLING")
+      && !orderHasPhotos(entry.order)) {
+    showGateError(entry.order.id);
+    renderCurrent();
+    return;
+  }
 
   try {
     const res = await fetch(`/api/order-items/${itemId}/status?status=${newStatus}`, {
@@ -713,8 +1207,12 @@ async function updateItemStatus(itemId, newStatus) {
     });
 
     if (!res.ok) {
-      const text = await res.text();
-      throw new Error("HTTP " + res.status + " — " + text);
+      let msg = "HTTP " + res.status;
+      try {
+        const data = await res.json();
+        if (data.error) msg = data.error;
+      } catch (e) {}
+      throw new Error(msg);
     }
 
     await loadQueue();
@@ -722,8 +1220,88 @@ async function updateItemStatus(itemId, newStatus) {
     console.error(err);
     errBox.textContent = "Error updating status: " + err.message;
     errBox.style.display = "block";
+    renderCurrent();
   }
 }
+
+/* ================= BATCH MOVES ================= */
+
+function updateBulkBar() {
+  const bar = document.getElementById("bulkBar");
+  const count = selectedItemIds.size;
+  bar.style.display = count > 0 ? "flex" : "none";
+  document.getElementById("bulkCount").textContent =
+    count + " item" + (count === 1 ? "" : "s") + " selected";
+}
+
+function clearSelection() {
+  selectedItemIds.clear();
+  updateBulkBar();
+  document.querySelectorAll(".item-check").forEach(cb => { cb.checked = false; });
+}
+
+async function moveSelectedItems() {
+  const target = document.getElementById("bulkStatusSelect").value;
+  if (!target) {
+    alert("Choose a status to move the selected items to.");
+    return;
+  }
+
+  const ids = Array.from(selectedItemIds);
+  if (!ids.length) return;
+
+  // Lock: batch cancel requires confirmation
+  if (target === "CANCELLED") {
+    const ok = confirm(`Cancel ${ids.length} selected item(s)? They will be marked as Cancelled.`);
+    if (!ok) return;
+  }
+
+  const errBox = document.getElementById("errorMessage");
+  errBox.style.display = "none";
+
+  const errors = [];
+  let moved = 0;
+
+  for (const id of ids) {
+    const entry = allItems.find(x => x.item.id === id);
+    if (!entry) continue;
+
+    // Lock: INSTALLING -> COMPLETED requires installation photos
+    if (target === "COMPLETED"
+        && (entry.item.productionStatus === "INSTALLING" || entry.order.status === "INSTALLING")
+        && !orderHasPhotos(entry.order)) {
+      errors.push(`${entry.order.orderNumber} — ${getItemName(entry.item)}: installation photos required.`);
+      continue;
+    }
+
+    try {
+      const res = await fetch(`/api/order-items/${id}/status?status=${target}`, { method: "PATCH" });
+      if (!res.ok) {
+        let msg = "HTTP " + res.status;
+        try {
+          const data = await res.json();
+          if (data.error) msg = data.error;
+        } catch (e) {}
+        errors.push(`${entry.order.orderNumber} — ${getItemName(entry.item)}: ${msg}`);
+        continue;
+      }
+      moved++;
+    } catch (err) {
+      errors.push(`${entry.order.orderNumber} — ${getItemName(entry.item)}: ${err.message}`);
+    }
+  }
+
+  selectedItemIds.clear();
+  updateBulkBar();
+  await loadQueue();
+
+  if (errors.length) {
+    errBox.innerHTML = `<strong>${moved} item(s) moved.</strong><br>` + errors.map(escapeHtml).join("<​br>");
+    errBox.style.display = "block";
+  }
+}
+
+/* ================= SPECS / NOTES MODAL ================= */
 
 function openModal(itemId) {
   const entry = allItems.find(x => x.item.id === itemId);
@@ -782,8 +1360,8 @@ function specsAsText(summary, separator) {
 
   const head = [];
   if (s.department) head.push(s.department);
-  if (s.press) head.push(s.press + (s.pressType ? ` (${s.pressType})` : ""));
-  if (s.sides) head.push(s.sides === "DOUBLE_SIDED" ? "Double Sided" : "Single Sided");
+  if (s.printer) head.push(s.printer + (s.pressType ? ` (${s.pressType})` : ""));
+  if (s.sides) head.push(s.sides === "DOUBLE_SIDED" || s.sides === "DOUBLE" ? "Double Sided" : "Single Sided");
   if (head.length) lines.push(head.join(" • "));
 
   const fs = s.frontSheets || {};
@@ -807,8 +1385,11 @@ function specsAsText(summary, separator) {
 
   const sizes = [];
   if (s.runWidth != null || s.runHeight != null) sizes.push(`Run ${size(s.runWidth, s.runHeight)}`);
+  if (s.runW != null || s.runH != null) sizes.push(`Run ${size(s.runW, s.runH)}`);
   if (s.flatWidth != null || s.flatHeight != null) sizes.push(`Flat ${size(s.flatWidth, s.flatHeight)}`);
+  if (s.flatW != null || s.flatH != null) sizes.push(`Flat ${size(s.flatW, s.flatH)}`);
   if (s.finishedWidth != null || s.finishedHeight != null) sizes.push(`Finished ${size(s.finishedWidth, s.finishedHeight)}`);
+  if (s.finW != null || s.finH != null) sizes.push(`Finished ${size(s.finW, s.finH)}`);
   if (sizes.length) lines.push(sizes.join(" • "));
 
   const flags = [];
@@ -826,6 +1407,11 @@ function specsAsText(summary, separator) {
     lines.push("Department Items: " + tasks.join(" • "));
   }
 
+  if (Array.isArray(s.finishing) && s.finishing.length) {
+    const tasks = s.finishing.map(f => `${f.task || f.description || "Task"}${f.qty != null ? " ×" + f.qty : ""}`);
+    lines.push("Finishing: " + tasks.join(" • "));
+  }
+
   if (s.extraSpecs) lines.push(s.extraSpecs);
 
   return lines.join(separator || "\n");
@@ -840,37 +1426,19 @@ function getItemName(item) {
   return (item.product && item.product.productName) || item.itemDescription || "Custom Item";
 }
 
-function getLineTotal(item) {
-  if (!item) return 0;
-  if (item.lineTotal != null && item.lineTotal !== "") {
-    return Number(item.lineTotal) || 0;
-  }
-  const unit = item.unitPrice != null ? Number(item.unitPrice) : (item.price != null ? Number(item.price) : 0);
-  const qty = Number(item.quantity) || 1;
-  return unit * qty;
-}
-
-function getOrderTotal(order) {
-  if (order.totalAmount != null && order.totalAmount !== "") {
-    return Number(order.totalAmount) || 0;
-  }
-  if (order.total != null && order.total !== "") {
-    return Number(order.total) || 0;
-  }
-  return (order.items || []).reduce((sum, item) => sum + getLineTotal(item), 0);
-}
-
-function formatMoney(value) {
-  return (Number(value) || 0).toLocaleString("en-CA", { style: "currency", currency: "CAD" });
-}
-
 function escapeHtml(val) {
   const d = document.createElement("div");
   d.textContent = val == null ? "" : String(val);
   return d.innerHTML;
 }
 
-window.addEventListener("DOMContentLoaded", loadQueue);
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("bulkStatusSelect").innerHTML =
+    '<option value="">Move to…</option>' +
+    STAGE_ORDER.map(k => `<option value="${k}">${STAGES[k]}</option>`).join("");
+
+  loadQueue();
+});
 </script>
 
 </body>

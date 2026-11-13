@@ -135,6 +135,19 @@
         }
         .msg.error { display: block; background: #fee2e2; color: var(--danger); }
         .msg.success { display: block; background: #dcfce7; color: var(--success); }
+
+        /* ==== Searchable select ==== */
+        .searchable-select { position: relative; width: 100%; }
+        .searchable-input { width: 100%; background: white; }
+        .searchable-dropdown {
+            display: none; position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: white;
+            border: 1px solid var(--border); border-radius: 4px; max-height: 240px; overflow-y: auto;
+            z-index: 60; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+        .searchable-option { padding: 8px 10px; font-size: 13px; cursor: pointer; }
+        .searchable-option:hover, .searchable-option.active { background: #eff6ff; }
+        .searchable-empty { padding: 8px 10px; font-size: 12px; color: var(--muted); }
+        .searchable-hidden-select { display: none !important; }
     </style>
 </head>
 <body>
@@ -144,11 +157,13 @@
         </a>
         <nav>
             <a href="dashboard.html">Home / Dashboard</a>
-            <a href="customers.html">Customers</a>
+            <a href="index.html">Customers</a>
             <a href="products.html">Products</a>
             <a href="quote-list.html">Quotes</a>
             <a href="orders.html">Orders</a>
             <a href="production-queue.html">Production Queue</a>
+            <a href="inventory.html">Inventory</a>
+            <a href="suppliers.html">Suppliers</a>
             <a href="purchase-orders.html" class="active">Purchase Orders</a>
         </nav>
     </aside>
@@ -161,14 +176,14 @@
             <div class="toolbar">
                 <div class="toolbar-left">
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search by PO number or supplier...">
+                    <input type="text" id="searchInput" placeholder="Search by PO number or supplier...">
                     </div>
                     <select id="statusFilter" class="filter-select">
-                        <option value="ALL">All statuses</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="PARTIALLY_RECEIVED">Partially Received</option>
-                        <option value="RECEIVED">Received</option>
-                        <option value="CANCELLED">Cancelled</option>
+                    <option value="ALL">All statuses</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="PARTIALLY_RECEIVED">Partially Received</option>
+                    <option value="RECEIVED">Received</option>
+                    <option value="CANCELLED">Cancelled</option>
                     </select>
                 </div>
                 <button class="btn btn-primary" onclick="openCreateModal()">+ New Purchase Order</button>
@@ -177,16 +192,16 @@
             <div class="card" style="padding: 0; overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr>
-                            <th>PO #</th>
-                            <th>Supplier</th>
-                            <th>Order Date</th>
-                            <th>Expected</th>
-                            <th>Status</th>
-                            <th class="num">Items</th>
-                            <th class="num">Total</th>
-                            <th style="text-align:right">Actions</th>
-                        </tr>
+                    <tr>
+                    <th>PO #</th>
+                    <th>Supplier</th>
+                    <th>Order Date</th>
+                    <th>Expected</th>
+                    <th>Status</th>
+                    <th class="num">Items</th>
+                    <th class="num">Total</th>
+                    <th style="text-align:right">Actions</th>
+                    </tr>
                     </thead>
                     <tbody id="ordersBody"></tbody>
                 </table>
@@ -205,8 +220,37 @@
 
             <div class="form-grid">
                 <div style="flex:2">
-                    <label for="supplierInput">Supplier *</label>
-                    <input type="text" id="supplierInput" maxlength="150" placeholder="e.g. Spicers, ND Graphics...">
+                    <label for="supplierSelect">Supplier *</label>
+                    <select id="supplierSelect" onchange="onSupplierSelectChange()"></select>
+                    <div id="manualSupplierField" style="display:none; margin-top:8px;">
+                        <input type="text" id="supplierInput" maxlength="150"
+                            placeholder="Type the supplier name (not registered)">
+                    </div>
+                    <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px"
+                        onclick="toggleNewSupplierForm()">+ New supplier</button>
+                    <div id="newSupplierBox" style="display:none; border:1px solid var(--border);
+                        border-radius:6px; padding:12px; margin-top:8px; background:#f8fafc;">
+                        <div class="form-grid">
+                            <div style="flex:2">
+                            <label for="nsName">Name *</label>
+                            <input type="text" id="nsName" maxlength="150" placeholder="e.g. Spicers, ND Graphics">
+                            </div>
+                            <div>
+                            <label for="nsContact">Contact</label>
+                            <input type="text" id="nsContact" maxlength="100">
+                            </div>
+                            <div>
+                            <label for="nsPhone">Phone</label>
+                            <input type="text" id="nsPhone" maxlength="50">
+                            </div>
+                            <div>
+                            <label for="nsEmail">Email</label>
+                            <input type="text" id="nsEmail" maxlength="150">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success btn-sm"
+                            onclick="createSupplierInline()">Save supplier</button>
+                    </div>
                 </div>
                 <div>
                     <label for="orderDateInput">Order Date</label>
@@ -216,30 +260,138 @@
                     <label for="expectedDateInput">Expected Date</label>
                     <input type="date" id="expectedDateInput">
                 </div>
-            </div>
-            <div class="form-grid">
                 <div>
+                    <label for="customerOrderInput">Customer Order #</label>
+                    <input type="text" id="customerOrderInput" maxlength="100"
+                        placeholder="e.g. Stonz PO 12345">
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div style="flex:1">
                     <label for="notesInput">Notes</label>
                     <textarea id="notesInput" placeholder="Optional notes..."></textarea>
                 </div>
             </div>
 
-            <label style="margin-bottom:8px">Items *</label>
-            <div class="card" style="padding: 0; overflow-x: auto; margin-bottom: 10px;">
+            <label>Items * — pick a registered material, or click "+ New Material" to register one now.</label>
+            <div class="card" style="padding: 0; overflow-x: auto; margin-bottom: 8px;">
                 <table class="lines-table">
                     <thead>
-                        <tr>
-                            <th style="width:40%">Item</th>
-                            <th style="width:14%">Quantity</th>
-                            <th style="width:16%">Unit Cost</th>
-                            <th class="num" style="width:16%">Line Total</th>
-                            <th style="width:6%"></th>
-                        </tr>
+                    <tr>
+                    <th>Item</th>
+                    <th class="num">Quantity</th>
+                    <th class="num">Unit Cost</th>
+                    <th class="num">Line Total</th>
+                    <th style="width:6%"></th>
+                    </tr>
                     </thead>
                     <tbody id="createLinesBody"></tbody>
                 </table>
             </div>
-            <button class="btn btn-ghost btn-sm" onclick="addCreateLine()">+ Add Item</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-ghost btn-sm" onclick="addCreateLine()">+ Add Item</button>
+                <button class="btn btn-ghost btn-sm" onclick="toggleNewMaterialForm()">+ New Material</button>
+            </div>
+
+            <div id="newMaterialBox" style="display:none; border:1px solid var(--border);
+                border-radius:6px; padding:12px; margin-top:8px; background:#f8fafc;">
+                <div class="form-grid">
+                    <div style="flex:2">
+                    <label for="nmName">Material name *</label>
+                    <input type="text" id="nmName" maxlength="150"
+                        placeholder="e.g. Titan, McCoy Silk, Mimaki LUS-170 UV Ink Cyan 1L">
+                    </div>
+                    <div>
+                    <label for="nmCategory">Supply category *</label>
+                    <select id="nmCategory" onchange="onNmCategoryChange()">
+                        <option value="">— Select —</option>
+                        <optgroup label="Digital">
+                        <option value="DIGITAL_PAPER">Paper</option>
+                        <option value="DIGITAL_PAPER_STICKER">Paper Sticker (adhesive)</option>
+                        <option value="DIGITAL_ENVELOPE">Envelope</option>
+                        <option value="DIGITAL_LABEL">Label</option>
+                        <option value="DIGITAL_CARDSTOCK">Cardstock / Cover stock</option>
+                        <option value="DIGITAL_SYNTHETIC">Synthetic paper</option>
+                        <option value="DIGITAL">Digital — other</option>
+                        </optgroup>
+                        <optgroup label="Other groups">
+                        <option value="WIDE_FORMAT">Wide Format</option>
+                        <option value="APPAREL">Apparel</option>
+                        <option value="SUBLIMATION">Sublimation</option>
+                        <option value="FINISHING">Finishing</option>
+                        <option value="OTHER">Other</option>
+                        </optgroup>
+                    </select>
+                    </div>
+                    <div>
+                    <label for="nmUnit">Unit *</label>
+                    <select id="nmUnit">
+                        <option value="SHEET">Sheet</option>
+                        <option value="ROLL">Roll</option>
+                        <option value="LINEAR_METER">Linear meter</option>
+                        <option value="SQUARE_METER">Sq meter</option>
+                        <option value="SQUARE_FOOT">Sq ft</option>
+                        <option value="UNIT">Unit</option>
+                        <option value="LITRE">Litre</option>
+                        <option value="KILOGRAM">Kilogram</option>
+                    </select>
+                    </div>
+                    <div>
+                    <label for="nmUnitCost">Unit Cost ($)</label>
+                    <input type="number" id="nmUnitCost" min="0" step="any" placeholder="e.g. 245.00">
+                    </div>
+                </div>
+
+                <div id="nmPaperSpec" style="display:none; border:1px solid var(--border);
+                    border-radius:6px; padding:10px; margin-top:4px; background:#fff;">
+                    <div class="form-grid" style="margin-bottom:0">
+                    <div>
+                        <label for="nmPaperSize">Paper size *</label>
+                        <select id="nmPaperSize" onchange="updateNmNamePreview()">
+                        <option value="11x17">11x17"</option>
+                        <option value="12x18">12x18"</option>
+                        <option value="13x19">13x19"</option>
+                        <option value="">Other / not sure</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="nmPaperWeight">Weight *</label>
+                        <select id="nmPaperWeight" onchange="updateNmNamePreview()">
+                        <option value="20#">20#</option>
+                        <option value="50#">50#</option>
+                        <option value="80#">80#</option>
+                        <option value="100#">100#</option>
+                        <option value="130#">130#</option>
+                        <option value="">Other / not sure</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="nmPaperFinish">Finish *</label>
+                        <select id="nmPaperFinish" onchange="updateNmNamePreview()">
+                        <option value="Dull Text">Dull Text</option>
+                        <option value="Gloss Text">Gloss Text</option>
+                        <option value="Dull Cover">Dull Cover</option>
+                        <option value="Gloss Cover">Gloss Cover</option>
+                        <option value="Silk Text">Silk Text</option>
+                        <option value="Silk Cover">Silk Cover</option>
+                        <option value="Semi Gloss">Semi Gloss</option>
+                        <option value="Matte">Matte</option>
+                        <option value="">Other / not sure</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="nmPaperOther">If "Other", type the spec</label>
+                        <input type="text" id="nmPaperOther" maxlength="100"
+                        placeholder="e.g. 28x40 18pt C1S" oninput="updateNmNamePreview()">
+                    </div>
+                    </div>
+                    <div class="muted" id="nmNamePreview" style="margin-top:8px;"></div>
+                </div>
+
+                <button type="button" class="btn btn-success btn-sm" style="margin-top:10px"
+                    onclick="createMaterialInline()">Save material</button>
+            </div>
 
             <div class="modal-footer">
                 <span class="total-box">Total: <span id="createTotal">$0.00</span></span>
@@ -261,14 +413,14 @@
             <div class="card" style="padding: 0; overflow-x: auto;">
                 <table class="lines-table">
                     <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th class="num">Ordered</th>
-                            <th class="num">Received</th>
-                            <th class="num">Remaining</th>
-                            <th style="width:15%">Receiving Now</th>
-                            <th style="width:22%">Notes</th>
-                        </tr>
+                    <tr>
+                    <th>Item</th>
+                    <th class="num">Ordered</th>
+                    <th class="num">Received</th>
+                    <th class="num">Remaining</th>
+                    <th class="num">Receiving Now</th>
+                    <th>Notes</th>
+                    </tr>
                     </thead>
                     <tbody id="receiveLinesBody"></tbody>
                 </table>
@@ -301,23 +453,33 @@
     <script>
         let inventoryItems = [];
         let purchaseOrders = [];
+        let suppliers = [];
 
         const API_PO = '/api/purchase-orders';
         const API_INVENTORY = '/api/inventory';
+        const API_SUPPLIERS = '/api/suppliers';
 
         document.getElementById('searchInput').addEventListener('input', render);
         document.getElementById('statusFilter').addEventListener('change', render);
+
+        ['nmName', 'nmPaperOther'].forEach(id =>
+            document.getElementById(id).addEventListener('input', updateNmNamePreview));
+        ['nmPaperSize', 'nmPaperWeight', 'nmPaperFinish'].forEach(id =>
+            document.getElementById(id).addEventListener('change', updateNmNamePreview));
 
         init();
 
         async function init() {
             document.getElementById('orderDateInput').value = todayISO();
             try {
-                const [invRes, poRes] = await Promise.all([
-                    fetch(API_INVENTORY), fetch(API_PO)
+                const [invRes, poRes, supRes] = await Promise.all([
+                    fetch(API_INVENTORY),
+                    fetch(API_PO),
+                    fetch(API_SUPPLIERS)
                 ]);
                 inventoryItems = invRes.ok ? await invRes.json() : [];
                 purchaseOrders = poRes.ok ? await poRes.json() : [];
+                suppliers = supRes.ok ? await supRes.json() : [];
             } catch (e) {
                 showMsg('createMsg', 'error', 'Could not load data. Is the server running?');
             }
@@ -353,65 +515,29 @@
         function unitLabel(unit) {
             const labels = {
                 SHEET: 'sheets', ROLL: 'rolls', BOARD: 'boards',
-                PIECE: 'pieces', UNIT: 'units', BOX: 'boxes', SET: 'sets'
+                PIECE: 'pieces', UNIT: 'units', BOX: 'boxes', SET: 'sets',
+                LINEAR_METER: 'linear meters', SQUARE_METER: 'sq meters',
+                SQUARE_FOOT: 'sq ft', LITRE: 'litres', KILOGRAM: 'kg'
             };
             return labels[unit] || String(unit || '').toLowerCase();
         }
 
-        function poTotal(order) {
-            return (order.lines || []).reduce((sum, line) =>
-                sum + Number(line.orderedQuantity || 0) * Number(line.unitCost || 0), 0);
-        }
-
-        function isOverdue(order) {
-            return order.expectedDate
-                && order.status !== 'RECEIVED'
-                && order.status !== 'CANCELLED'
-                && order.expectedDate < todayISO();
-        }
-
-        function render() {
-            const term = document.getElementById('searchInput').value.trim().toLowerCase();
-            const status = document.getElementById('statusFilter').value;
-
-            const filtered = purchaseOrders.filter(order => {
-                const matchesTerm = !term
-                    || String(order.poNumber).toLowerCase().includes(term)
-                    || String(order.supplier).toLowerCase().includes(term);
-                const matchesStatus = status === 'ALL' || order.status === status;
-                return matchesTerm && matchesStatus;
-            });
-
-            const body = document.getElementById('ordersBody');
-            body.innerHTML = filtered.map(order => {
-                const receivedCount = (order.lines || [])
-                    .filter(l => Number(l.receivedQuantity || 0) > 0).length;
-                const canReceive = order.status === 'PENDING' || order.status === 'PARTIALLY_RECEIVED';
-
-                return `
-                    <tr>
-                        <td class="po-number">${escapeHtml(order.poNumber)}</td>
-                        <td>${escapeHtml(order.supplier)}</td>
-                        <td>${escapeHtml(order.orderDate || '')}</td>
-                        <td class="${isOverdue(order) ? 'overdue' : ''}">
-                            ${escapeHtml(order.expectedDate || '—')}
-                        </td>
-                        <td><span class="badge badge-${escapeHtml(order.status)}">${statusLabel(order.status)}</span></td>
-                        <td class="num">${(order.lines || []).length}</td>
-                        <td class="num">${fmtMoney(poTotal(order))}</td>
-                        <td>
-                            <div class="actions">
-                                <button class="btn btn-ghost btn-sm" onclick="openDetailsModal(${order.id})">Details</button>
-                                ${canReceive ? `<button class="btn btn-success btn-sm" onclick="openReceiveModal(${order.id})">Receive</button>` : ''}
-                                ${order.status === 'PENDING' ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder(${order.id})">Cancel</button>` : ''}
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            document.getElementById('emptyState').style.display =
-                filtered.length === 0 ? 'block' : 'none';
+        function categoryLabel(category) {
+            const labels = {
+                DIGITAL_PAPER: 'Paper',
+                DIGITAL_PAPER_STICKER: 'Paper Sticker',
+                DIGITAL_ENVELOPE: 'Envelope',
+                DIGITAL_LABEL: 'Label',
+                DIGITAL_CARDSTOCK: 'Cardstock',
+                DIGITAL_SYNTHETIC: 'Synthetic',
+                DIGITAL: 'Digital',
+                WIDE_FORMAT: 'Wide Format',
+                APPAREL: 'Apparel',
+                SUBLIMATION: 'Sublimation',
+                FINISHING: 'Finishing',
+                OTHER: 'Other'
+            };
+            return labels[category] || category || '';
         }
 
         function closeModal(id) {
@@ -434,19 +560,165 @@
             el.textContent = '';
         }
 
-        // ---------- Create ----------
+        // ---- Searchable select ----
+
+        function refreshSearchableSelect(select) {
+            if (!select) return;
+
+            if (select.__searchable) {
+                select.__searchable.sync();
+            } else {
+                makeSelectSearchable(select);
+            }
+        }
+
+        function makeSelectSearchable(select) {
+            if (!select || select.__searchable) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'searchable-select';
+
+            select.parentNode.insertBefore(wrapper, select);
+            wrapper.appendChild(select);
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'searchable-input';
+            input.autocomplete = 'off';
+            input.placeholder = 'Type to search... or click to open the list';
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'searchable-dropdown';
+
+            wrapper.insertBefore(input, select);
+            wrapper.insertBefore(dropdown, select);
+
+            select.classList.add('searchable-hidden-select');
+
+            const state = { activeIndex: -1, visibleOptions: [] };
+
+            function selectedLabel() {
+                const option = select.options[select.selectedIndex];
+                return option ? option.textContent.trim() : '';
+            }
+
+            function syncInputFromSelect() {
+                input.value = selectedLabel();
+            }
+
+            function closeDropdown() {
+                dropdown.style.display = 'none';
+                state.activeIndex = -1;
+            }
+
+            function renderList(query) {
+                const q = String(query || '').trim().toLowerCase();
+                const words = q.split(/\s+/).filter(Boolean);
+
+                state.visibleOptions = Array.from(select.options).filter(opt =>
+                    opt.value && words.every(w => opt.textContent.toLowerCase().includes(w)));
+
+                state.activeIndex = -1;
+                dropdown.innerHTML = '';
+
+                if (state.visibleOptions.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'searchable-empty';
+                    empty.textContent = 'No matches found.';
+                    dropdown.appendChild(empty);
+                } else {
+                    state.visibleOptions.forEach((opt, i) => {
+                        const div = document.createElement('div');
+                        div.className = 'searchable-option';
+                        div.textContent = opt.textContent;
+                        div.dataset.index = i;
+                        dropdown.appendChild(div);
+                    });
+                }
+
+                dropdown.style.display = 'block';
+            }
+
+            function openFullList() {
+                input.select();
+                renderList('');
+            }
+
+            function chooseOption(option) {
+                select.value = option.value;
+                syncInputFromSelect();
+                closeDropdown();
+                select.dispatchEvent(new Event('change'));
+            }
+
+            dropdown.addEventListener('mousedown', event => {
+                const optionDiv = event.target.closest('.searchable-option');
+                if (!optionDiv) return;
+                event.preventDefault();
+                const option = state.visibleOptions[Number(optionDiv.dataset.index)];
+                if (option) chooseOption(option);
+            });
+
+            input.addEventListener('focus', openFullList);
+            input.addEventListener('click', openFullList);
+
+            input.addEventListener('input', () => {
+                state.activeIndex = -1;
+                renderList(input.value);
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(closeDropdown, 150);
+            });
+
+            input.addEventListener('keydown', event => {
+                const open = dropdown.style.display === 'block';
+
+                if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    if (!open) { renderList(''); return; }
+                    const count = state.visibleOptions.length;
+                    if (count === 0) return;
+                    state.activeIndex = event.key === 'ArrowDown'
+                        ? (state.activeIndex + 1) % count
+                        : (state.activeIndex - 1 + count) % count;
+                    Array.from(dropdown.querySelectorAll('.searchable-option')).forEach((div, i) =>
+                        div.classList.toggle('active', i === state.activeIndex));
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    if (!open) { renderList(input.value); return; }
+                    const option = state.visibleOptions[state.activeIndex];
+                    if (option) chooseOption(option);
+                } else if (event.key === 'Escape') {
+                    closeDropdown();
+                    syncInputFromSelect();
+                }
+            });
+
+            state.sync = syncInputFromSelect;
+            select.__searchable = state;
+
+            syncInputFromSelect();
+        }
+
+        // ---- Create ----
+
+        function itemOptionsHtml() {
+            return inventoryItems.map(item => {
+                const cat = categoryLabel(item.category);
+                return `<option value="${item.id}">${escapeHtml(item.name)}`
+                    + (cat ? ` — ${escapeHtml(cat)}` : '')
+                    + ` (${escapeHtml(unitLabel(item.unit))})</option>`;
+            }).join('');
+        }
 
         function addCreateLine() {
-            const options = inventoryItems.map(item =>
-                `<option value="${item.id}">${escapeHtml(item.name)} (${escapeHtml(unitLabel(item.unit))})</option>`
-            ).join('');
-
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>
                     <select class="line-item">
-                        <option value="">— Select —</option>
-                        ${options}
+                    <option value="">— Select —</option>
+                    ${itemOptionsHtml()}
                     </select>
                 </td>
                 <td><input type="number" class="line-qty" min="0.01" step="any" placeholder="0"></td>
@@ -454,10 +726,26 @@
                 <td class="num line-total muted">$0.00</td>
                 <td><button class="remove-line" onclick="removeCreateLine(this)">×</button></td>
             `;
-            row.querySelector('.line-item').value = '';
             row.querySelectorAll('input').forEach(input =>
                 input.addEventListener('input', updateCreateTotals));
             document.getElementById('createLinesBody').appendChild(row);
+
+            const itemSelect = row.querySelector('.line-item');
+            itemSelect.addEventListener('change', onLineItemChange);
+            refreshSearchableSelect(itemSelect);
+        }
+
+        function onLineItemChange(event) {
+            const select = event.target;
+            const row = select.closest('tr');
+            const costInput = row.querySelector('.line-cost');
+
+            const item = inventoryItems.find(entry => String(entry.id) === select.value);
+
+            if (item && item.unitCost != null && costInput && !costInput.value) {
+                costInput.value = Number(item.unitCost);
+                updateCreateTotals();
+            }
         }
 
         function removeCreateLine(btn) {
@@ -479,11 +767,19 @@
 
         function openCreateModal() {
             clearMsg('createMsg');
+            populateSupplierSelect();
+            document.getElementById('manualSupplierField').style.display = 'none';
+            document.getElementById('supplierInput').value = '';
+            document.getElementById('customerOrderInput').value = '';
+            ['nsName', 'nsContact', 'nsPhone', 'nsEmail'].forEach(id =>
+                document.getElementById(id).value = '');
+            document.getElementById('newSupplierBox').style.display = 'none';
+            resetNewMaterialForm();
             if (inventoryItems.length === 0) {
                 const invRes = fetch(API_INVENTORY).then(r => r.json())
                     .then(items => {
-                        inventoryItems = items;
-                        addCreateLine();
+                    inventoryItems = items;
+                    addCreateLine();
                     });
             }
             openModal('createOverlay');
@@ -492,7 +788,13 @@
         async function submitCreate() {
             clearMsg('createMsg');
 
-            const supplier = document.getElementById('supplierInput').value.trim();
+            const supplierSelect = document.getElementById('supplierSelect');
+            const manualSupplier = document.getElementById('supplierInput').value.trim();
+
+            const supplierRefId = supplierSelect.value && supplierSelect.value !== 'OTHER'
+                ? Number(supplierSelect.value)
+                : null;
+
             const orderDate = document.getElementById('orderDateInput').value;
             const expectedDate = document.getElementById('expectedDateInput').value;
             const notes = document.getElementById('notesInput').value.trim();
@@ -500,18 +802,26 @@
             const lines = [];
             document.querySelectorAll('#createLinesBody tr').forEach(row => {
                 const itemId = row.querySelector('.line-item').value;
-                const qty = row.querySelector('.line-qty').value;
-                const cost = row.querySelector('.line-cost').value;
-                if (itemId && qty) {
+                const qty = Number(row.querySelector('.line-qty').value || 0);
+                const cost = Number(row.querySelector('.line-cost').value || 0);
+
+                if (itemId && qty > 0) {
                     lines.push({
-                        inventoryItem: { id: Number(itemId) },
-                        orderedQuantity: Number(qty),
-                        unitCost: Number(cost || 0)
+                    inventoryItem: { id: Number(itemId) },
+                    orderedQuantity: Number(qty),
+                    unitCost: Number(cost || 0)
                     });
                 }
             });
 
-            if (!supplier) { showMsg('createMsg', 'error', 'Supplier is required.'); return; }
+            if (!supplierRefId && supplierSelect.value !== 'OTHER') {
+                showMsg('createMsg', 'error', 'Select a supplier (or choose "Other" to type the name).');
+                return;
+            }
+            if (supplierSelect.value === 'OTHER' && !manualSupplier) {
+                showMsg('createMsg', 'error', 'Type the supplier name or click "+ New supplier".');
+                return;
+            }
             if (lines.length === 0) {
                 showMsg('createMsg', 'error', 'Add at least one item with quantity.');
                 return;
@@ -522,11 +832,13 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        supplier: supplier,
-                        orderDate: orderDate || todayISO(),
-                        expectedDate: expectedDate || null,
-                        notes: notes || null,
-                        lines: lines
+                    supplier: supplierRefId ? null : manualSupplier,
+                    supplierRef: supplierRefId ? { id: supplierRefId } : null,
+                    orderDate: orderDate || todayISO(),
+                    expectedDate: expectedDate || null,
+                    customerOrderNumber: document.getElementById('customerOrderInput').value.trim() || null,
+                    notes: notes || null,
+                    lines: lines
                     })
                 });
 
@@ -538,6 +850,8 @@
                 const created = await res.json();
                 purchaseOrders.unshift(created);
                 closeModal('createOverlay');
+                populateSupplierSelect();
+                document.getElementById('manualSupplierField').style.display = 'none';
                 document.getElementById('supplierInput').value = '';
                 document.getElementById('notesInput').value = '';
                 document.getElementById('createLinesBody').innerHTML = '';
@@ -549,7 +863,226 @@
             }
         }
 
-        // ---------- Receive ----------
+        // ---- Suppliers ----
+
+        function populateSupplierSelect(selectedId) {
+            const sel = document.getElementById('supplierSelect');
+
+            const options = ['<option value="">— Select —</option>'];
+
+            suppliers.forEach(s =>
+                options.push(`<option value="${s.id}">${escapeHtml(s.name)}</option>`));
+            options.push('<option value="OTHER">Other (not registered)</option>');
+
+            sel.innerHTML = options.join('');
+            sel.value = selectedId ? String(selectedId) : '';
+            refreshSearchableSelect(sel);
+        }
+
+        function onSupplierSelectChange() {
+            const sel = document.getElementById('supplierSelect');
+            document.getElementById('manualSupplierField').style.display =
+                sel.value === 'OTHER' ? 'block' : 'none';
+        }
+
+        function toggleNewSupplierForm() {
+            const box = document.getElementById('newSupplierBox');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function createSupplierInline() {
+            const name = document.getElementById('nsName').value.trim();
+
+            if (!name) {
+                showMsg('createMsg', 'error', 'Supplier name is required.');
+                return;
+            }
+
+            try {
+                const res = await fetch(API_SUPPLIERS, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                    name: name,
+                    contactName: document.getElementById('nsContact').value.trim() || null,
+                    phone: document.getElementById('nsPhone').value.trim() || null,
+                    email: document.getElementById('nsEmail').value.trim() || null
+                    })
+                });
+
+                if (!res.ok) {
+                    showMsg('createMsg', 'error', await res.text());
+                    return;
+                }
+
+                const created = await res.json();
+                suppliers.push(created);
+                suppliers.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+                populateSupplierSelect(created.id);
+
+                ['nsName', 'nsContact', 'nsPhone', 'nsEmail'].forEach(id =>
+                    document.getElementById(id).value = '');
+                document.getElementById('newSupplierBox').style.display = 'none';
+                showMsg('createMsg', 'success', 'Supplier "' + created.name + '" registered and selected.');
+            } catch (e) {
+                showMsg('createMsg', 'error', 'Error saving the supplier.');
+            }
+        }
+
+        function currentSupplierName() {
+            const sel = document.getElementById('supplierSelect');
+
+            if (sel.value && sel.value !== 'OTHER') {
+                const found = suppliers.find(s => String(s.id) === sel.value);
+                if (found) return found.name;
+            }
+
+            return document.getElementById('supplierInput').value.trim() || null;
+        }
+
+        // ---- Materials (inline creation) ----
+
+        function toggleNewMaterialForm() {
+            const box = document.getElementById('newMaterialBox');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+            if (box.style.display === 'block') {
+                document.getElementById('nmName').focus();
+            }
+        }
+
+        function resetNewMaterialForm() {
+            ['nmName', 'nmUnitCost', 'nmPaperOther'].forEach(id =>
+                document.getElementById(id).value = '');
+            ['nmPaperSize', 'nmPaperWeight', 'nmPaperFinish'].forEach(id =>
+                document.getElementById(id).value = '');
+            document.getElementById('nmCategory').value = '';
+            onNmCategoryChange();
+            document.getElementById('newMaterialBox').style.display = 'none';
+        }
+
+        function onNmCategoryChange() {
+            const isPaper = document.getElementById('nmCategory').value === 'DIGITAL_PAPER';
+            document.getElementById('nmPaperSpec').style.display = isPaper ? 'block' : 'none';
+            updateNmNamePreview();
+        }
+
+        function nmComposedName() {
+            const base = document.getElementById('nmName').value.trim();
+
+            if (document.getElementById('nmCategory').value !== 'DIGITAL_PAPER') {
+                return base;
+            }
+
+            const size = document.getElementById('nmPaperSize').value;
+            const weight = document.getElementById('nmPaperWeight').value;
+            const finish = document.getElementById('nmPaperFinish').value;
+            const other = document.getElementById('nmPaperOther').value.trim();
+
+            return [base, size, weight, finish || other].filter(Boolean).join(' ');
+        }
+
+        function updateNmNamePreview() {
+            const el = document.getElementById('nmNamePreview');
+            if (!el) return;
+
+            if (document.getElementById('nmCategory').value !== 'DIGITAL_PAPER') {
+                el.textContent = '';
+                return;
+            }
+
+            const composed = nmComposedName();
+            el.textContent = composed ? 'Will be saved as: ' + composed : '';
+        }
+
+        async function createMaterialInline() {
+            const category = document.getElementById('nmCategory').value;
+            const composedName = nmComposedName();
+
+            if (!category) {
+                showMsg('createMsg', 'error', 'Select a supply category.');
+                return;
+            }
+            if (!composedName) {
+                showMsg('createMsg', 'error', 'Material name is required.');
+                return;
+            }
+
+            let description = null;
+
+            if (category === 'DIGITAL_PAPER') {
+                const size = document.getElementById('nmPaperSize').value;
+                const weight = document.getElementById('nmPaperWeight').value;
+                const finish = document.getElementById('nmPaperFinish').value;
+                const other = document.getElementById('nmPaperOther').value.trim();
+
+                if (!size || !weight || !(finish || other)) {
+                    showMsg('createMsg', 'error',
+                        'Select size, weight and finish for paper (or choose "Other" and type the spec).');
+                    return;
+                }
+
+                description = 'Paper spec: '
+                    + [size ? size + '"' : '', weight, finish || other].filter(Boolean).join(', ');
+            }
+
+            const unitCostRaw = document.getElementById('nmUnitCost').value;
+
+            try {
+                const res = await fetch(API_INVENTORY, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                    name: composedName,
+                    category: category,
+                    unit: document.getElementById('nmUnit').value,
+                    unitCost: unitCostRaw === '' ? null : Number(unitCostRaw),
+                    quantity: 0,
+                    active: true,
+                    supplier: currentSupplierName(),
+                    description: description
+                    })
+                });
+
+                if (!res.ok) {
+                    showMsg('createMsg', 'error', await res.text());
+                    return;
+                }
+
+                const created = await res.json();
+                inventoryItems.push(created);
+                inventoryItems.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+
+                document.querySelectorAll('#createLinesBody .line-item').forEach(sel => {
+                    const current = sel.value;
+                    sel.innerHTML = '<option value="">— Select —</option>' + itemOptionsHtml();
+                    sel.value = current;
+                    refreshSearchableSelect(sel);
+                });
+
+                const emptySelect = Array.from(document.querySelectorAll('#createLinesBody .line-item'))
+                    .find(sel => !sel.value);
+
+                if (emptySelect) {
+                    emptySelect.value = String(created.id);
+                    refreshSearchableSelect(emptySelect);
+
+                    const row = emptySelect.closest('tr');
+                    const costInput = row ? row.querySelector('.line-cost') : null;
+
+                    if (costInput && !costInput.value && created.unitCost != null) {
+                        costInput.value = Number(created.unitCost);
+                    }
+                }
+
+                updateCreateTotals();
+                resetNewMaterialForm();
+                showMsg('createMsg', 'success', 'Material "' + created.name + '" registered and selected.');
+            } catch (e) {
+                showMsg('createMsg', 'error', 'Error saving the material.');
+            }
+        }
+
+        // ---- Receive ----
 
         let receiveOrderId = null;
 
@@ -567,18 +1100,18 @@
 
                 document.getElementById('receiveLinesBody').innerHTML = (order.lines || []).map(line => {
                     const remaining = Math.max(
-                        Number(line.orderedQuantity || 0) - Number(line.receivedQuantity || 0), 0);
+                    Number(line.orderedQuantity || 0) - Number(line.receivedQuantity || 0), 0);
                     return `
-                        <tr data-line-id="${line.id}">
-                            <td>${escapeHtml(line.inventoryItem ? line.inventoryItem.name : 'Item #' + line.id)}</td>
-                            <td class="num">${Number(line.orderedQuantity)}</td>
-                            <td class="num">${Number(line.receivedQuantity || 0)}</td>
-                            <td class="num">${remaining}</td>
-                            <td>
-                                <input type="number" class="recv-qty" min="0" max="${remaining}" step="any" value="${remaining}">
-                            </td>
-                            <td><input type="text" class="recv-notes" placeholder="Optional"></td>
-                        </tr>
+                    <tr data-line-id="${line.id}">
+                    <td>${escapeHtml(line.inventoryItem ? line.inventoryItem.name : 'Item #' + line.id)}</td>
+                    <td class="num">${Number(line.orderedQuantity)}</td>
+                    <td class="num">${Number(line.receivedQuantity || 0)}</td>
+                    <td class="num">${remaining}</td>
+                    <td>
+                    <input type="number" class="recv-qty" min="0" max="${remaining}" step="any" value="${remaining}">
+                    </td>
+                    <td><input type="text" class="recv-notes" placeholder="Optional"></td>
+                    </tr>
                     `;
                 }).join('');
 
@@ -596,9 +1129,9 @@
                 const qty = Number(row.querySelector('.recv-qty').value || 0);
                 if (qty > 0) {
                     receipts.push({
-                        lineId: Number(row.dataset.lineId),
-                        quantity: qty,
-                        notes: row.querySelector('.recv-notes').value.trim() || null
+                    lineId: Number(row.dataset.lineId),
+                    quantity: qty,
+                    notes: row.querySelector('.recv-notes').value.trim() || null
                     });
                 }
             });
@@ -624,7 +1157,7 @@
             }
         }
 
-        // ---------- Details / Cancel ----------
+        // ---- Details / Cancel ----
 
         async function openDetailsModal(id) {
             try {
@@ -639,6 +1172,7 @@
                     + statusLabel(order.status) + '</span> &nbsp;|&nbsp; Order date: '
                     + escapeHtml(order.orderDate || '—')
                     + ' &nbsp;|&nbsp; Expected: ' + escapeHtml(order.expectedDate || '—')
+                    + (order.customerOrderNumber ? ' &nbsp;|&nbsp; Customer Order #: ' + escapeHtml(order.customerOrderNumber) : '')
                     + (order.notes ? ' &nbsp;|&nbsp; Notes: ' + escapeHtml(order.notes) : '');
 
                 let total = 0;
@@ -646,32 +1180,32 @@
                     const lineTotal = Number(line.orderedQuantity || 0) * Number(line.unitCost || 0);
                     total += lineTotal;
                     return `
-                        <tr>
-                            <td>${escapeHtml(line.inventoryItem ? line.inventoryItem.name : 'Item #' + line.id)}</td>
-                            <td class="num">${Number(line.orderedQuantity)}</td>
-                            <td class="num">${Number(line.receivedQuantity || 0)}</td>
-                            <td class="num">${Math.max(Number(line.orderedQuantity || 0) - Number(line.receivedQuantity || 0), 0)}</td>
-                            <td class="num">${fmtMoney(line.unitCost)}</td>
-                            <td class="num">${fmtMoney(lineTotal)}</td>
-                        </tr>
+                    <tr>
+                    <td>${escapeHtml(line.inventoryItem ? line.inventoryItem.name : 'Item #' + line.id)}</td>
+                    <td class="num">${Number(line.orderedQuantity)}</td>
+                    <td class="num">${Number(line.receivedQuantity || 0)}</td>
+                    <td class="num">${Math.max(Number(line.orderedQuantity || 0) - Number(line.receivedQuantity || 0), 0)}</td>
+                    <td class="num">${fmtMoney(line.unitCost)}</td>
+                    <td class="num">${fmtMoney(lineTotal)}</td>
+                    </tr>
                     `;
                 }).join('');
 
                 document.getElementById('detailsBody').innerHTML = `
                     <div class="card" style="padding:0;overflow-x:auto">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th class="num">Ordered</th>
-                                    <th class="num">Received</th>
-                                    <th class="num">Remaining</th>
-                                    <th class="num">Unit Cost</th>
-                                    <th class="num">Line Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                        </table>
+                    <table>
+                    <thead>
+                    <tr>
+                    <th>Item</th>
+                    <th class="num">Ordered</th>
+                    <th class="num">Received</th>
+                    <th class="num">Remaining</th>
+                    <th class="num">Unit Cost</th>
+                    <th class="num">Line Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                    </table>
                     </div>
                     <div class="total-box" style="text-align:right;margin-top:12px">Total: ${fmtMoney(total)}</div>
                 `;
@@ -703,6 +1237,61 @@
                 purchaseOrders = await res.json();
                 render();
             }
+        }
+
+        function poTotal(order) {
+            return (order.lines || []).reduce((sum, line) =>
+                sum + Number(line.orderedQuantity || 0) * Number(line.unitCost || 0), 0);
+        }
+
+        function isOverdue(order) {
+            return order.expectedDate
+                && order.status !== 'RECEIVED'
+                && order.status !== 'CANCELLED'
+                && order.expectedDate < todayISO();
+        }
+
+        function render() {
+            const term = document.getElementById('searchInput').value.trim().toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+
+            const filtered = purchaseOrders.filter(order => {
+                const matchesTerm = !term
+                    || String(order.poNumber).toLowerCase().includes(term)
+                    || String(order.supplier).toLowerCase().includes(term)
+                    || String(order.customerOrderNumber || '').toLowerCase().includes(term);
+                const matchesStatus = status === 'ALL' || order.status === status;
+                return matchesTerm && matchesStatus;
+            });
+
+            const body = document.getElementById('ordersBody');
+            body.innerHTML = filtered.map(order => {
+                const canReceive = order.status === 'PENDING' || order.status === 'PARTIALLY_RECEIVED';
+
+                return `
+                    <tr>
+                    <td class="po-number">${escapeHtml(order.poNumber)}</td>
+                    <td>${escapeHtml(order.supplier)}</td>
+                    <td>${escapeHtml(order.orderDate || '')}</td>
+                    <td class="${isOverdue(order) ? 'overdue' : ''}">
+                    ${escapeHtml(order.expectedDate || '—')}
+                    </td>
+                    <td><span class="badge badge-${escapeHtml(order.status)}">${statusLabel(order.status)}</span></td>
+                    <td class="num">${(order.lines || []).length}</td>
+                    <td class="num">${fmtMoney(poTotal(order))}</td>
+                    <td>
+                    <div class="actions">
+                    <button class="btn btn-ghost btn-sm" onclick="openDetailsModal(${order.id})">Details</button>
+                    ${canReceive ? `<button class="btn btn-success btn-sm" onclick="openReceiveModal(${order.id})">Receive</button>` : ''}
+                    ${order.status === 'PENDING' ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder(${order.id})">Cancel</button>` : ''}
+                    </div>
+                    </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('emptyState').style.display =
+                filtered.length === 0 ? 'block' : 'none';
         }
     </script>
 </body>

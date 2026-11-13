@@ -151,6 +151,15 @@
         .message.success { display: block; background: #ddf8e8; color: #08753e; }
         .message.error { display: block; background: #ffe4e4; color: #a51f1f; word-break: break-word; }
 
+        /* INSTALLATION PHOTOS */
+        .install-upload-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+        .install-upload-row input[type="file"] { border: 1px dashed #cbd5e1; background: #f8fafc; padding: 8px; }
+        .install-photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .install-photo-cell { position: relative; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #f8fafc; }
+        .install-photo-cell img { display: block; width: 100%; height: 110px; object-fit: cover; }
+        .install-photo-remove { position: absolute; top: 4px; right: 4px; background: rgba(220,38,38,.92); color: #fff; border: none; border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .install-photo-empty { color: var(--muted); font-size: 13px; }
+
         @media (max-width: 1100px) {
             .cu-layout { grid-template-columns: 1fr; }
             .cu-right { position: static; }
@@ -164,8 +173,9 @@
         }
         @media print {
             aside, .page-header, .back-link, .status-actions, .edit-link, .notes-btn,
-            .items-toolbar, .item-form-card, .row-btn { display: none !important; }
+            .items-toolbar, .item-form-card, .row-btn, #rushFeeEditRow { display: none !important; }
             #itemsTable th:last-child, #itemsTable td:last-child { display: none; }
+            #installationPhotosCard { display: none !important; }
             main { padding: 0; }
             .tax-off { display: none !important; }
         }
@@ -183,6 +193,7 @@
         <a href="quote-list.html">Quotes</a>
         <a href="orders.html" class="active">Orders</a>
         <a href="production-queue.html">Production Queue</a>
+        <a href="purchase-orders.html">Purchase Orders</a>
     </nav>
 </aside>
 
@@ -202,18 +213,19 @@
                 </div>
                 <div class="status-actions">
                     <select id="orderStatusSelect">
-                        <option value="PENDING_PAYMENT">Pending Payment</option>
-                        <option value="PENDING_FILE">Pending File</option>
-                        <option value="GRAPHICS">Graphics</option>
-                        <option value="SF_QUEUE">Small Format Queue</option>
-                        <option value="SF_PRINTING">SF Printing</option>
-                        <option value="WF_QUEUE">Wide Format Queue</option>
-                        <option value="WF_PRINTING">WF Printing</option>
-                        <option value="FINISHING">Finishing</option>
-                        <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
-                        <option value="SHIPPING">Shipping</option>
-                        <option value="COMPLETED">Completed</option>
-                        <option value="CANCELLED">Cancelled</option>
+                    <option value="PENDING_PAYMENT">Pending Payment</option>
+                    <option value="PENDING_FILE">Pending File</option>
+                    <option value="GRAPHICS">Graphics</option>
+                    <option value="SF_QUEUE">Small Format Queue</option>
+                    <option value="SF_PRINTING">SF Printing</option>
+                    <option value="WF_QUEUE">Wide Format Queue</option>
+                    <option value="WF_PRINTING">WF Printing</option>
+                    <option value="FINISHING">Finishing</option>
+                    <option value="READY_FOR_PICKUP">Ready for Pick Up</option>
+                    <option value="SHIPPING">Shipping</option>
+                    <option value="INSTALLING">Installing</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
                     </select>
                     <button class="btn-primary" onclick="updateOrderStatus()">Update Status</button>
                     <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
@@ -226,9 +238,9 @@
                     <label>Customer <button class="edit-link" onclick="toggleEditCustomer()">Change</button></label>
                     <div class="info-value" id="customerName">-</div>
                     <div id="customerEditRow" class="inline-edit-row" style="display:none;">
-                        <select id="customerSelect"></select>
-                        <button class="btn-primary" onclick="saveCustomerChange()">Save</button>
-                        <button class="btn-secondary" onclick="toggleEditCustomer()">Cancel</button>
+                    <select id="customerSelect"></select>
+                    <button class="btn-primary" onclick="saveCustomerChange()">Save</button>
+                    <button class="btn-secondary" onclick="toggleEditCustomer()">Cancel</button>
                     </div>
                 </div>
                 <div class="info-block"><label>Order Date</label><div class="info-value" id="orderDate">-</div></div>
@@ -236,9 +248,9 @@
                     <label>Due Date <button class="edit-link" onclick="toggleEditDueDate()">Edit</button></label>
                     <div class="info-value" id="dueDate">Not defined</div>
                     <div id="dueDateEditRow" class="inline-edit-row" style="display:none;">
-                        <input type="date" id="dueDateInput">
-                        <button class="btn-primary" onclick="saveDueDate()">Save</button>
-                        <button class="btn-secondary" onclick="toggleEditDueDate()">Cancel</button>
+                    <input type="date" id="dueDateInput">
+                    <button class="btn-primary" onclick="saveDueDate()">Save</button>
+                    <button class="btn-secondary" onclick="toggleEditDueDate()">Cancel</button>
                     </div>
                 </div>
                 <div class="info-block"><label>Source Quote</label><div class="info-value" id="sourceQuote">-</div></div>
@@ -260,289 +272,289 @@
                 <div id="itemTypeChooser" class="type-chooser">
                     <div class="type-chooser-q">What do you want to add?</div>
                     <div class="type-chooser-btns">
-                        <button type="button" class="type-btn" onclick="chooseItemType('CATALOG')">
-                            <strong>Registered product</strong>
-                            <span>Pick from the catalog, select its size and quantity price.</span>
-                        </button>
-                        <button type="button" class="type-btn" onclick="chooseItemType('CUSTOM')">
-                            <strong>Custom product (guided)</strong>
-                            <span>Step-by-step: pick group, printer, media, size with cut plan and finishing.</span>
-                        </button>
+                    <button type="button" class="type-btn" onclick="chooseItemType('CATALOG')">
+                    <strong>Registered product</strong>
+                    <span>Pick from the catalog, select its size and quantity price.</span>
+                    </button>
+                    <button type="button" class="type-btn" onclick="chooseItemType('CUSTOM')">
+                    <strong>Custom product (guided)</strong>
+                    <span>Step-by-step: pick group, printer, media, size with cut plan and finishing.</span>
+                    </button>
                     </div>
                 </div>
 
                 <!-- CATALOG PANEL -->
                 <div id="catalogPanel" style="display:none;">
                     <div class="type-bar">
-                        <span>Registered product</span>
-                        <button type="button" class="btn-secondary btn-small" onclick="showItemTypeChooser()">← Change type</button>
+                    <span>Registered product</span>
+                    <button type="button" class="btn-secondary btn-small" onclick="showItemTypeChooser()">← Change type</button>
                     </div>
                     <div class="form-row">
-                        <div class="form-field" id="itemProductField">
-                            <label for="itemProduct">Product</label>
-                            <select id="itemProduct" onchange="onItemProductChange()"></select>
-                        </div>
-                        <div class="form-field" id="itemSizeField" style="display:none;">
-                            <label for="itemSize">Size / Variation</label>
-                            <select id="itemSize" onchange="onItemSizeChange()"></select>
-                        </div>
-                        <div class="form-field">
-                            <label for="itemDescription">Description *</label>
-                            <input id="itemDescription" placeholder="Item description">
-                        </div>
-                        <div class="form-field">
-                            <label for="itemQuantity">Quantity *</label>
-                            <input type="number" id="itemQuantity" min="1" step="1" oninput="onCatalogQtyChange()">
-                        </div>
-                        <div class="form-field">
-                            <label for="itemUnitPrice">Unit Price (CAD) *</label>
-                            <input type="number" id="itemUnitPrice" min="0" step="0.0001" oninput="onCatalogManualPriceInput()">
-                        </div>
+                    <div class="form-field" id="itemProductField">
+                    <label for="itemProduct">Product</label>
+                    <select id="itemProduct" onchange="onItemProductChange()"></select>
+                    </div>
+                    <div class="form-field" id="itemSizeField" style="display:none;">
+                    <label for="itemSize">Size / Variation</label>
+                    <select id="itemSize" onchange="onItemSizeChange()"></select>
+                    </div>
+                    <div class="form-field">
+                    <label for="itemDescription">Description *</label>
+                    <input id="itemDescription" placeholder="Item description">
+                    </div>
+                    <div class="form-field">
+                    <label for="itemQuantity">Quantity *</label>
+                    <input type="number" id="itemQuantity" min="1" step="1" oninput="onCatalogQtyChange()">
+                    </div>
+                    <div class="form-field">
+                    <label for="itemUnitPrice">Unit Price (CAD) *</label>
+                    <input type="number" id="itemUnitPrice" min="0" step="0.0001" oninput="onCatalogManualPriceInput()">
+                    </div>
                     </div>
                     <div id="catalogPriceScales" class="hint"></div>
 
                     <!-- MEDIA & SIDES (from product registration) -->
                     <div id="catalogSpecsBar" class="spec-section" style="display:none;">
-                        <div class="spec-title">Media &amp; sides</div>
-                        <div class="form-row" style="margin-bottom:0;">
-                            <div class="form-field">
-                                <label for="catMedia">Media / Stock</label>
-                                <input id="catMedia" type="text" placeholder="Media registered on the product">
-                            </div>
-                            <div class="form-field narrow">
-                                <label for="catDouble">Print sides</label>
-                                <select id="catDouble" onchange="catMarkupTouched=true;recalcCatalog()">
-                                    <option value="SINGLE">Single (4/0)</option>
-                                    <option value="DOUBLE">Double (4/4 — 2x print)</option>
-                                </select>
-                            </div>
-                            <div class="form-field" id="catManualSizeField" style="display:none;">
-                                <label>Size (inches) *</label>
-                                <div class="size-pair">
-                                    <input type="number" id="catW" step="0.01" min="0" placeholder="W" oninput="onCatSizeInput()">
-                                    <span class="x">×</span>
-                                    <input type="number" id="catH" step="0.01" min="0" placeholder="H" oninput="onCatSizeInput()">
-                                </div>
-                            </div>
-                        </div>
+                    <div class="spec-title">Media &amp; sides</div>
+                    <div class="form-row" style="margin-bottom:0;">
+                    <div class="form-field">
+                    <label for="catMedia">Media / Stock</label>
+                    <input id="catMedia" type="text" placeholder="Media registered on the product">
+                    </div>
+                    <div class="form-field narrow">
+                    <label for="catDouble">Print sides</label>
+                    <select id="catDouble" onchange="catMarkupTouched=true;recalcCatalog()">
+                    <option value="SINGLE">Single (4/0)</option>
+                    <option value="DOUBLE">Double (4/4 — 2x print)</option>
+                    </select>
+                    </div>
+                    <div class="form-field" id="catManualSizeField" style="display:none;">
+                    <label>Size (inches) *</label>
+                    <div class="size-pair">
+                    <input type="number" id="catW" step="0.01" min="0" placeholder="W" oninput="onCatSizeInput()">
+                    <span class="x">×</span>
+                    <input type="number" id="catH" step="0.01" min="0" placeholder="H" oninput="onCatSizeInput()">
+                    </div>
+                    </div>
+                    </div>
                     </div>
 
                     <!-- PRICING (custom engine, same as custom item) -->
                     <div id="catalogPricingSection" style="display:none;">
-                        <div class="spec-section">
-                            <div class="spec-title">Finishing &amp; extra tasks</div>
-                            <div id="catFinishingRows"></div>
-                            <button type="button" class="btn-secondary btn-small" onclick="addCatalogFinishingRow()" style="margin-top:8px;">+ Add finishing</button>
-                        </div>
+                    <div class="spec-section">
+                    <div class="spec-title">Finishing &amp; extra tasks</div>
+                    <div id="catFinishingRows"></div>
+                    <button type="button" class="btn-secondary btn-small" onclick="addCatalogFinishingRow()" style="margin-top:8px;">+ Add finishing</button>
+                    </div>
 
-                        <div id="catCutCard" class="card cut-card" style="display:none;">
-                            <div id="catCutBadge" class="up-badge">Up to <b>0</b> in a sheet</div>
-                            <div class="cut-title" id="catCutSheetTitle">Cutting plan</div>
-                            <div id="catCutSvgBox"></div>
-                            <div class="cut-info" id="catCutStats"></div>
-                        </div>
+                    <div id="catCutCard" class="card cut-card" style="display:none;">
+                    <div id="catCutBadge" class="up-badge">Up to <b>0</b> in a sheet</div>
+                    <div class="cut-title" id="catCutSheetTitle">Cutting plan</div>
+                    <div id="catCutSvgBox"></div>
+                    <div class="cut-info" id="catCutStats"></div>
+                    </div>
 
-                        <div id="catCostBox" class="price-calc-box">
-                            <div class="calc-row"><span>Print cost</span><span id="catCostPrint">$0.00</span></div>
-                            <div class="calc-row"><span>Media cost</span><span id="catCostStock">$0.00</span></div>
-                            <div class="calc-row"><span>Cut cost</span><span id="catCostCut">$0.00</span></div>
-                            <div class="calc-row"><span>Finishing cost</span><span id="catCostFinishing">$0.00</span></div>
-                            <div class="calc-row total"><span>Total cost (locked)</span><strong id="catCostTotal">$0.00</strong></div>
-                            <div class="calc-row"><span>Markup %</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="catMarkup" min="0" step="1" value="100" style="width:80px;padding:3px 6px;text-align:right;" oninput="catMarkupTouched=true;recalcCatalog()"><span id="catCostMarkup">100%</span></span></div>
-                            <div class="calc-row total"><span>Line total</span><strong id="catCostLineTotal">$0.00</strong></div>
-                            <div class="calc-row"><span>Unit price</span><strong id="catCostUnitPrice">$0.0000</strong></div>
-                            <div class="calc-row" style="font-size:11px;color:#64748b;"><span>Price source</span><span id="catPriceSource">—</span></div>
-                        </div>
+                    <div id="catCostBox" class="price-calc-box">
+                    <div class="calc-row"><span>Print cost</span><span id="catCostPrint">$0.00</span></div>
+                    <div class="calc-row"><span>Media cost</span><span id="catCostStock">$0.00</span></div>
+                    <div class="calc-row"><span>Cut cost</span><span id="catCostCut">$0.00</span></div>
+                    <div class="calc-row"><span>Finishing cost</span><span id="catCostFinishing">$0.00</span></div>
+                    <div class="calc-row total"><span>Total cost (locked)</span><strong id="catCostTotal">$0.00</strong></div>
+                    <div class="calc-row"><span>Markup %</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="catMarkup" min="0" step="1" value="100" style="width:80px;padding:3px 6px;text-align:right;" oninput="catMarkupTouched=true;recalcCatalog()"><span id="catCostMarkup">100%</span></span></div>
+                    <div class="calc-row total"><span>Line total</span><strong id="catCostLineTotal">$0.00</strong></div>
+                    <div class="calc-row"><span>Unit price</span><strong id="catCostUnitPrice">$0.0000</strong></div>
+                    <div class="calc-row" style="font-size:11px;color:#64748b;"><span>Price source</span><span id="catPriceSource">—</span></div>
+                    </div>
                     </div>
 
                     <div class="item-form-actions" style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
-                        <button type="button" class="btn-secondary" onclick="closeItemForm()">Cancel</button>
-                        <button type="button" class="btn-primary" onclick="saveCatalogItem()">Save Item</button>
+                    <button type="button" class="btn-secondary" onclick="closeItemForm()">Cancel</button>
+                    <button type="button" class="btn-primary" onclick="saveCatalogItem()">Save Item</button>
                     </div>
                 </div>
 
                 <!-- CUSTOM ITEM GUIDED (DOCKET MANAGER STYLE) -->
                 <div id="customItemCard" style="display:none;">
                     <div class="type-bar">
-                        <span>Custom Item — Guided Specification &amp; Cut Plan</span>
-                        <button type="button" class="btn-secondary btn-small" onclick="showItemTypeChooser()">← Change type</button>
+                    <span>Custom Item — Guided Specification &amp; Cut Plan</span>
+                    <button type="button" class="btn-secondary btn-small" onclick="showItemTypeChooser()">← Change type</button>
                     </div>
 
                     <div class="cu-layout">
-                        <!-- COLUNA ESQUERDA: FORMULÁRIO PASSO A PASSO -->
-                        <div class="cu-left">
-                            <div class="form-row">
-                                <div class="form-field">
-                                    <label for="cuDescription">Description *</label>
-                                    <input id="cuDescription" placeholder="e.g. Coroplast Signs 48x48">
-                                </div>
-                            </div>
+                    <!-- COLUNA ESQUERDA: FORMULÁRIO PASSO A PASSO -->
+                    <div class="cu-left">
+                    <div class="form-row">
+                    <div class="form-field">
+                    <label for="cuDescription">Description *</label>
+                    <input id="cuDescription" placeholder="e.g. Coroplast Signs 48x48">
+                    </div>
+                    </div>
 
-                            <!-- 1. Group & Printer -->
-                            <div class="spec-section">
-                                <div class="spec-title">1. Group and printer</div>
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <div class="form-field">
-                                        <label for="cuGroup">Group</label>
-                                        <select id="cuGroup" onchange="onCuGroupChange()">
-                                            <option value="">— Select group —</option>
-                                            <option value="SMALL">Small Format</option>
-                                            <option value="WIDE">Wide Format</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="cuPrinter">Printer</label>
-                                        <select id="cuPrinter" onchange="onCuPrinterChange()">
-                                            <option value="">— Select group first —</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- 1. Group & Printer -->
+                    <div class="spec-section">
+                    <div class="spec-title">1. Group and printer</div>
+                    <div class="form-row" style="margin-bottom:0;">
+                    <div class="form-field">
+                    <label for="cuGroup">Group</label>
+                    <select id="cuGroup" onchange="onCuGroupChange()">
+                    <option value="">— Select group —</option>
+                    <option value="SMALL">Small Format</option>
+                    <option value="WIDE">Wide Format</option>
+                    </select>
+                    </div>
+                    <div class="form-field">
+                    <label for="cuPrinter">Printer</label>
+                    <select id="cuPrinter" onchange="onCuPrinterChange()">
+                    <option value="">— Select group first —</option>
+                    </select>
+                    </div>
+                    </div>
+                    </div>
 
-                            <!-- 2. Colors & Sides -->
-                            <div class="spec-section cu-hidden" id="cuSecSides">
-                                <div class="spec-title">2. Inks and sides</div>
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <div class="form-field">
-                                        <label for="cuColorMode">Inks</label>
-                                        <select id="cuColorMode" onchange="onCuColorChange()">
-                                            <option value="COLOR">Full Color</option>
-                                            <option value="BW">B&amp;W (Black only)</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="cuSides">Sides</label>
-                                        <select id="cuSides" onchange="onCuColorChange()">
-                                            <option value="SINGLE">Single Sided (1 side)</option>
-                                            <option value="DOUBLE">Double Sided (2 sides)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- 2. Colors & Sides -->
+                    <div class="spec-section cu-hidden" id="cuSecSides">
+                    <div class="spec-title">2. Inks and sides</div>
+                    <div class="form-row" style="margin-bottom:0;">
+                    <div class="form-field">
+                    <label for="cuColorMode">Inks</label>
+                    <select id="cuColorMode" onchange="onCuColorChange()">
+                    <option value="COLOR">Full Color</option>
+                    <option value="BW">B&amp;W (Black only)</option>
+                    </select>
+                    </div>
+                    <div class="form-field">
+                    <label for="cuSides">Sides</label>
+                    <select id="cuSides" onchange="onCuColorChange()">
+                    <option value="SINGLE">Single Sided (1 side)</option>
+                    <option value="DOUBLE">Double Sided (2 sides)</option>
+                    </select>
+                    </div>
+                    </div>
+                    </div>
 
-                            <!-- 3. Stock -->
-                            <div class="spec-section cu-hidden" id="cuSecStock">
-                                <div class="spec-title">3. Stock / Media</div>
-                                <div class="form-row">
-                                    <div class="form-field">
-                                        <label for="cuStock">Stock / Substrate</label>
-                                        <select id="cuStock" onchange="onCuStockChange()">
-                                            <option value="">— Select stock —</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-row" id="cuSheetRow" style="margin-bottom:0;">
-                                    <div class="form-field">
-                                        <label for="cuSheetSelect">Sheet / Board size</label>
-                                        <select id="cuSheetSelect" onchange="onCuSheetSelectChange()">
-                                            <option value="">— Select size —</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- 3. Stock -->
+                    <div class="spec-section cu-hidden" id="cuSecStock">
+                    <div class="spec-title">3. Stock / Media</div>
+                    <div class="form-row">
+                    <div class="form-field">
+                    <label for="cuStock">Stock / Substrate</label>
+                    <select id="cuStock" onchange="onCuStockChange()">
+                    <option value="">— Select stock —</option>
+                    </select>
+                    </div>
+                    </div>
+                    <div class="form-row" id="cuSheetRow" style="margin-bottom:0;">
+                    <div class="form-field">
+                    <label for="cuSheetSelect">Sheet / Board size</label>
+                    <select id="cuSheetSelect" onchange="onCuSheetSelectChange()">
+                    <option value="">— Select size —</option>
+                    </select>
+                    </div>
+                    </div>
+                    </div>
 
-                            <!-- 4. Sizes -->
-                            <div class="spec-section cu-hidden" id="cuSecSizes">
-                                <div class="spec-title">4. Sizes (inches)</div>
-                                <div class="form-row">
-                                    <div class="form-field">
-                                        <label>Run Size (sheet / board)</label>
-                                        <div class="size-pair">
-                                            <input type="number" id="cuRunW" step="0.01" min="0" placeholder="W" oninput="onCuSizeChange()">
-                                            <span class="x">×</span>
-                                            <input type="number" id="cuRunH" step="0.01" min="0" placeholder="H" oninput="onCuSizeChange()">
-                                        </div>
-                                    </div>
-                                    <div class="form-field">
-                                        <label>Flat Size (piece to cut) *</label>
-                                        <div class="size-pair">
-                                            <input type="number" id="cuFlatW" step="0.01" min="0" placeholder="W" oninput="onCuSizeChange()">
-                                            <span class="x">×</span>
-                                            <input type="number" id="cuFlatH" step="0.01" min="0" placeholder="H" oninput="onCuSizeChange()">
-                                        </div>
-                                    </div>
-                                    <div class="form-field">
-                                        <label>Final Size</label>
-                                        <div class="size-pair">
-                                            <input type="number" id="cuFinW" step="0.01" min="0" placeholder="W" oninput="recalcCustom()">
-                                            <span class="x">×</span>
-                                            <input type="number" id="cuFinH" step="0.01" min="0" placeholder="H" oninput="recalcCustom()">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row" style="margin-bottom:0;">
-                                    <div class="form-field">
-                                        <label for="cuBleed">Bleed (each side, in)</label>
-                                        <input type="number" id="cuBleed" step="0.005" min="0" value="0.125" oninput="onCuSizeChange()">
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="cuGap">Gap between pieces (in)</label>
-                                        <input type="number" id="cuGap" step="0.005" min="0" value="0.25" oninput="onCuSizeChange()">
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="cuMargin">Sheet margin (in)</label>
-                                        <input type="number" id="cuMargin" step="0.005" min="0" value="0.25" oninput="onCuSizeChange()">
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- 4. Sizes -->
+                    <div class="spec-section cu-hidden" id="cuSecSizes">
+                    <div class="spec-title">4. Sizes (inches)</div>
+                    <div class="form-row">
+                    <div class="form-field">
+                    <label>Run Size (sheet / board)</label>
+                    <div class="size-pair">
+                    <input type="number" id="cuRunW" step="0.01" min="0" placeholder="W" oninput="onCuSizeChange()">
+                    <span class="x">×</span>
+                    <input type="number" id="cuRunH" step="0.01" min="0" placeholder="H" oninput="onCuSizeChange()">
+                    </div>
+                    </div>
+                    <div class="form-field">
+                    <label>Flat Size (piece to cut) *</label>
+                    <div class="size-pair">
+                    <input type="number" id="cuFlatW" step="0.01" min="0" placeholder="W" oninput="onCuSizeChange()">
+                    <span class="x">×</span>
+                    <input type="number" id="cuFlatH" step="0.01" min="0" placeholder="H" oninput="onCuSizeChange()">
+                    </div>
+                    </div>
+                    <div class="form-field">
+                    <label>Final Size</label>
+                    <div class="size-pair">
+                    <input type="number" id="cuFinW" step="0.01" min="0" placeholder="W" oninput="recalcCustom()">
+                    <span class="x">×</span>
+                    <input type="number" id="cuFinH" step="0.01" min="0" placeholder="H" oninput="recalcCustom()">
+                    </div>
+                    </div>
+                    </div>
+                    <div class="form-row" style="margin-bottom:0;">
+                    <div class="form-field">
+                    <label for="cuBleed">Bleed (each side, in)</label>
+                    <input type="number" id="cuBleed" step="0.005" min="0" value="0.125" oninput="onCuSizeChange()">
+                    </div>
+                    <div class="form-field">
+                    <label for="cuGap">Gap between pieces (in)</label>
+                    <input type="number" id="cuGap" step="0.005" min="0" value="0.25" oninput="onCuSizeChange()">
+                    </div>
+                    <div class="form-field">
+                    <label for="cuMargin">Sheet margin (in)</label>
+                    <input type="number" id="cuMargin" step="0.005" min="0" value="0.25" oninput="onCuSizeChange()">
+                    </div>
+                    </div>
+                    </div>
 
-                            <!-- 5. Finishing -->
-                            <div class="spec-section cu-hidden" id="cuSecFinishing">
-                                <div class="spec-title">5. Finishing &amp; extra tasks</div>
-                                <div id="cuFinishingRows"></div>
-                                <button type="button" class="btn-secondary btn-small" onclick="addCuFinishingRow()" style="margin-top:8px;">+ Add finishing</button>
-                            </div>
+                    <!-- 5. Finishing -->
+                    <div class="spec-section cu-hidden" id="cuSecFinishing">
+                    <div class="spec-title">5. Finishing &amp; extra tasks</div>
+                    <div id="cuFinishingRows"></div>
+                    <button type="button" class="btn-secondary btn-small" onclick="addCuFinishingRow()" style="margin-top:8px;">+ Add finishing</button>
+                    </div>
 
-                            <!-- 6. Pricing -->
-                            <div class="spec-section cu-hidden" id="cuSecPricing">
-                                <div class="spec-title">6. Quantity &amp; Pricing</div>
-                                <div class="form-row">
-                                    <div class="form-field">
-                                        <label for="cuQty">Quantity *</label>
-                                        <input type="number" id="cuQty" min="1" step="1" value="1" oninput="onCuQtyInput()">
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="cuMarkup">Markup %</label>
-                                        <input type="number" id="cuMarkup" min="0" step="1" value="100" oninput="recalcCustom()">
-                                    </div>
-                                    <div class="form-field">
-                                        <label for="cuPrice">Unit Price (CAD) *</label>
-                                        <input type="number" id="cuPrice" min="0" step="0.0001" oninput="onCuManualPriceInput()">
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- 6. Pricing -->
+                    <div class="spec-section cu-hidden" id="cuSecPricing">
+                    <div class="spec-title">6. Quantity &amp; Pricing</div>
+                    <div class="form-row">
+                    <div class="form-field">
+                    <label for="cuQty">Quantity *</label>
+                    <input type="number" id="cuQty" min="1" step="1" value="1" oninput="onCuQtyInput()">
+                    </div>
+                    <div class="form-field">
+                    <label for="cuMarkup">Markup %</label>
+                    <input type="number" id="cuMarkup" min="0" step="1" value="100" oninput="recalcCustom()">
+                    </div>
+                    <div class="form-field">
+                    <label for="cuPrice">Unit Price (CAD) *</label>
+                    <input type="number" id="cuPrice" min="0" step="0.0001" oninput="onCuManualPriceInput()">
+                    </div>
+                    </div>
+                    </div>
 
-                            <datalist id="cuFinishingPresets"></datalist>
+                    <datalist id="cuFinishingPresets"></datalist>
 
-                            <div class="item-form-actions" style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
-                                <button type="button" class="btn-secondary" onclick="closeItemForm()">Cancel</button>
-                                <button type="button" class="btn-primary" onclick="saveCustomItem()">Save Custom Item</button>
-                            </div>
-                        </div>
+                    <div class="item-form-actions" style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+                    <button type="button" class="btn-secondary" onclick="closeItemForm()">Cancel</button>
+                    <button type="button" class="btn-primary" onclick="saveCustomItem()">Save Custom Item</button>
+                    </div>
+                    </div>
 
-                        <!-- COLUNA DIREITA: PLANO DE CORTE + RESUMO DE CUSTOS -->
-                        <div class="cu-right">
-                            <div id="cuCutPlanCard" class="card cut-card cu-hidden">
-                                <div id="cuCutBadge" class="up-badge">Up to <b>0</b> in a sheet</div>
-                                <div class="cut-title" id="cuCutSheetTitle">Cutting plan</div>
-                                <div id="cuCutSvgBox"></div>
-                                <div class="cut-info" id="cuCutStats"></div>
-                            </div>
+                    <!-- COLUNA DIREITA: PLANO DE CORTE + RESUMO DE CUSTOS -->
+                    <div class="cu-right">
+                    <div id="cuCutPlanCard" class="card cut-card cu-hidden">
+                    <div id="cuCutBadge" class="up-badge">Up to <b>0</b> in a sheet</div>
+                    <div class="cut-title" id="cuCutSheetTitle">Cutting plan</div>
+                    <div id="cuCutSvgBox"></div>
+                    <div class="cut-info" id="cuCutStats"></div>
+                    </div>
 
-                            <div id="cuCostBox" class="price-calc-box cu-hidden">
-                                <div class="calc-row"><span>Print cost</span><span id="cuCostPrint">$0.00</span></div>
-                                <div class="calc-row"><span>Stock cost</span><span id="cuCostStock">$0.00</span></div>
-                                <div class="calc-row"><span>Finishing cost</span><span id="cuCostFinishing">$0.00</span></div>
-                                <div class="calc-row total"><span>Total cost (locked)</span><strong id="cuCostTotal">$0.00</strong></div>
-                                <div class="calc-row"><span>Markup</span><span id="cuCostMarkup">100%</span></div>
-                                <div class="calc-row total"><span>Line total</span><strong id="cuCostLineTotal">$0.00</strong></div>
-                                <div class="calc-row"><span>Unit price</span><strong id="cuCostUnitPrice">$0.0000</strong></div>
-                            </div>
+                    <div id="cuCostBox" class="price-calc-box cu-hidden">
+                    <div class="calc-row"><span>Print cost</span><span id="cuCostPrint">$0.00</span></div>
+                    <div class="calc-row"><span>Stock cost</span><span id="cuCostStock">$0.00</span></div>
+                    <div class="calc-row"><span>Finishing cost</span><span id="cuCostFinishing">$0.00</span></div>
+                    <div class="calc-row total"><span>Total cost (locked)</span><strong id="cuCostTotal">$0.00</strong></div>
+                    <div class="calc-row"><span>Markup</span><span id="cuCostMarkup">100%</span></div>
+                    <div class="calc-row total"><span>Line total</span><strong id="cuCostLineTotal">$0.00</strong></div>
+                    <div class="calc-row"><span>Unit price</span><strong id="cuCostUnitPrice">$0.0000</strong></div>
+                    </div>
 
-                            <div id="cuCutHint" class="cu-hint">
-                                Fill in group, printer, stock and sizes to see the cut plan and automatic price preview.
-                            </div>
-                        </div>
+                    <div id="cuCutHint" class="cu-hint">
+                    Fill in group, printer, stock and sizes to see the cut plan and automatic price preview.
+                    </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -552,8 +564,8 @@
                 <table id="itemsTable">
                     <thead>
                     <tr>
-                        <th>Product</th><th>Description</th><th>Quantity</th><th>Unit Price</th>
-                        <th>Production Status</th><th>Total</th><th>Actions</th>
+                    <th>Product</th><th>Description</th><th>Quantity</th><th>Unit Price</th>
+                    <th>Production Status</th><th>Total</th><th>Actions</th>
                     </tr>
                     </thead>
                     <tbody id="itemsBody"></tbody>
@@ -564,20 +576,68 @@
                 <div class="totals-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
                 <div class="totals-row" id="gstRow">
                     <span style="display: flex; align-items: center; gap: 7px;">
-                        <input type="checkbox" id="gstCheckbox" style="width: 16px; height: 16px; padding: 0; margin: 0; border: none; cursor: pointer; accent-color: #2563eb;" onchange="saveTaxFlags()">
-                        <span id="gstLabel">GST</span>
+                    <input type="checkbox" id="gstCheckbox" style="width: 16px; height: 16px; padding: 0; margin: 0; border: none; cursor: pointer; accent-color: #2563eb;" onchange="saveTaxFlags()">
+                    <span id="gstLabel">GST</span>
                     </span>
                     <span id="gstAmount">$0.00</span>
                 </div>
                 <div class="totals-row" id="pstRow">
                     <span style="display: flex; align-items: center; gap: 7px;">
-                        <input type="checkbox" id="pstCheckbox" style="width: 16px; height: 16px; padding: 0; margin: 0; border: none; cursor: pointer; accent-color: #2563eb;" onchange="saveTaxFlags()">
-                        <span id="pstLabel">PST</span>
+                    <input type="checkbox" id="pstCheckbox" style="width: 16px; height: 16px; padding: 0; margin: 0; border: none; cursor: pointer; accent-color: #2563eb;" onchange="saveTaxFlags()">
+                    <span id="pstLabel">PST</span>
                     </span>
                     <span id="pstAmount">$0.00</span>
                 </div>
+                <div class="totals-row" id="rushFeeRow" style="opacity: 0.45;">
+                    <span style="display: flex; align-items: center; gap: 7px;">
+                    <span id="rushFeeLabel">Rush fee</span>
+                    <button type="button" class="edit-link" id="rushFeeEditLink" onclick="toggleEditRushFee()">Add</button>
+                    </span>
+                    <span id="rushFeeAmount">$0.00</span>
+                </div>
                 <div class="totals-row grand-total"><span>Total</span><span id="totalAmount">$0.00</span></div>
             </div>
+
+            <!-- RUSH FEE EDITOR: fixed $ or % of the pre-tax subtotal -->
+            <div id="rushFeeEditRow" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:12px 14px;margin-top:12px;margin-left:auto;max-width:350px;">
+                <label for="rushFeeTypeSelect">Rush fee type</label>
+                <select id="rushFeeTypeSelect" onchange="onRushFeeTypeChange()">
+                    <option value="FIXED">Fixed amount ($)</option>
+                    <option value="PERCENT">Percent of subtotal (%)</option>
+                </select>
+
+                <div id="rushFeeFixedField" style="display:none;margin-top:8px;">
+                    <label for="rushFeeFixedValue">Fixed amount (CAD)</label>
+                    <input type="number" id="rushFeeFixedValue" min="0" step="0.01" oninput="updateRushFeePreview()">
+                </div>
+
+                <div id="rushFeePercentField" style="display:none;margin-top:8px;">
+                    <label for="rushFeePercentValue">Percent of subtotal (before taxes)</label>
+                    <input type="number" id="rushFeePercentValue" min="0" step="0.01" oninput="updateRushFeePreview()">
+                </div>
+
+                <div id="rushFeePreview" style="margin-top:8px;font-size:12px;font-weight:bold;color:#b91c1c;text-align:right;"></div>
+
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;">
+                    <button type="button" class="btn-secondary" onclick="toggleEditRushFee()">Cancel</button>
+                    <button type="button" class="btn-primary" onclick="saveRushFee()">Save Rush Fee</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="installationPhotosCard">
+            <div class="items-toolbar">
+                <h3>Installation Photos</h3>
+                <span id="installPhotoHint" style="font-size:12px;color:#64748b;font-weight:bold;"></span>
+            </div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:10px;">
+                Required while an order or item is in <strong>Installing</strong>: attach the job-site photos before moving to Completed.
+            </div>
+            <div class="install-upload-row">
+                <input type="file" id="installPhotoInput" accept="image/*" multiple>
+                <button type="button" class="btn-primary" onclick="uploadInstallationPhotos()">Upload Photos</button>
+            </div>
+            <div id="installPhotosGrid" class="install-photos-grid"></div>
         </div>
 
         <div class="card">
@@ -712,6 +772,8 @@
             document.getElementById("pstAmount").textContent = money(currentOrder.pstAmount);
             document.getElementById("totalAmount").textContent = money(currentOrder.totalAmount);
             renderTaxChecks();
+            renderRushFee();
+            renderInstallationPhotos();
 
             renderOrderItems(currentOrder.items || []);
         } catch (err) {
@@ -769,6 +831,125 @@
         }
     }
 
+    // ==== Rush fee (FIXED $ or PERCENT % of the pre-tax subtotal) ====
+    // The label shows the typed percent, e.g. "Rush fee (25%)". Orders converted
+    // from a RUSH quote inherit rushFeeType / rushFeePercent / rushFee automatically.
+
+    function trimNumber(value) {
+        return String(Number(value));
+    }
+
+    function rushFeePercentSuffix(type, percent) {
+        return String(type || "").toUpperCase() === "PERCENT" && Number(percent) > 0
+            ? ` (${trimNumber(percent)}%)`
+            : "";
+    }
+
+    function renderRushFee() {
+        const row = document.getElementById("rushFeeRow");
+        const fee = Number(currentOrder?.rushFee || 0);
+        const type = String(currentOrder?.rushFeeType || "FIXED");
+        const percent = currentOrder?.rushFeePercent;
+
+        document.getElementById("rushFeeLabel").textContent =
+            "Rush fee" + rushFeePercentSuffix(type, percent);
+        document.getElementById("rushFeeAmount").textContent = money(fee);
+
+        // No fee: muted on screen and hidden on the printed invoice (tax-off class).
+        const off = fee <= 0;
+        row.style.opacity = off ? "0.45" : "1";
+        row.classList.toggle("tax-off", off);
+        document.getElementById("rushFeeEditLink").textContent = off ? "Add" : "Edit";
+    }
+
+    function toggleEditRushFee() {
+        const row = document.getElementById("rushFeeEditRow");
+        const show = row.style.display === "none";
+
+        if (show) {
+            const type = String(currentOrder?.rushFeeType || "FIXED").toUpperCase() === "PERCENT"
+                ? "PERCENT"
+                : "FIXED";
+
+            document.getElementById("rushFeeTypeSelect").value = type;
+
+            if (type === "PERCENT") {
+                document.getElementById("rushFeePercentValue").value =
+                    currentOrder?.rushFeePercent != null ? Number(currentOrder.rushFeePercent) : "";
+                document.getElementById("rushFeeFixedValue").value =
+                    Number(currentOrder?.rushFee || 0) > 0 ? Number(currentOrder.rushFee).toFixed(2) : "";
+            } else {
+                document.getElementById("rushFeeFixedValue").value =
+                    Number(currentOrder?.rushFee || 0) > 0 ? Number(currentOrder.rushFee).toFixed(2) : "";
+                document.getElementById("rushFeePercentValue").value = "";
+            }
+
+            onRushFeeTypeChange();
+        }
+
+        row.style.display = show ? "block" : "none";
+    }
+
+    function onRushFeeTypeChange() {
+        const type = document.getElementById("rushFeeTypeSelect").value;
+
+        document.getElementById("rushFeeFixedField").style.display = type === "FIXED" ? "block" : "none";
+        document.getElementById("rushFeePercentField").style.display = type === "PERCENT" ? "block" : "none";
+
+        updateRushFeePreview();
+    }
+
+    function updateRushFeePreview() {
+        const subtotal = Number(currentOrder?.subtotal || 0);
+        const type = document.getElementById("rushFeeTypeSelect").value;
+
+        const fee = type === "PERCENT"
+            ? subtotal * (Number(document.getElementById("rushFeePercentValue").value) || 0) / 100
+            : Number(document.getElementById("rushFeeFixedValue").value) || 0;
+
+        const gstRate = currentOrder?.gstRate != null ? Number(currentOrder.gstRate) : 5;
+        const pstRate = currentOrder?.pstRate != null ? Number(currentOrder.pstRate) : 7;
+        const newTotal = (subtotal + fee) * (1 + (gstRate + pstRate) / 100);
+
+        document.getElementById("rushFeePreview").textContent =
+            `Rush fee = ${money(fee)} · New total = ${money(newTotal)}`;
+    }
+
+    async function saveRushFee() {
+        const type = document.getElementById("rushFeeTypeSelect").value;
+        const subtotal = Number(currentOrder?.subtotal || 0);
+
+        const percent = Number(document.getElementById("rushFeePercentValue").value) || 0;
+        const fixedValue = Number(document.getElementById("rushFeeFixedValue").value) || 0;
+
+        // PERCENT: the backend recalculates the $ value from the subtotal;
+        // we send the same math so the value is correct even before recalculation.
+        const fee = type === "PERCENT"
+            ? Math.round((subtotal * percent / 100) * 100) / 100
+            : fixedValue;
+
+        try {
+            const res = await fetch(`/api/orders/${orderId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...currentOrder,
+                    rushFeeType: type,
+                    rushFeePercent: type === "PERCENT" ? percent : null,
+                    rushFee: fee
+                })
+            });
+            if (!res.ok) throw new Error("Failed to update rush fee.");
+
+            document.getElementById("rushFeeEditRow").style.display = "none";
+            await loadOrderDetails();
+            showMessage("Rush fee updated.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
+        }
+    }
+
     function renderOrderItems(items) {
         const tbody = document.getElementById("itemsBody");
         if (!items.length) {
@@ -785,8 +966,8 @@
                 <td>${escapeHtml(item.itemDescription || "")}
                     ${buildSpecsDisplay(item.printSpecsSummary)}
                     <div style="margin-top:6px;">
-                        ${notes ? `<div class="notes-tag"><strong>Notes:</strong> ${escapeHtml(notes)}</div>` : ""}
-                        <button type="button" class="notes-btn" onclick="promptItemNotes(${id})">${notes ? "Edit Notes" : "+ Add Note"}</button>
+                    ${notes ? `<div class="notes-tag"><strong>Notes:</strong> ${escapeHtml(notes)}</div>` : ""}
+                    <button type="button" class="notes-btn" onclick="promptItemNotes(${id})">${notes ? "Edit Notes" : "+ Add Note"}</button>
                     </div>
                 </td>
                 <td>${Number(item.quantity || 0)}</td>
@@ -808,6 +989,7 @@
             ["SF_PRINTING", "SF Printing"], ["WF_QUEUE", "Wide Format Queue"],
             ["WF_PRINTING", "WF Printing"], ["FINISHING", "Finishing"],
             ["READY_FOR_PICKUP", "Ready for Pick Up"], ["SHIPPING", "Shipping"],
+            ["INSTALLING", "Installing"],
             ["COMPLETED", "Completed"], ["CANCELLED", "Cancelled"]
         ];
         return list.map(([v, l]) => `<option value="${v}" ${v === selected ? "selected" : ""}>${l}</option>`).join("");
@@ -1175,7 +1357,7 @@
         }
 
         const totalCost = scaleUsed ? (Number(scaleUsed.totalCost) + finishingCost)
-                                    : (printCost + stockCost + cutCost + finishingCost);
+                    : (printCost + stockCost + cutCost + finishingCost);
 
         const markupInput = parseFloat(document.getElementById("catMarkup").value);
         const markup = Number.isFinite(markupInput) ? markupInput : 100;
@@ -1481,9 +1663,9 @@
                     cuEl("cuCutBadge").className = "up-badge zero";
                     cuEl("cuCutBadge").innerHTML = `Up to <b>0</b> in a sheet`;
                     cuEl("cuCutSvgBox").innerHTML = `<div style="color:#b91c1c;font-size:12px;padding:12px;background:#fef2f2;border:1px dashed #fca5a5;border-radius:6px;margin:8px 0;">
-                        <strong>Piece does not fit into the sheet!</strong><br>
-                        Piece + bleed is ${pieceW}"×${pieceH}".<br>
-                        Usable sheet width/height after margins is too small. Try setting Bleed or Margins to 0.
+                    <strong>Piece does not fit into the sheet!</strong><br>
+                    Piece + bleed is ${pieceW}"×${pieceH}".<br>
+                    Usable sheet width/height after margins is too small. Try setting Bleed or Margins to 0.
                     </div>`;
                     cuEl("cuCutStats").innerHTML = "";
                 }
@@ -1527,7 +1709,7 @@
                     const tx = (pc.x + bleed) * s + 1, ty = (pc.y + bleed) * s + 1;
                     const tw = (pc.w - 2 * bleed) * s, th = (pc.h - 2 * bleed) * s;
                     if (tw > 0 && th > 0) {
-                        svg += `<rect x="${tx}" y="${ty}" width="${tw}" height="${th}" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2"/>`;
+                    svg += `<rect x="${tx}" y="${ty}" width="${tw}" height="${th}" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2"/>`;
                     }
                 }
 
@@ -1838,9 +2020,28 @@
 
     async function updateOrderStatus() {
         const st = document.getElementById("orderStatusSelect").value;
+        const current = currentOrder ? (currentOrder.status || "") : "";
+
+        // Lock: cancelling requires confirmation
+        if (st === "CANCELLED" && !confirm("Cancel this order? It will be marked as Cancelled.")) {
+            document.getElementById("orderStatusSelect").value = current;
+            return;
+        }
+
+        // Lock: INSTALLING -> COMPLETED requires installation photos on the order
+        if (st === "COMPLETED" && current === "INSTALLING" && !orderHasPhotos()) {
+            showMessage("Installation photos are required before moving this order to Completed. Upload them in the Installation Photos section.", "error");
+            document.getElementById("orderStatusSelect").value = current;
+            return;
+        }
+
         try {
             const res = await fetch(`/api/orders/${orderId}/status?status=${encodeURIComponent(st)}`, { method: "PATCH" });
-            if (!res.ok) throw new Error("Failed to update status.");
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || data.message || "Failed to update status.");
+            }
+            await loadOrderDetails();
             showMessage("Order status updated.", "success");
         } catch (err) {
             console.error(err);
@@ -1849,14 +2050,112 @@
     }
 
     async function updateItemProductionStatus(itemId, st) {
+        const item = (currentOrder?.items || []).find(i => Number(i.id) === Number(itemId));
+        const current = item ? (item.productionStatus || "PENDING_FILE") : "";
+
+        // Lock: cancelling requires confirmation
+        if (st === "CANCELLED" && !confirm("Cancel this item? It will be marked as Cancelled.")) {
+            await loadOrderDetails();
+            return;
+        }
+
+        // Lock: INSTALLING -> COMPLETED requires installation photos on the order
+        if (st === "COMPLETED"
+                && (current === "INSTALLING" || currentOrder?.status === "INSTALLING")
+                && !orderHasPhotos()) {
+            showMessage("Installation photos are required before moving this item to Completed. Upload them in the Installation Photos section.", "error");
+            await loadOrderDetails();
+            return;
+        }
+
         try {
             const res = await fetch(`/api/order-items/${itemId}/status?status=${encodeURIComponent(st)}`, { method: "PATCH" });
-            if (!res.ok) throw new Error("Failed to update item status.");
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || data.message || "Failed to update item status.");
+            }
             await loadOrderDetails();
         } catch (err) {
             console.error(err);
             showMessage(err.message, "error");
             await loadOrderDetails();
+        }
+    }
+
+    // ==== Installation photos (required before INSTALLING -> COMPLETED) ====
+
+    function getInstallationPhotoList() {
+        const raw = String(currentOrder?.installationPhotos || "").trim();
+        if (!raw) return [];
+        return raw.split(/\r?\n/).map(u => u.trim()).filter(u => u !== "");
+    }
+
+    function orderHasPhotos() {
+        return getInstallationPhotoList().length > 0;
+    }
+
+    function renderInstallationPhotos() {
+        const grid = document.getElementById("installPhotosGrid");
+        const photos = getInstallationPhotoList();
+
+        document.getElementById("installPhotoHint").textContent =
+            photos.length + " photo" + (photos.length === 1 ? "" : "s") + " attached";
+
+        if (!photos.length) {
+            grid.innerHTML = '<div class="install-photo-empty">No installation photos attached yet.</div>';
+            return;
+        }
+
+        grid.innerHTML = photos.map((url, index) => `
+            <div class="install-photo-cell">
+                <a href="${escapeHtml(url)}" target="_blank" rel="noopener">
+                    <img src="${escapeHtml(url)}" alt="Installation photo ${index + 1}">
+                </a>
+                <button type="button" class="install-photo-remove" onclick="removeInstallationPhoto(${index})">✕</button>
+            </div>
+        `).join("");
+    }
+
+    async function uploadInstallationPhotos() {
+        const input = document.getElementById("installPhotoInput");
+        const files = input && input.files ? Array.from(input.files) : [];
+
+        if (!files.length) {
+            showMessage("Select at least one photo to upload.", "error");
+            return;
+        }
+
+        const formData = new FormData();
+        files.forEach(f => formData.append("files", f));
+
+        try {
+            const res = await fetch(`/api/orders/${orderId}/installation-photos/upload`, {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || "Failed to upload photos.");
+
+            input.value = "";
+            await loadOrderDetails();
+            showMessage("Installation photos added.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
+        }
+    }
+
+    async function removeInstallationPhoto(index) {
+        if (!confirm("Remove this installation photo?")) return;
+        try {
+            const res = await fetch(`/api/orders/${orderId}/installation-photos/${index}`, { method: "DELETE" });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || "Failed to remove photo.");
+            await loadOrderDetails();
+            showMessage("Photo removed.", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage(err.message, "error");
         }
     }
 

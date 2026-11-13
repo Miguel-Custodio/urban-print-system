@@ -22,10 +22,20 @@ public class PurchaseOrder {
     @Column(name = "po_number", nullable = false, unique = true, length = 40)
     private String poNumber;
 
+    @Size(max = 100)
+    @Column(name = "customer_order_number", length = 100)
+    private String customerOrderNumber;
+
     @NotBlank(message = "Supplier is required")
     @Size(max = 150)
     @Column(nullable = false, length = 150)
     private String supplier;
+
+    // Fornecedor cadastrado (opcional). Quando informado, o service copia
+    // o nome para o campo supplier acima.
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplierRef;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -42,9 +52,9 @@ public class PurchaseOrder {
     private String notes;
 
     @OneToMany(
-            mappedBy = "purchaseOrder",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+        mappedBy = "purchaseOrder",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     @JsonManagedReference
     private List<PurchaseOrderLine> lines = new ArrayList<>();
@@ -99,12 +109,28 @@ public class PurchaseOrder {
         this.poNumber = poNumber;
     }
 
+    public String getCustomerOrderNumber() {
+        return customerOrderNumber;
+    }
+
+    public void setCustomerOrderNumber(String customerOrderNumber) {
+        this.customerOrderNumber = customerOrderNumber;
+    }
+
     public String getSupplier() {
         return supplier;
     }
 
     public void setSupplier(String supplier) {
         this.supplier = supplier;
+    }
+
+    public Supplier getSupplierRef() {
+        return supplierRef;
+    }
+
+    public void setSupplierRef(Supplier supplierRef) {
+        this.supplierRef = supplierRef;
     }
 
     public PurchaseOrderStatus getStatus() {

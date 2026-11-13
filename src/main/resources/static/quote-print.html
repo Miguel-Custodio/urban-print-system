@@ -577,6 +577,21 @@
         return 0;
     }
 
+    // " (25%)" when the fee was saved as a percent of the pre-tax subtotal;
+    // "" for fixed amounts and for older quotes without a saved type.
+    function rushFeePercentSuffix() {
+        const isPercent = String(quote.rushFeeType || "").toUpperCase() === "PERCENT";
+        const percent = Number(quote.rushFeePercent || 0);
+
+        return isPercent && percent > 0
+            ? ` (${trimNumber(percent)}%)`
+            : "";
+    }
+
+    function getRushFeeLabel() {
+        return "Rush fee" + rushFeePercentSuffix();
+    }
+
     function renderHeader() {
         return `
             <div class="doc-header">
@@ -1003,7 +1018,7 @@
 
                     ${rushFee > 0 ? `
                     <div class="totals-row">
-                    <span>Rush fee</span>
+                    <span>${escapeHtml(getRushFeeLabel())}</span>
                     <strong>${formatMoney(rushFee)}</strong>
                     </div>
                     ` : ""}
@@ -1064,7 +1079,7 @@
                     : "Pick-up or free delivery.";
 
         const rushText = getRushFee() > 0
-            ? `A one-time rush fee of ${formatMoney(getRushFee())} is included in each option total.`
+            ? `A one-time rush fee${rushFeePercentSuffix()} of ${formatMoney(getRushFee())} is included in each option total.`
             : "";
 
         return `

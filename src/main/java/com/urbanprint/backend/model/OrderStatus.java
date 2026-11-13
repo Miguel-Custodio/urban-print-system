@@ -11,6 +11,7 @@ public enum OrderStatus {
     FINISHING("Finishing"),
     READY_FOR_PICKUP("Ready for Pick Up"),
     SHIPPING("Shipping"),
+    INSTALLING("Installing"),
     COMPLETED("Completed"),
     CANCELLED("Cancelled");
 

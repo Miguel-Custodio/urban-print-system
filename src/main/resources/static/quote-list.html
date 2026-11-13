@@ -432,7 +432,13 @@
                 ? `<span class="status status-${escapeHtml(status)}">${escapeHtml(status)}</span>`
                 : `<span style="color:#94a3b8">—</span>`;
 
-            const taxTotal = Number(quote.gstAmount || 0) + Number(quote.pstAmount || 0);
+            const gstAmount = Number(quote.gstAmount || 0);
+            const pstAmount = Number(quote.pstAmount || 0);
+            const taxTotal = Math.round((gstAmount + pstAmount) * 100) / 100;
+
+            const taxCell = taxTotal > 0
+                ? formatCurrency(taxTotal)
+                : `<span style="color:#94a3b8" title="Customer pays no taxes (GST $${gstAmount.toFixed(2)} + PST $${pstAmount.toFixed(2)})">—</span>`;
 
             return `
                 <tr>
@@ -454,7 +460,7 @@
 
                     <td>${formatCurrency(quote.subtotal)}</td>
 
-                    <td>${formatCurrency(taxTotal)}</td>
+                    <td>${taxCell}</td>
 
                     <td>
                     <strong>${formatCurrency(quote.totalAmount)}</strong>

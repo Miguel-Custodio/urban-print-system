@@ -60,6 +60,16 @@ public class Quote {
     @Column(length = 20)
     private String turnaroundOption;
 
+    // Rush fee: FIXED = valor fixo em $; PERCENT = % do subtotal (antes dos impostos)
+    @Column(name = "rush_fee_type", length = 10)
+    private String rushFeeType = "FIXED";
+
+    // Percentual usado quando rushFeeType = PERCENT
+    @Column(name = "rush_fee_percent", precision = 5, scale = 2)
+    private BigDecimal rushFeePercent;
+
+    // Rush fee em $ (fixo digitado ou calculado a partir do percentual);
+    // entra na base taxavel (GST/PST)
     @Column(precision = 10, scale = 2)
     private BigDecimal rushFee = BigDecimal.ZERO;
 
@@ -116,6 +126,12 @@ public class Quote {
 
     public String getTurnaroundOption() { return turnaroundOption; }
     public void setTurnaroundOption(String turnaroundOption) { this.turnaroundOption = turnaroundOption; }
+
+    public String getRushFeeType() { return rushFeeType; }
+    public void setRushFeeType(String rushFeeType) { this.rushFeeType = rushFeeType; }
+
+    public BigDecimal getRushFeePercent() { return rushFeePercent; }
+    public void setRushFeePercent(BigDecimal rushFeePercent) { this.rushFeePercent = rushFeePercent; }
 
     public BigDecimal getRushFee() { return rushFee; }
     public void setRushFee(BigDecimal rushFee) { this.rushFee = rushFee; }

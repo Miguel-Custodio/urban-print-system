@@ -304,7 +304,7 @@
                     <option value="3-5">3–5 Business Days</option>
                     <option value="5-7">5–7 Business Days</option>
                     <option value="7-10">7–10 Business Days</option>
-                    <option value="RUSH">Rush — +$20.00 rush fee</option>
+                    <option value="RUSH">Rush — rush fee applies (edit below)</option>
                 </select>
                 <div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5">
                     Production time starts when we receive your print-ready PDF artwork,
@@ -324,8 +324,35 @@
             </div>
         </div>
 
-        <div id="rushFeeNote" style="display:none;background:#fee2e2;color:#b91c1c;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:bold;margin-bottom:14px">
-            RUSH FEE: $20.00 — added automatically to the total (taxed with GST/PST).
+        <!-- Rush fee editor: fixed $ or % of the pre-tax subtotal -->
+        <div id="rushFeePanel" style="display:none;background:#fee2e2;border:1px solid #fecaca;border-radius:6px;padding:10px 12px;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <strong style="color:#b91c1c;font-size:12px;text-transform:uppercase;letter-spacing:0.5px">Rush fee</strong>
+
+                <select id="rushFeeType" style="width:230px" onchange="onRushFeeTypeChange()">
+                    <option value="FIXED">Fixed amount ($)</option>
+                    <option value="PERCENT">Percent of subtotal (%)</option>
+                </select>
+
+                <span id="rushFeeFixedField" style="display:none;align-items:center;gap:6px">
+                    <input type="number" id="rushFeeFixedValue" min="0" step="0.01"
+                           style="width:110px" oninput="renderTotals()">
+                    <span style="font-size:12px;color:#b91c1c">fixed $</span>
+                </span>
+
+                <span id="rushFeePercentField" style="display:none;align-items:center;gap:6px">
+                    <input type="number" id="rushFeePercentValue" min="0" step="0.01"
+                           style="width:90px" oninput="renderTotals()">
+                    <span style="font-size:12px;color:#b91c1c">% of subtotal (before taxes)</span>
+                </span>
+
+                <span id="rushFeePreview" style="font-size:12px;font-weight:bold;color:#b91c1c"></span>
+            </div>
+
+            <div style="font-size:11px;color:#b91c1c;margin-top:6px;line-height:1.5">
+                Rush fee applies only when Production Time is Rush. It is added to the pre-tax total
+                and taxed with GST/PST. Percent is calculated on the items subtotal (before taxes, without delivery).
+            </div>
         </div>
 
         <div class="table-wrapper">
@@ -729,7 +756,8 @@
 
     const DELIVERY_FEES = { PICKUP: 0, ZONE_A: 10, ZONE_B: 15, ZONE_C: 20, ZONE_F: 0, COURIER: null };
 
-    const RUSH_FEE = 20;
+    // Default rush fee (fixed $) used when the field is left empty
+    const RUSH_FEE_DEFAULT = 20;
 
     const DELIVERY_OPTIONS = [
         { value: "PICKUP", label: "Pick-up" },
@@ -929,6 +957,24 @@
     function renderTurnaround() {
         document.getElementById("turnaroundSelect").value = quote.turnaroundOption || "";
 
+        // Rush fee editor: type (FIXED/PERCENT) + fixed $ value or percent.
+        // Populated from the saved quote so editing keeps the configured rush.
+        const rushType = quote.rushFeeType === "PERCENT" ? "PERCENT" : "FIXED";
+
+        document.getElementById("rushFeeType").value = rushType;
+
+        if (rushType === "PERCENT") {
+            document.getElementById("rushFeePercentValue").value =
+                quote.rushFeePercent != null ? quote.rushFeePercent : "";
+            document.getElementById("rushFeeFixedValue").value = "";
+        } else {
+            document.getElementById("rushFeeFixedValue").value =
+                quote.rushFee != null && Number(quote.rushFee) > 0
+                    ? Number(quote.rushFee).toFixed(2)
+                    : "";
+            document.getElementById("rushFeePercentValue").value = "";
+        }
+
         const expiryInput = document.getElementById("expiryDateInput");
 
         if (quote.expiryDate) {
@@ -944,8 +990,83 @@
 
     function onTurnaroundChange() {
         const isRush = document.getElementById("turnaroundSelect").value === "RUSH";
-        document.getElementById("rushFeeNote").style.display = isRush ? "block" : "none";
+
+        document.getElementById("rushFeePanel").style.display = isRush ? "block" : "none";
+
+        if (isRush) {
+            onRushFeeTypeChange();
+        } else {
+            renderTotals();
+        }
+    }
+
+    function onRushFeeTypeChange() {
+        const type = document.getElementById("rushFeeType").value || "FIXED";
+        const fixedField = document.getElementById("rushFeeFixedField");
+        const percentField = document.getElementById("rushFeePercentField");
+        const fixedInput = document.getElementById("rushFeeFixedValue");
+
+        fixedField.style.display = type === "FIXED" ? "inline-flex" : "none";
+        percentField.style.display = type === "PERCENT" ? "inline-flex" : "none";
+
+        // Empty fixed field falls back to the default $20
+        if (type === "FIXED" && fixedInput.value === "") {
+            fixedInput.value = RUSH_FEE_DEFAULT.toFixed(2);
+        }
+
         renderTotals();
+    }
+
+    // Current items subtotal (respects the quantity-option groups,
+    // same rule used by renderTotals)
+    function getItemsSubtotal() {
+        let subtotal = 0;
+
+        getAllGroups().forEach(group => {
+            if (group.length === 1) {
+                subtotal += Number(group[0].totalPrice || 0);
+            } else {
+                const selectedItem = getSelectedOption(group);
+                subtotal += Number(selectedItem.totalPrice || 0);
+            }
+        });
+
+        return subtotal;
+    }
+
+    // Current rush fee configuration read from the screen:
+    // FIXED = fixed $ value (default $20 when empty);
+    // PERCENT = % of the items subtotal, before taxes and delivery.
+    function getRushConfig() {
+        const isRush = document.getElementById("turnaroundSelect").value === "RUSH";
+
+        if (!isRush) {
+            return { isRush: false, type: "FIXED", percent: 0, fee: 0 };
+        }
+
+        const type = document.getElementById("rushFeeType").value || "FIXED";
+        const subtotal = getItemsSubtotal();
+
+        if (type === "PERCENT") {
+            const percent = Number(document.getElementById("rushFeePercentValue").value) || 0;
+
+            return {
+                isRush: true,
+                type: "PERCENT",
+                percent: percent,
+                fee: roundTo(subtotal * percent / 100, 2)
+            };
+        }
+
+        const rawFixed = document.getElementById("rushFeeFixedValue").value;
+        const fixed = rawFixed === "" ? RUSH_FEE_DEFAULT : (Number(rawFixed) || 0);
+
+        return {
+            isRush: true,
+            type: "FIXED",
+            percent: 0,
+            fee: roundTo(Math.max(fixed, 0), 2)
+        };
     }
 
     function clearExpiryDate() {
@@ -1191,7 +1312,7 @@
 
         showMessage(
             editingWideIndex != null
-                ? "Wide format line updated. Click Save Changes to persist the quote."
+                ? "Wide format line updated. Click Save Changes to persist the quote"
                 : "Wide format line added. Click Save Changes to persist the quote.",
             "success"
         );
@@ -1433,18 +1554,10 @@
     }
 
     function renderTotals() {
-        const groups = getAllGroups();
-
-        let subtotal = 0;
-
-        groups.forEach(group => {
-            if (group.length === 1) {
-                subtotal += Number(group[0].totalPrice || 0);
-            } else {
-                const selectedItem = getSelectedOption(group);
-                subtotal += Number(selectedItem.totalPrice || 0);
-            }
-        });
+        const subtotal = getItemsSubtotal();
+        const rush = getRushConfig();
+        const rushFee = rush.fee;
+        const taxable = subtotal + rushFee;
 
         const gstEnabled = document.getElementById("gstCheckbox").checked;
         const pstEnabled = document.getElementById("pstCheckbox").checked;
@@ -1458,9 +1571,6 @@
             : 0;
         const deliveryMethod = document.getElementById("deliveryMethod").value;
         const deliveryFee = getDeliveryFee(deliveryMethod);
-
-        const rushFee = document.getElementById("turnaroundSelect").value === "RUSH" ? RUSH_FEE : 0;
-        const taxable = subtotal + rushFee;
 
         const gstAmount = taxable * gstRate / 100;
         const pstAmount = taxable * pstRate / 100;
@@ -1515,9 +1625,20 @@
 
         if (rushFee > 0) {
             rushRow.style.display = "";
-            rushRow.innerHTML = `<span>Rush fee</span><strong>${formatMoney(rushFee)}</strong>`;
+            rushRow.innerHTML = `<span>Rush fee${rush.type === "PERCENT" ? ` (${rush.percent}%)` : ""}</span><strong>${formatMoney(rushFee)}</strong>`;
         } else {
             rushRow.style.display = "none";
+        }
+
+        // Live preview inside the rush fee editor panel
+        const rushPreview = document.getElementById("rushFeePreview");
+
+        if (rushPreview) {
+            rushPreview.textContent = rush.isRush
+                ? (rush.type === "PERCENT"
+                    ? `= ${formatMoney(rushFee)} (${rush.percent}% × ${formatMoney(subtotal)})`
+                    : `= ${formatMoney(rushFee)}`)
+                : "";
         }
 
         document.getElementById("totalCell").textContent =
@@ -2906,6 +3027,7 @@
         }
 
         const turnaround = document.getElementById("turnaroundSelect").value || null;
+        const rush = getRushConfig();
 
         const payload = {
             quoteNumber: quote.quoteNumber || null,
@@ -2914,7 +3036,9 @@
             expiryDate: document.getElementById("expiryDateInput").value || null,
             status: quote.status === "CONVERTED" ? "CONVERTED" : null,
             turnaroundOption: turnaround,
-            rushFee: turnaround === "RUSH" ? RUSH_FEE : 0,
+            rushFeeType: turnaround === "RUSH" ? rush.type : "FIXED",
+            rushFeePercent: turnaround === "RUSH" && rush.type === "PERCENT" ? rush.percent : null,
+            rushFee: turnaround === "RUSH" ? rush.fee : 0,
             notes: quote.notes || null,
             gstRate: getTaxRateForSave("gstCheckbox", quote.gstRate, 5),
             pstRate: getTaxRateForSave("pstCheckbox", quote.pstRate, 7),

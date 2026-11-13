@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers — Urban Print Shop</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --primary-light: #334155;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --card: #fff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --danger: #dc2626;
+            --success: #16a34a;
+        }
+
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+        aside {
+            width: 230px; background: var(--primary); color: #fff; padding: 20px 12px;
+            flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+        }
+        .brand-logo-link {
+            display: block; text-decoration: none; margin-bottom: 16px;
+            padding-bottom: 16px; border-bottom: 1px solid #475569;
+        }
+        .brand-logo {
+            display: block; width: 100%; max-width: 190px; height: auto;
+            margin: 0 auto; object-fit: contain;
+        }
+        nav { display: flex; flex-direction: column; gap: 4px; }
+        nav a { color: #cbd5e1; text-decoration: none; padding: 10px 12px; border-radius: 6px; font-size: .9rem; }
+        nav a:hover, nav a.active { color: #fff; background: var(--primary-light); }
+
+        main { flex: 1; min-width: 0; padding: 22px; }
+        h1 { margin: 0; font-size: 22px; color: #172235; }
+        .subtitle { margin: 5px 0 20px; color: var(--muted); font-size: 13px; }
+
+        .toolbar {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px; margin-bottom: 18px;
+        }
+        .search-box input {
+            padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px;
+            width: 260px; font-size: 14px;
+        }
+        .btn {
+            border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer;
+            font-weight: bold; font-size: .88rem; text-decoration: none; display: inline-block;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-ghost { background: #e2e8f0; color: var(--text); }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-success { background: #dcfce7; color: var(--success); }
+        .btn-sm { padding: 6px 10px; font-size: .78rem; }
+
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 7px; padding: 18px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th {
+            text-align: left; padding: 10px 12px; color: var(--muted);
+            font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+            border-bottom: 1px solid var(--border); white-space: nowrap;
+        }
+        td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:last-child td { border-bottom: 0; }
+        tr:hover td { background: #f8fafc; }
+        .actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+
+        .badge {
+            display: inline-block; padding: 4px 10px; border-radius: 12px;
+            font-size: 11px; font-weight: bold; letter-spacing: .04em;
+        }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-inactive { background: #e2e8f0; color: #475569; }
+
+        .empty-state { text-align: center; color: var(--muted); padding: 40px 0; }
+
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, .55);
+            z-index: 50; align-items: flex-start; justify-content: center; padding: 40px 16px;
+            overflow-y: auto;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #fff; border-radius: 8px; width: 100%; max-width: 720px;
+            padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+        }
+        .modal h2 { margin: 0 0 4px; font-size: 18px; }
+        .modal .modal-sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+        .form-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+        .form-grid > div { flex: 1; min-width: 160px; }
+        label { display: block; font-size: 12px; font-weight: bold; color: var(--muted); margin-bottom: 5px; }
+        input, textarea {
+            width: 100%; padding: 9px 10px; border: 1px solid #cbd5e1;
+            border-radius: 6px; font-size: 14px; background: #fff;
+        }
+        textarea { resize: vertical; min-height: 60px; }
+        .modal-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 10px; margin-top: 18px; flex-wrap: wrap;
+        }
+        .msg {
+            display: none; margin-top: 14px; padding: 10px 14px; border-radius: 6px;
+            font-size: 13px; font-weight: bold;
+        }
+        .msg.error { display: block; background: #fee2e2; color: var(--danger); }
+        .msg.success { display: block; background: #dcfce7; color: var(--success); }
+    </style>
+</head>
+<body>
+    <aside>
+        <a class="brand-logo-link" href="dashboard.html">
+            <img src="Design-sem-nome-2.png" alt="Urban Print Shop" class="brand-logo">
+        </a>
+        <nav>
+            <a href="dashboard.html">Home / Dashboard</a>
+            <a href="customers.html">Customers</a>
+            <a href="products.html">Products</a>
+            <a href="quote-list.html">Quotes</a>
+            <a href="orders.html">Orders</a>
+            <a href="production-queue.html">Production Queue</a>
+            <a href="purchase-orders.html">Purchase Orders</a>
+            <a href="suppliers.html" class="active">Suppliers</a>
+        </nav>
+    </aside>
+
+    <main>
+        <h1>Suppliers</h1>
+        <div class="subtitle">Registry of companies you buy materials from (cost center).</div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by name, contact, city...">
+            </div>
+            <button class="btn btn-primary" onclick="openCreateModal()">+ New Supplier</button>
+        </div>
+
+        <div class="card" style="padding: 0; overflow-x: auto;">
+            <table>
+                <thead>
+                <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>City</th>
+                <th>Payment Terms</th>
+                <th>Status</th>
+                <th style="text-align:right">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="suppliersBody"></tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display:none">
+                No suppliers found. Click "+ New Supplier" to register the first one.
+            </div>
+        </div>
+    </main>
+
+    <!-- Create / edit modal -->
+    <div class="modal-overlay" id="supplierOverlay">
+        <div class="modal">
+            <h2 id="modalTitle">New Supplier</h2>
+            <div class="modal-sub" id="modalSub">Register a company you buy materials from.</div>
+
+            <div class="form-grid">
+                <div style="flex:2">
+                    <label for="fName">Name *</label>
+                    <input type="text" id="fName" maxlength="150" placeholder="e.g. Spicers, ND Graphics...">
+                </div>
+                <div>
+                    <label for="fContact">Contact</label>
+                    <input type="text" id="fContact" maxlength="100" placeholder="Sales rep name">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label for="fPhone">Phone</label>
+                    <input type="text" id="fPhone" maxlength="40" placeholder="604-000-0000">
+                </div>
+                <div>
+                    <label for="fEmail">Email</label>
+                    <input type="text" id="fEmail" maxlength="150" placeholder="orders@supplier.com">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label for="fAddress">Address</label>
+                    <input type="text" id="fAddress" maxlength="200">
+                </div>
+                <div>
+                    <label for="fCity">City</label>
+                    <input type="text" id="fCity" maxlength="100" placeholder="Surrey, BC">
+                </div>
+                <div>
+                    <label for="fTerms">Payment Terms</label>
+                    <input type="text" id="fTerms" maxlength="100" placeholder="e.g. Net 30, COD, credit card">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label for="fNotes">Notes</label>
+                    <textarea id="fNotes" maxlength="2000" placeholder="Optional notes..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <label style="display:flex;align-items:center;gap:8px;margin:0">
+                    <input type="checkbox" id="fActive" checked style="width:auto"> Active
+                </label>
+                <div style="display:flex;gap:8px">
+                    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="submitSupplier()">Save Supplier</button>
+                </div>
+            </div>
+            <div id="supplierMsg" class="msg"></div>
+        </div>
+    </div>
+
+    <script>
+        let suppliers = [];
+        let editingId = null;
+
+        const API_SUPPLIERS = '/api/suppliers';
+
+        document.getElementById('searchInput').addEventListener('input', render);
+
+        init();
+
+        async function init() {
+            await reloadSuppliers();
+        }
+
+        async function reloadSuppliers() {
+            try {
+                const res = await fetch(API_SUPPLIERS);
+                suppliers = res.ok ? await res.json() : [];
+                render();
+            } catch (e) {
+                showMsg('supplierMsg', 'error', 'Could not load suppliers. Is the server running?');
+            }
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function showMsg(id, type, text) {
+            const el = document.getElementById(id);
+            el.className = 'msg ' + type;
+            el.textContent = text;
+        }
+
+        function clearMsg(id) {
+            const el = document.getElementById(id);
+            el.className = 'msg';
+            el.textContent = '';
+        }
+
+        function render() {
+            const term = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            const filtered = suppliers.filter(s =>
+                !term
+                || String(s.name).toLowerCase().includes(term)
+                || String(s.contactName || '').toLowerCase().includes(term)
+                || String(s.city || '').toLowerCase().includes(term)
+                || String(s.email || '').toLowerCase().includes(term)
+            );
+
+            const body = document.getElementById('suppliersBody');
+
+            body.innerHTML = filtered.map(s => `
+                <tr>
+                <td style="font-weight:bold">${escapeHtml(s.name)}</td>
+                <td>${escapeHtml(s.contactName || '—')}</td>
+                <td>${escapeHtml(s.phone || '—')}</td>
+                <td>${escapeHtml(s.email || '—')}</td>
+                <td>${escapeHtml(s.city || '—')}</td>
+                <td>${escapeHtml(s.paymentTerms || '—')}</td>
+                <td>
+                <span class="badge ${s.active ? 'badge-active' : 'badge-inactive'}">
+                ${s.active ? 'Active' : 'Inactive'}
+                </span>
+                </td>
+                <td>
+                <div class="actions">
+                <button class="btn btn-ghost btn-sm" onclick="openEditModal(${s.id})">Edit</button>
+                ${s.active
+                    ? `<button class="btn btn-danger btn-sm" onclick="setActive(${s.id}, false)">Deactivate</button>`
+                    : `<button class="btn btn-success btn-sm" onclick="setActive(${s.id}, true)">Activate</button>`}
+                </div>
+                </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('emptyState').style.display =
+                filtered.length === 0 ? 'block' : 'none';
+        }
+
+        function openCreateModal() {
+            editingId = null;
+            clearMsg('supplierMsg');
+            document.getElementById('modalTitle').textContent = 'New Supplier';
+            document.getElementById('modalSub').textContent = 'Register a company you buy materials from.';
+            ['fName', 'fContact', 'fPhone', 'fEmail', 'fAddress', 'fCity', 'fTerms', 'fNotes']
+                .forEach(id => document.getElementById(id).value = '');
+            document.getElementById('fActive').checked = true;
+            document.getElementById('supplierOverlay').classList.add('open');
+        }
+
+        function openEditModal(id) {
+            const s = suppliers.find(item => Number(item.id) === Number(id));
+            if (!s) return;
+
+            editingId = s.id;
+            clearMsg('supplierMsg');
+            document.getElementById('modalTitle').textContent = 'Edit Supplier';
+            document.getElementById('modalSub').textContent = s.name;
+
+            document.getElementById('fName').value = s.name || '';
+            document.getElementById('fContact').value = s.contactName || '';
+            document.getElementById('fPhone').value = s.phone || '';
+            document.getElementById('fEmail').value = s.email || '';
+            document.getElementById('fAddress').value = s.address || '';
+            document.getElementById('fCity').value = s.city || '';
+            document.getElementById('fTerms').value = s.paymentTerms || '';
+            document.getElementById('fNotes').value = s.notes || '';
+            document.getElementById('fActive').checked = !!s.active;
+
+            document.getElementById('supplierOverlay').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('supplierOverlay').classList.remove('open');
+        }
+
+        async function submitSupplier() {
+            clearMsg('supplierMsg');
+
+            const payload = {
+                name: document.getElementById('fName').value.trim(),
+                contactName: document.getElementById('fContact').value.trim() || null,
+                phone: document.getElementById('fPhone').value.trim() || null,
+                email: document.getElementById('fEmail').value.trim() || null,
+                address: document.getElementById('fAddress').value.trim() || null,
+                city: document.getElementById('fCity').value.trim() || null,
+                paymentTerms: document.getElementById('fTerms').value.trim() || null,
+                notes: document.getElementById('fNotes').value.trim() || null,
+                active: document.getElementById('fActive').checked
+            };
+
+            if (!payload.name) {
+                showMsg('supplierMsg', 'error', 'Supplier name is required.');
+                return;
+            }
+
+            try {
+                const res = await fetch(
+                    editingId == null ? API_SUPPLIERS : API_SUPPLIERS + '/' + editingId,
+                    {
+                        method: editingId == null ? 'POST' : 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                if (!res.ok) {
+                    showMsg('supplierMsg', 'error', await res.text());
+                    return;
+                }
+
+                closeModal();
+                await reloadSuppliers();
+            } catch (e) {
+                showMsg('supplierMsg', 'error', 'Error saving the supplier.');
+            }
+        }
+
+        async function setActive(id, active) {
+            if (!active && !confirm('Deactivate this supplier? Existing purchase orders keep the name.')) return;
+
+            try {
+                const res = await fetch(API_SUPPLIERS + '/' + id + '/active?active=' + active,
+                    { method: 'POST' });
+                if (!res.ok) {
+                    alert(await res.text());
+                    return;
+                }
+                await reloadSuppliers();
+            } catch (e) {
+                alert('Error updating the supplier.');
+            }
+        }
+    </script>
+</body>
+</html>
